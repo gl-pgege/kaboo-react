@@ -1,0 +1,712 @@
+/* kaboo-react — default styles
+ *
+ * Theme integration:
+ *   kaboo-react reads standard CSS custom properties (--background,
+ *   --foreground, --card, --muted, --border, etc.) that shadcn/ui
+ *   and similar design systems define. When those variables exist,
+ *   kaboo components adapt automatically. When they don't, the
+ *   built-in neutral fallbacks provide a clean look out of the box.
+ *
+ *   To override any token, set the --kaboo-* variable on a parent
+ *   element or :root.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ── Theme tokens ── */
+:where([class*="kaboo-"]) {
+  --kaboo-bg: var(--background, #ffffff);
+  --kaboo-fg: var(--foreground, #09090b);
+  --kaboo-card: var(--card, #ffffff);
+  --kaboo-card-fg: var(--card-foreground, #09090b);
+  --kaboo-muted: var(--muted, #f4f4f5);
+  --kaboo-muted-fg: var(--muted-foreground, #71717a);
+  --kaboo-border: var(--border, #e4e4e7);
+  --kaboo-accent: var(--accent, #f4f4f5);
+  --kaboo-accent-fg: var(--accent-foreground, #18181b);
+  --kaboo-ring: var(--ring, #a1a1aa);
+  --kaboo-success: #16a34a;
+  --kaboo-success-bg: #dcfce7;
+  --kaboo-active: var(--kaboo-muted-fg);
+  --kaboo-active-bg: var(--kaboo-muted);
+  /* status / tool accents */
+  --kaboo-warning: #f59e0b;
+  --kaboo-warning-bg: rgba(245, 158, 11, 0.12);
+  --kaboo-running: #d97706;
+  --kaboo-error: #dc2626;
+  --kaboo-tool-success: #059669;
+}
+
+.kaboo-root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.875rem;
+  color: var(--kaboo-fg);
+  line-height: 1.5;
+}
+
+/* ── Agent Card ── */
+.kaboo-agent-card {
+  border: 1px solid var(--kaboo-border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 8px 0;
+  font-size: 0.875rem;
+  transition: background 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--kaboo-card);
+  color: var(--kaboo-card-fg);
+}
+
+.kaboo-agent-card-done {
+  background: var(--kaboo-muted);
+}
+
+.kaboo-inline-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.kaboo-agent-card-children {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding-left: 10px;
+  border-left: 2px solid var(--kaboo-border);
+}
+
+.kaboo-agent-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.kaboo-agent-card-title-area { flex: 1; min-width: 0; }
+
+.kaboo-agent-card-title-row { display: flex; align-items: center; gap: 6px; }
+
+.kaboo-agent-card-title { font-weight: 600; font-size: 0.82rem; color: var(--kaboo-fg); }
+
+.kaboo-agent-card-subtitle { font-size: 0.72rem; color: var(--kaboo-muted-fg); margin-top: 1px; }
+
+.kaboo-agent-card-collapsed {
+  border-top: 1px solid var(--kaboo-border);
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-agent-card-body {
+  border-top: 1px solid var(--kaboo-border);
+  padding: 8px 14px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.kaboo-agent-card-task {
+  background: var(--kaboo-muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--kaboo-fg);
+  margin-bottom: 8px;
+  border-left: 3px solid var(--kaboo-border);
+}
+
+.kaboo-agent-card-tools { margin-bottom: 6px; }
+.kaboo-agent-card-timeline { display: flex; flex-direction: column; gap: 4px; }
+
+.kaboo-agent-card-tokens {
+  padding: 6px 8px;
+  background: var(--kaboo-bg);
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: var(--kaboo-fg);
+  margin-bottom: 6px;
+}
+
+.kaboo-agent-card-result {
+  background: var(--kaboo-bg);
+  border: 1px solid var(--kaboo-border);
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.5;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-agent-card-empty { font-size: 0.8rem; color: var(--kaboo-muted-fg); font-style: italic; padding: 8px 0; }
+
+.kaboo-agent-card-structured { margin-top: 8px; }
+
+.kaboo-agent-card-structured-summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--kaboo-muted-fg);
+  user-select: none;
+}
+
+.kaboo-agent-card-structured-pre {
+  background: var(--kaboo-muted);
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-x: auto;
+  max-height: 200px;
+  margin-top: 4px;
+  color: var(--kaboo-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Status Badge ── */
+.kaboo-status-badge {
+  font-weight: 500;
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.kaboo-status-done { color: var(--kaboo-success); background: var(--kaboo-success-bg); }
+.kaboo-status-active { color: var(--kaboo-active); background: var(--kaboo-active-bg); }
+.kaboo-status-interrupted { color: var(--kaboo-warning); background: var(--kaboo-warning-bg); }
+
+/* ── Tool Count ── */
+.kaboo-tool-count {
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: var(--kaboo-muted);
+  color: var(--kaboo-accent-fg);
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.kaboo-tool-count-done { background: var(--kaboo-success-bg); color: var(--kaboo-success); }
+
+/* ── Chevron ── */
+.kaboo-chevron {
+  flex-shrink: 0;
+  color: var(--kaboo-muted-fg);
+  transition: transform 0.2s;
+}
+.kaboo-chevron-open { transform: rotate(180deg); }
+
+.kaboo-icon-shrink { flex-shrink: 0; }
+
+.kaboo-tool-spinner { stroke: var(--kaboo-running); }
+.kaboo-tool-dot-success { fill: var(--kaboo-tool-success); }
+.kaboo-tool-dot-error { fill: var(--kaboo-error); }
+.kaboo-tool-dot-cancelled { fill: var(--kaboo-muted-fg); }
+
+/* ── Tool Row ── */
+.kaboo-inline-tool {
+  border: 1px solid var(--kaboo-border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 8px 0;
+  background: var(--kaboo-card);
+  color: var(--kaboo-card-fg);
+}
+
+.kaboo-inline-tool .kaboo-tool-row { margin-bottom: 0; }
+
+.kaboo-tool-row { margin-bottom: 4px; }
+
+.kaboo-tool-row-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.kaboo-tool-row-label { font-weight: 500; color: var(--kaboo-fg); flex: 1; word-break: break-word; }
+
+.kaboo-tool-row-status { font-size: 0.68rem; color: var(--kaboo-muted-fg); flex-shrink: 0; }
+
+.kaboo-tool-row-summary {
+  margin-left: 16px;
+  font-size: 0.75rem;
+  color: var(--kaboo-muted-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90%;
+  padding-bottom: 2px;
+}
+
+.kaboo-tool-row-detail { margin-left: 16px; margin-bottom: 8px; }
+
+.kaboo-tool-input {
+  background: var(--kaboo-muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  border-left: 3px solid var(--kaboo-border);
+  margin-bottom: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-tool-result {
+  background: var(--kaboo-muted);
+  border: 1px solid var(--kaboo-border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  max-height: 180px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--kaboo-fg);
+}
+.kaboo-tool-result-table { padding: 4px 0; white-space: normal; }
+.kaboo-tool-result-cancelled { color: var(--kaboo-muted-fg); font-style: italic; }
+
+/* ── Mini Table ── */
+.kaboo-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.kaboo-mini-table th {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--kaboo-border);
+  color: var(--kaboo-muted-fg);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.kaboo-mini-table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--kaboo-muted);
+  color: var(--kaboo-fg);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kaboo-mini-table-overflow { font-size: 0.7rem; color: var(--kaboo-muted-fg); padding: 3px 8px; }
+
+/* ── Drill Button ── */
+.kaboo-drill-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border: none;
+  border-top: 1px solid var(--kaboo-border);
+  background: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--kaboo-accent-fg);
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.kaboo-drill-btn:hover { background: var(--kaboo-muted); color: var(--kaboo-fg); }
+.kaboo-drill-btn:hover svg { transform: translateX(2px); }
+.kaboo-drill-btn svg { transition: transform 0.2s; }
+
+/* ── Breadcrumb Navigation ── */
+.kaboo-breadcrumb-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  background: var(--kaboo-muted);
+  border-bottom: 1px solid var(--kaboo-border);
+  overflow-x: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.kaboo-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.kaboo-breadcrumb-sep {
+  color: var(--kaboo-muted-fg);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+.kaboo-breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--kaboo-accent-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  font-family: inherit;
+  text-decoration: none;
+}
+.kaboo-breadcrumb-link:not(:disabled):hover { background: var(--kaboo-accent); color: var(--kaboo-fg); }
+
+.kaboo-breadcrumb-current {
+  color: var(--kaboo-fg) !important;
+  font-weight: 600;
+  cursor: default;
+  background: var(--kaboo-bg);
+  border: 1px solid var(--kaboo-border);
+}
+.kaboo-breadcrumb-current:hover { background: var(--kaboo-bg) !important; color: var(--kaboo-fg) !important; }
+
+.kaboo-breadcrumb-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+/* ── Drill Detail View ── */
+.kaboo-drill-detail {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--kaboo-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.875rem;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-drill-detail-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.kaboo-hidden { display: none; }
+
+.kaboo-drill-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--kaboo-muted-fg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.kaboo-drill-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kaboo-drill-tokens-content {
+  padding: 14px 16px;
+  background: var(--kaboo-muted);
+  border: 1px solid var(--kaboo-border);
+  border-radius: 10px;
+  font-size: 0.84rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  max-height: 500px;
+  overflow-y: auto;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-drill-task { margin-bottom: 16px; }
+
+.kaboo-drill-children { margin-top: 20px; }
+
+.kaboo-drill-interrupt { margin-top: 16px; }
+
+/* ── Activity Panel ── */
+.kaboo-activity-panel { padding: 4px 0; }
+
+/* ── Markdown Content ── */
+.kaboo-md { line-height: 1.6; }
+.kaboo-md-h2 { font-size: 1rem; font-weight: 700; color: var(--kaboo-fg); margin: 16px 0 6px; }
+.kaboo-md-h2:first-child { margin-top: 0; }
+.kaboo-md-h3 { font-size: 0.9rem; font-weight: 600; color: var(--kaboo-fg); margin: 12px 0 4px; }
+.kaboo-md-h3:first-child { margin-top: 0; }
+.kaboo-md-h4 { font-size: 0.84rem; font-weight: 600; color: var(--kaboo-fg); margin: 10px 0 4px; }
+.kaboo-md-h4:first-child { margin-top: 0; }
+.kaboo-md-p { margin: 2px 0; }
+.kaboo-md-li { margin: 1px 0; padding-left: 4px; list-style: disc inside; }
+.kaboo-md-spacer { height: 8px; }
+
+/* ── Interrupt Renderer ── */
+.kaboo-interrupt {
+  border: 1px solid var(--kaboo-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 8px 0;
+  background: var(--kaboo-card);
+  color: var(--kaboo-card-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.875rem;
+}
+
+.kaboo-interrupt-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.kaboo-interrupt-icon { color: var(--kaboo-running); flex-shrink: 0; margin-top: 1px; }
+
+.kaboo-interrupt-message { font-weight: 500; line-height: 1.4; }
+
+.kaboo-interrupt-details { margin-bottom: 10px; }
+
+.kaboo-interrupt-details summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--kaboo-muted-fg);
+  user-select: none;
+}
+
+.kaboo-interrupt-pre {
+  background: var(--kaboo-muted);
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-x: auto;
+  max-height: 160px;
+  margin-top: 4px;
+  color: var(--kaboo-fg);
+}
+
+.kaboo-interrupt-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.kaboo-interrupt-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--kaboo-border);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  background: var(--kaboo-bg);
+  color: var(--kaboo-fg);
+}
+
+.kaboo-interrupt-btn:hover { background: var(--kaboo-muted); }
+
+.kaboo-interrupt-btn-approve {
+  background: var(--kaboo-success-bg);
+  color: var(--kaboo-success);
+  border-color: var(--kaboo-success);
+}
+.kaboo-interrupt-btn-approve:hover { opacity: 0.85; }
+
+.kaboo-interrupt-btn-reject { color: var(--kaboo-muted-fg); }
+
+.kaboo-interrupt-btn-next {
+  background: var(--kaboo-accent);
+  color: var(--kaboo-accent-fg);
+}
+
+.kaboo-interrupt-btn-back {
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-interrupt-progress {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--kaboo-muted-fg);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.kaboo-interrupt-question {
+  font-weight: 500;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.kaboo-interrupt-radio-group,
+.kaboo-interrupt-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kaboo-interrupt-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+  background: var(--kaboo-bg);
+  color: var(--kaboo-fg);
+}
+.kaboo-interrupt-option:hover { background: var(--kaboo-muted); }
+.kaboo-interrupt-option-selected {
+  border-color: var(--kaboo-success);
+  background: var(--kaboo-success-bg);
+}
+
+.kaboo-interrupt-radio,
+.kaboo-interrupt-checkbox {
+  accent-color: var(--kaboo-success);
+}
+
+.kaboo-interrupt-other { margin-top: 2px; }
+
+.kaboo-interrupt-option-other {
+  gap: 8px;
+  cursor: default;
+}
+.kaboo-interrupt-option-other:hover { background: var(--kaboo-bg); }
+.kaboo-interrupt-option-other.kaboo-interrupt-option-selected {
+  border-color: var(--kaboo-success);
+  background: var(--kaboo-success-bg);
+}
+.kaboo-interrupt-other-input {
+  flex: 1;
+  margin-top: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.kaboo-interrupt-other-input:focus { border-color: transparent; }
+
+.kaboo-interrupt-text-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  background: var(--kaboo-bg);
+  color: var(--kaboo-fg);
+  margin-top: 4px;
+  outline: none;
+}
+.kaboo-interrupt-text-input:focus { border-color: var(--kaboo-ring); }
+
+.kaboo-interrupt-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--kaboo-border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  background: var(--kaboo-bg);
+  color: var(--kaboo-fg);
+  resize: vertical;
+  outline: none;
+  min-height: 60px;
+}
+.kaboo-interrupt-textarea:focus { border-color: var(--kaboo-ring); }
+
+.kaboo-interrupt-responded {
+  padding: 8px 14px;
+  margin: 8px 0;
+  font-size: 0.8rem;
+  color: var(--kaboo-muted-fg);
+  font-style: italic;
+}
+
+/* ── Answered ask_user prompt (durable, inline Q&A) ── */
+.kaboo-askuser {
+  border: 1px solid var(--kaboo-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  background: var(--kaboo-card);
+  color: var(--kaboo-card-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kaboo-askuser-qa {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kaboo-askuser-question {
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-askuser-answer {
+  line-height: 1.4;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--kaboo-muted);
+  color: var(--kaboo-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.kaboo-askuser-answer-empty {
+  color: var(--kaboo-muted-fg);
+  font-style: italic;
+}
+
+.kaboo-askuser-answer-declined {
+  color: var(--kaboo-muted-fg);
+  font-style: italic;
+}
+
+/* ── Blinking cursor ── */
+.kaboo-blink-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  background: var(--kaboo-muted-fg);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: kaboo-blink 1s step-end infinite;
+}
+
+/* ── Animations ── */
+@keyframes kaboo-blink { 50% { opacity: 0; } }
