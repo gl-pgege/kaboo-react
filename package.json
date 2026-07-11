@@ -69,7 +69,7 @@
     "docs:verify": "node scripts/verify-docs.mjs",
     "docs": "yarn docs:api && yarn docs:llms",
     "examples:typecheck": "node scripts/typecheck-examples.mjs",
-    "prepack": "yarn build && yarn docs:api && yarn docs:llms && yarn docs:verify && yarn test"
+    "prepack": "yarn build && yarn docs:api && yarn docs:llms && yarn docs:verify && yarn examples:typecheck && yarn test"
   },
   "peerDependencies": {
     "@copilotkit/react-core": ">=1.62.0",
