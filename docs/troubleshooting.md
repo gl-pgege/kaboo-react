@@ -21,7 +21,7 @@ Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
   CopilotKit agent does not.
 - Confirm `KabooProvider`'s `runtimeUrl` points at that backend and the request
   isn't blocked (check the network tab / dev-proxy). The
-  [minimal example](https://github.com/gl-pgege/@pgege/kaboo-react/tree/main/examples/minimal)
+  [minimal example](https://github.com/gl-pgege/kaboo-react/tree/main/examples/minimal)
   proxies `/api` to `http://localhost:4000`.
 - A plain-agent entry renders inline in the chat (`inlineChatOwner`), so you may
   see cards inside the chat rather than a separate panel — that's expected.

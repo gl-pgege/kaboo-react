@@ -25,5 +25,5 @@ Initial release.
   `KabooInterruptHandler`, `KabooAskUser`, `KabooToolRender`).
 - `@pgege/kaboo-react/styles.css` stylesheet with themeable `--kaboo-*` design tokens.
 
-[Unreleased]: https://github.com/gl-pgege/@pgege/kaboo-react/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/gl-pgege/@pgege/kaboo-react/releases/tag/v0.1.0
+[Unreleased]: https://github.com/gl-pgege/kaboo-react/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/gl-pgege/kaboo-react/releases/tag/v0.1.0

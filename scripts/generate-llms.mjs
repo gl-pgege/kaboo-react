@@ -16,7 +16,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PAGES = "https://gl-pgege.github.io/@pgege/kaboo-react/";
+const PAGES = "https://gl-pgege.github.io/kaboo-react/";
 const REPO = "https://github.com/gl-pgege/kaboo-react";
 
 const SUMMARY =

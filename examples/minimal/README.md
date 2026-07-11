@@ -3,7 +3,7 @@
 The smallest end-to-end wiring of `kaboo-react`: a `KabooProvider` wrapping a
 `CopilotChat` (with `KabooMessageView`), plus `GlassTabs` + `DrillDetailView` for
 drill-down. This is the same pattern documented in the
-[Quick start](https://gl-pgege.github.io/@pgege/kaboo-react/#quick-start).
+[Quick start](https://gl-pgege.github.io/kaboo-react/#quick-start).
 
 ## What it shows
 
