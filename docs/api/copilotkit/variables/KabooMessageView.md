@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -51,7 +51,7 @@ is a drop-in `messageView` (the slot expects a component carrying `Cursor`).
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooMessageView } from "kaboo-react/copilotkit";
+import { KabooMessageView } from "@kaboo/react/copilotkit";
 
 function Chat() {
   return <CopilotChat messageView={KabooMessageView} />;

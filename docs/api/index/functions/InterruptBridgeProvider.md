@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -27,7 +27,7 @@ automatically by [KabooProvider](KabooProvider.md).
 ## Example
 
 ```tsx
-import { InterruptBridgeProvider } from "kaboo-react";
+import { InterruptBridgeProvider } from "@kaboo/react";
 
 function Providers({ children }: { children: React.ReactNode }) {
   return <InterruptBridgeProvider>{children}</InterruptBridgeProvider>;

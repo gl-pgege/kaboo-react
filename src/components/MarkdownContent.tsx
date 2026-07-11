@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
  *
  * @example
  * ```tsx
- * import { MarkdownContent } from "kaboo-react";
+ * import { MarkdownContent } from "@kaboo/react";
  *
  * function Example() {
  *   return <MarkdownContent text={"# Title\n\nSome **bold** text."} />;

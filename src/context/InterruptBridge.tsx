@@ -54,7 +54,7 @@ const InterruptBridgeContext = createContext<InterruptBridgeValue>({
  *
  * @example
  * ```tsx
- * import { InterruptBridgeProvider } from "kaboo-react";
+ * import { InterruptBridgeProvider } from "@kaboo/react";
  *
  * function Providers({ children }: { children: React.ReactNode }) {
  *   return <InterruptBridgeProvider>{children}</InterruptBridgeProvider>;
@@ -81,7 +81,7 @@ export function InterruptBridgeProvider({ children }: { children: ReactNode }) {
  *
  * @example
  * ```tsx
- * import { useInterruptBridge } from "kaboo-react";
+ * import { useInterruptBridge } from "@kaboo/react";
  *
  * function OpenGateCount() {
  *   const { active } = useInterruptBridge();

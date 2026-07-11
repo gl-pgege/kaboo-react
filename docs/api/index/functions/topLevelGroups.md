@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -25,7 +25,7 @@ group names are free to contain any characters.
 ## Example
 
 ```ts
-import { topLevelGroups } from "kaboo-react";
+import { topLevelGroups } from "@kaboo/react";
 
 function rootCount(groups: Parameters<typeof topLevelGroups>[0]) {
   return topLevelGroups(groups).length;

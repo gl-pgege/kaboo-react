@@ -1,8 +1,8 @@
-**kaboo-react**
+**@kaboo/react**
 
 ***
 
-# kaboo-react
+# @kaboo/react
 
 ## Modules
 

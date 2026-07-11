@@ -25,11 +25,11 @@ yarn examples:typecheck    # type-check examples/ against built types
 - **Two barrels.**
   - `kaboo-react` (`src/index.ts`) — framework-agnostic contexts, hooks,
     components, utils, formatters, types.
-  - `kaboo-react/copilotkit` (`src/copilotkit.ts`) — integrations coupled to
+  - `@kaboo/react/copilotkit` (`src/copilotkit.ts`) — integrations coupled to
     CopilotKit. **Put any CopilotKit-dependent code here, never in the main
     barrel.**
 - **Stylesheet.** `src/styles.css` is copied to `dist/styles.css` by tsup and
-  exported as `kaboo-react/styles.css`. Theming is via CSS variables only
+  exported as `@kaboo/react/styles.css`. Theming is via CSS variables only
   (`--background`/`--foreground`/`--card`/`--muted`/`--border` + `--kaboo-*`
   overrides). Do not add a CSS-in-JS dependency.
 - **Peer deps.** `react`, `react-dom`, `@copilotkit/react-core`. Do not add

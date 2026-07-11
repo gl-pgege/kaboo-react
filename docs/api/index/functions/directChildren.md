@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -27,7 +27,7 @@ Direct children of `parentId` (one level deep) via the `parentGroup` field.
 ## Example
 
 ```ts
-import { directChildren } from "kaboo-react";
+import { directChildren } from "@kaboo/react";
 
 function childCount(
   groups: Parameters<typeof directChildren>[0],

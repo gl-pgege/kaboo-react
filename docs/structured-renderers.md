@@ -12,7 +12,7 @@ receives the structured output object (`Record<string, unknown>`) and returns a
 
 ```ts
 import { createElement } from "react";
-import type { StructuredRenderers } from "kaboo-react";
+import type { StructuredRenderers } from "@kaboo/react";
 
 const renderers: StructuredRenderers = {
   WeatherReport: (data) => createElement("div", null, String(data.summary)),
@@ -25,8 +25,8 @@ Pass the map to `KabooProvider` (or `KabooActivityProvider` if you compose
 providers by hand):
 
 ```tsx
-import { KabooProvider } from "kaboo-react";
-import type { StructuredRenderers } from "kaboo-react";
+import { KabooProvider } from "@kaboo/react";
+import type { StructuredRenderers } from "@kaboo/react";
 
 const renderers: StructuredRenderers = {
   WeatherReport: (data) => <div>Summary: {String(data.summary)}</div>,

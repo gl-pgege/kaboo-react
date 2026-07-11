@@ -19,7 +19,7 @@ export const DrillContext = createContext<DrillState>({
  *
  * @example
  * ```tsx
- * import { DrillProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+ * import { DrillProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
  *
  * function Panel() {
  *   return (

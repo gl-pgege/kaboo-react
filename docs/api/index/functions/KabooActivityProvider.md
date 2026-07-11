@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -28,7 +28,7 @@ composing providers by hand under an existing `<CopilotKit>`.
 ## Example
 
 ```tsx
-import { KabooActivityProvider, ActivityPanel } from "kaboo-react";
+import { KabooActivityProvider, ActivityPanel } from "@kaboo/react";
 
 function Activity({ agent }: { agent: string }) {
   return (

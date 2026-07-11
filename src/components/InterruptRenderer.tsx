@@ -299,8 +299,8 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
  *
  * @example
  * ```tsx
- * import { InterruptRenderer } from "kaboo-react";
- * import type { InterruptReason } from "kaboo-react";
+ * import { InterruptRenderer } from "@kaboo/react";
+ * import type { InterruptReason } from "@kaboo/react";
  *
  * const reason: InterruptReason = {
  *   type: "approval",

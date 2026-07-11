@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -27,7 +27,7 @@ mount it yourself if you compose the providers by hand.
 ## Example
 
 ```tsx
-import { DrillProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+import { DrillProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
 
 function Panel() {
   return (

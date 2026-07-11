@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -21,7 +21,7 @@ nothing when there is no activity.
 ## Example
 
 ```tsx
-import { ActivityPanel } from "kaboo-react";
+import { ActivityPanel } from "@kaboo/react";
 
 function Sidebar() {
   return (

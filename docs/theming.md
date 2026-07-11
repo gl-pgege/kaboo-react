@@ -21,7 +21,7 @@ neutral defaults.
 Import it once, near your app root:
 
 ```ts
-import "kaboo-react/styles.css";
+import "@kaboo/react/styles.css";
 ```
 
 The package sets `"sideEffects": ["*.css"]`, so bundlers keep the stylesheet even

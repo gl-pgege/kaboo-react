@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -27,7 +27,7 @@ spacing. Intentionally small — it is not a full CommonMark implementation.
 ## Example
 
 ```tsx
-import { MarkdownContent } from "kaboo-react";
+import { MarkdownContent } from "@kaboo/react";
 
 function Example() {
   return <MarkdownContent text={"# Title\n\nSome **bold** text."} />;

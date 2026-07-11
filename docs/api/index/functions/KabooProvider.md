@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -28,9 +28,9 @@ activity endpoint to configure.
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "kaboo-react";
-import { KabooMessageView } from "kaboo-react/copilotkit";
-import "kaboo-react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
+import { KabooMessageView } from "@kaboo/react/copilotkit";
+import "@kaboo/react/styles.css";
 
 function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (

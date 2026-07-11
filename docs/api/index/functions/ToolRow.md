@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -27,8 +27,8 @@ for tabular JSON, otherwise text). Used inside the [Timeline](Timeline.md).
 ## Example
 
 ```tsx
-import { ToolRow } from "kaboo-react";
-import type { ToolCall } from "kaboo-react";
+import { ToolRow } from "@kaboo/react";
+import type { ToolCall } from "@kaboo/react";
 
 const tool: ToolCall = {
   toolUseId: "t1",

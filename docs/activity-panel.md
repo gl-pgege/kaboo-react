@@ -10,7 +10,7 @@ Each group links to its parent via `parentGroup`, forming the hierarchy. Read th
 root groups with `topLevelGroups`:
 
 ```tsx
-import { useActivity, topLevelGroups } from "kaboo-react";
+import { useActivity, topLevelGroups } from "@kaboo/react";
 
 export function RootAgents() {
   const { groups } = useActivity();
@@ -28,7 +28,7 @@ export function RootAgents() {
 - **`MiniTable`** — tabular tool results.
 
 ```tsx
-import { ActivityPanel } from "kaboo-react";
+import { ActivityPanel } from "@kaboo/react";
 
 export function Sidebar() {
   return (
@@ -44,7 +44,7 @@ export function Sidebar() {
 To let users explore sub-agents, pair the breadcrumb and detail components:
 
 ```tsx
-import { GlassTabs, DrillDetailView } from "kaboo-react";
+import { GlassTabs, DrillDetailView } from "@kaboo/react";
 
 export function DrillArea() {
   return (
@@ -62,7 +62,7 @@ export function DrillArea() {
   `drillToRoot`, `drillToLevel`).
 
 ```tsx
-import { useDrill } from "kaboo-react";
+import { useDrill } from "@kaboo/react";
 
 export function BackButton() {
   const { drillUp, activeDrill } = useDrill();
@@ -77,7 +77,7 @@ export function BackButton() {
 - **`directChildren(groups, parentId)`** — one level of children.
 
 ```ts
-import { directChildren } from "kaboo-react";
+import { directChildren } from "@kaboo/react";
 
 export function childCount(
   groups: Parameters<typeof directChildren>[0],

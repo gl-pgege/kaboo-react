@@ -9,7 +9,7 @@ import type { DrillState } from "../types";
  *
  * @example
  * ```tsx
- * import { useDrill } from "kaboo-react";
+ * import { useDrill } from "@kaboo/react";
  *
  * function BackButton() {
  *   const { drillUp, activeDrill } = useDrill();

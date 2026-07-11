@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * import { formatToolInput } from "kaboo-react";
+ * import { formatToolInput } from "@kaboo/react";
  *
  * const { summary } = formatToolInput({ query: "select 1" });
  * // summary === "select 1"

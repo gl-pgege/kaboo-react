@@ -12,7 +12,7 @@ What problem are you trying to solve? What's the use case?
 ## Proposed solution
 
 What would you like to happen? Which barrel would it live in
-(`kaboo-react` vs `kaboo-react/copilotkit`)?
+(`kaboo-react` vs `@kaboo/react/copilotkit`)?
 
 ## Alternatives
 

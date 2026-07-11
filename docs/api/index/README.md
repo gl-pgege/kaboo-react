@@ -1,4 +1,4 @@
-[**kaboo-react**](../README.md)
+[**@kaboo/react**](../README.md)
 
 ***
 

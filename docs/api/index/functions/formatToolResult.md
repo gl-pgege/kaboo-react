@@ -1,4 +1,4 @@
-[**kaboo-react**](../../README.md)
+[**@kaboo/react**](../../README.md)
 
 ***
 
@@ -35,7 +35,7 @@ Text rendering of the result when it is not tabular.
 ## Example
 
 ```ts
-import { formatToolResult } from "kaboo-react";
+import { formatToolResult } from "@kaboo/react";
 
 const { rows } = formatToolResult('{"rows":[{"id":"1"}]}');
 // rows?.length === 1

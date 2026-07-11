@@ -46,7 +46,7 @@ export function partitionChildrenByToolCall(
  *
  * @example
  * ```ts
- * import { topLevelGroups } from "kaboo-react";
+ * import { topLevelGroups } from "@kaboo/react";
  *
  * function rootCount(groups: Parameters<typeof topLevelGroups>[0]) {
  *   return topLevelGroups(groups).length;
@@ -64,7 +64,7 @@ export function topLevelGroups(
  *
  * @example
  * ```ts
- * import { directChildren } from "kaboo-react";
+ * import { directChildren } from "@kaboo/react";
  *
  * function childCount(
  *   groups: Parameters<typeof directChildren>[0],

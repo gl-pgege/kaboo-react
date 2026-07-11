@@ -13,11 +13,11 @@ endpoint to wire up.
 ## Install
 
 ```bash
-yarn add kaboo-react
+yarn add @kaboo/react
 # or
-npm install kaboo-react
+npm install @kaboo/react
 # or
-pnpm add kaboo-react
+pnpm add @kaboo/react
 ```
 
 Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
@@ -25,7 +25,7 @@ Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
 Import the stylesheet once, near your app root:
 
 ```ts
-import "kaboo-react/styles.css";
+import "@kaboo/react/styles.css";
 ```
 
 ## Quick start
@@ -33,9 +33,9 @@ import "kaboo-react/styles.css";
 <!-- source: examples/minimal/src/App.tsx#quickstart -->
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "kaboo-react";
-import { KabooMessageView } from "kaboo-react/copilotkit";
-import "kaboo-react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
+import { KabooMessageView } from "@kaboo/react/copilotkit";
+import "@kaboo/react/styles.css";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -56,7 +56,7 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 - [Structured renderers](structured-renderers.md) — custom UI for schema output.
 - [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
 - [Activity panel & drill-down](activity-panel.md) — the activity tree.
-- [CopilotKit subpath](copilotkit-subpath.md) — the `kaboo-react/copilotkit` barrel.
+- [CopilotKit subpath](copilotkit-subpath.md) — the `@kaboo/react/copilotkit` barrel.
 - [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.
 - [API inventory](api-inventory.md) and the [API reference](api/README.md).
 

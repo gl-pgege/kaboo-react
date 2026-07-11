@@ -38,7 +38,7 @@ export interface AgentCardProps {
  *
  * @example
  * ```tsx
- * import { AgentCard, useActivity } from "kaboo-react";
+ * import { AgentCard, useActivity } from "@kaboo/react";
  *
  * function FirstCard() {
  *   const { groups } = useActivity();

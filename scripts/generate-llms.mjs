@@ -16,7 +16,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PAGES = "https://gl-pgege.github.io/kaboo-react/";
+const PAGES = "https://gl-pgege.github.io/@kaboo/react/";
 const REPO = "https://github.com/gl-pgege/kaboo-react";
 
 const SUMMARY =
@@ -44,8 +44,8 @@ llms +=
   "cards, tool calls, streamed tokens, structured outputs, drill-down, and " +
   "human-in-the-loop interrupts — inside a CopilotKit chat. Activity rides the " +
   "AG-UI run stream (as `ACTIVITY_SNAPSHOT` events); there is no separate " +
-  "endpoint. It ships two barrels (`kaboo-react`, `kaboo-react/copilotkit`) and " +
-  "a `kaboo-react/styles.css` stylesheet.\n\n";
+  "endpoint. It ships two barrels (`kaboo-react`, `@kaboo/react/copilotkit`) and " +
+  "a `@kaboo/react/styles.css` stylesheet.\n\n";
 
 llms += "## Docs\n\n";
 for (const n of NAV) llms += `- [${n.title}](${n.url})\n`;

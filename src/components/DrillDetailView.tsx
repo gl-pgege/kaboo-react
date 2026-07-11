@@ -19,7 +19,7 @@ import { InterruptRenderer } from "./InterruptRenderer";
  *
  * @example
  * ```tsx
- * import { GlassTabs, DrillDetailView } from "kaboo-react";
+ * import { GlassTabs, DrillDetailView } from "@kaboo/react";
  *
  * function DrillArea() {
  *   return (
