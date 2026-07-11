@@ -20,7 +20,13 @@ plugins:
 
 markdown_extensions:
   - admonition
-  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - toc:
@@ -29,10 +35,13 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting started: getting-started.md
+  - Concepts: concepts.md
   - Theming: theming.md
   - Structured renderers: structured-renderers.md
   - Human-in-the-loop: hitl.md
   - Activity panel: activity-panel.md
   - CopilotKit subpath: copilotkit-subpath.md
+  - Troubleshooting: troubleshooting.md
   - API inventory: api-inventory.md
   - ...
+  - Ecosystem: https://gl-pgege.github.io/kaboo-docs/

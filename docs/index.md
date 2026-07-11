@@ -14,6 +14,10 @@ endpoint to wire up.
 
 ```bash
 yarn add kaboo-react
+# or
+npm install kaboo-react
+# or
+pnpm add kaboo-react
 ```
 
 Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
@@ -47,9 +51,19 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 ## Next steps
 
 - [Getting started](getting-started.md) — a step-by-step walkthrough.
+- [Concepts](concepts.md) — the data model (`ACTIVITY_SNAPSHOT` → `StreamGroup`).
 - [Theming](theming.md) — CSS variables and `--kaboo-*` tokens.
 - [Structured renderers](structured-renderers.md) — custom UI for schema output.
 - [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
 - [Activity panel & drill-down](activity-panel.md) — the activity tree.
 - [CopilotKit subpath](copilotkit-subpath.md) — the `kaboo-react/copilotkit` barrel.
+- [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.
 - [API inventory](api-inventory.md) and the [API reference](api/README.md).
+
+## The kaboo stack
+
+kaboo-react is the UI layer. It pairs with
+[kaboo-workflows](https://gl-pgege.github.io/kaboo-workflows/) (agent
+orchestration) and [kaboo-runtime](https://gl-pgege.github.io/kaboo-runtime/)
+(persistence). See [the kaboo stack](https://gl-pgege.github.io/kaboo-docs/) for
+the whole picture.

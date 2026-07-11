@@ -17,6 +17,10 @@ complete setup.
 
 ```bash
 yarn add kaboo-react
+# or
+npm install kaboo-react
+# or
+pnpm add kaboo-react
 ```
 
 Peer dependencies (install if you don't already have them):
@@ -109,3 +113,10 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 - `disableInlineCards` / `disableInterruptHandler` — skip an auto-mounted handler
   (e.g. to render your own).
 - `copilotKitProps` — forward extra props to the underlying `<CopilotKit>`.
+
+## Next steps
+
+- [Concepts](concepts.md) — the data model behind the activity tree.
+- [Activity panel & drill-down](activity-panel.md) — render and navigate it.
+- [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
+- [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.
