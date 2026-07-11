@@ -6,7 +6,7 @@
 
 > **KabooAskUser**(`__namedParameters`): `null`
 
-Defined in: [integrations/KabooAskUser.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/integrations/KabooAskUser.tsx#L28)
+Defined in: [integrations/KabooAskUser.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooAskUser.tsx#L28)
 
 Renders answered `ask_user` prompts inline in the chat, anchored to the tool
 call. The tool call is a permanent part of the transcript, so the question and

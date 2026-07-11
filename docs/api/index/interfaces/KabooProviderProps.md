@@ -4,7 +4,7 @@
 
 # Interface: KabooProviderProps
 
-Defined in: [context/KabooProvider.tsx:10](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L10)
+Defined in: [context/KabooProvider.tsx:10](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L10)
 
 Props for [KabooProvider](../functions/KabooProvider.md).
 
@@ -14,7 +14,7 @@ Props for [KabooProvider](../functions/KabooProvider.md).
 
 > **agent**: `string`
 
-Defined in: [context/KabooProvider.tsx:14](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L14)
+Defined in: [context/KabooProvider.tsx:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L14)
 
 CopilotKit agent id to run (the workflow entry agent).
 
@@ -24,7 +24,7 @@ CopilotKit agent id to run (the workflow entry agent).
 
 > **children**: `ReactNode`
 
-Defined in: [context/KabooProvider.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L28)
+Defined in: [context/KabooProvider.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L28)
 
 Your app subtree, rendered inside all kaboo contexts.
 
@@ -34,7 +34,7 @@ Your app subtree, rendered inside all kaboo contexts.
 
 > `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"children"` \| `"agent"` \| `"runtimeUrl"` \| `"threadId"`\>\>
 
-Defined in: [context/KabooProvider.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L26)
+Defined in: [context/KabooProvider.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L26)
 
 Extra props forwarded to the underlying `<CopilotKit>`.
 
@@ -44,7 +44,7 @@ Extra props forwarded to the underlying `<CopilotKit>`.
 
 > `optional` **disableInlineCards?**: `boolean`
 
-Defined in: [context/KabooProvider.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L24)
+Defined in: [context/KabooProvider.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L24)
 
 Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/KabooInlineCards.md).
 
@@ -54,7 +54,7 @@ Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/Ka
 
 > `optional` **disableInterruptHandler?**: `boolean`
 
-Defined in: [context/KabooProvider.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L22)
+Defined in: [context/KabooProvider.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L22)
 
 Skip auto-mounting the built-in [KabooInterruptHandler](../../copilotkit/functions/KabooInterruptHandler.md).
 
@@ -64,7 +64,7 @@ Skip auto-mounting the built-in [KabooInterruptHandler](../../copilotkit/functio
 
 > `optional` **interruptRenderers?**: `Partial`\<`Record`\<`"approval"` \| `"form"`, `ComponentType`\<[`InterruptRendererProps`](InterruptRendererProps.md)\>\>\>
 
-Defined in: [context/KabooProvider.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L20)
+Defined in: [context/KabooProvider.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L20)
 
 Per-interrupt-type renderer overrides for the built-in HITL handler.
 
@@ -74,7 +74,7 @@ Per-interrupt-type renderer overrides for the built-in HITL handler.
 
 > **runtimeUrl**: `string`
 
-Defined in: [context/KabooProvider.tsx:12](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L12)
+Defined in: [context/KabooProvider.tsx:12](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L12)
 
 URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
@@ -84,7 +84,7 @@ URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
 > `optional` **structuredRenderers?**: [`StructuredRenderers`](../type-aliases/StructuredRenderers.md)
 
-Defined in: [context/KabooProvider.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L18)
+Defined in: [context/KabooProvider.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L18)
 
 Renderers for structured agent outputs, keyed by output schema name.
 
@@ -94,6 +94,6 @@ Renderers for structured agent outputs, keyed by output schema name.
 
 > `optional` **threadId?**: `string`
 
-Defined in: [context/KabooProvider.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/KabooProvider.tsx#L16)
+Defined in: [context/KabooProvider.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L16)
 
 Conversation id. Scopes both the run and its activity.

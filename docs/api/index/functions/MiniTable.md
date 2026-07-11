@@ -6,7 +6,7 @@
 
 > **MiniTable**(`__namedParameters`): `Element` \| `null`
 
-Defined in: [components/MiniTable.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/components/MiniTable.tsx#L15)
+Defined in: [components/MiniTable.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/MiniTable.tsx#L15)
 
 Compact table for row-shaped tool results. Columns are inferred from the first
 row's keys; underscores in headers become spaces. Renders at most `maxRows`

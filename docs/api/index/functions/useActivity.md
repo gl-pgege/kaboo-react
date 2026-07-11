@@ -6,7 +6,7 @@
 
 > **useActivity**(): [`ActivityState`](../interfaces/ActivityState.md)
 
-Defined in: [hooks/useActivity.ts:20](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/hooks/useActivity.ts#L20)
+Defined in: [hooks/useActivity.ts:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/hooks/useActivity.ts#L20)
 
 Reads the current [ActivityState](../interfaces/ActivityState.md) (all activity groups for the thread)
 from the nearest [KabooActivityProvider](KabooActivityProvider.md). Re-renders on each new

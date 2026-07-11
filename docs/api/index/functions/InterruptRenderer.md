@@ -6,7 +6,7 @@
 
 > **InterruptRenderer**(`props`): `ReactElement`
 
-Defined in: [components/InterruptRenderer.tsx:322](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/components/InterruptRenderer.tsx#L322)
+Defined in: [components/InterruptRenderer.tsx:322](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/InterruptRenderer.tsx#L322)
 
 Default human-in-the-loop interrupt UI. Renders an Approve/Reject panel for an
 [ApprovalReason](../interfaces/ApprovalReason.md) and a (optionally multi-step) form with radio/checkbox/

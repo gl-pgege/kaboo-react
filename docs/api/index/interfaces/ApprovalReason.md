@@ -4,7 +4,7 @@
 
 # Interface: ApprovalReason
 
-Defined in: [types.ts:56](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L56)
+Defined in: [types.ts:56](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L56)
 
 An approval interrupt: the agent is asking the user to approve or reject a
 gated tool call before it runs.
@@ -15,7 +15,7 @@ gated tool call before it runs.
 
 > **message**: `string`
 
-Defined in: [types.ts:60](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L60)
+Defined in: [types.ts:60](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L60)
 
 Human-readable description of what is being approved.
 
@@ -25,7 +25,7 @@ Human-readable description of what is being approved.
 
 > `optional` **tool\_input?**: `unknown`
 
-Defined in: [types.ts:64](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L64)
+Defined in: [types.ts:64](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L64)
 
 The proposed tool input, shown for review.
 
@@ -35,7 +35,7 @@ The proposed tool input, shown for review.
 
 > **tool\_name**: `string`
 
-Defined in: [types.ts:62](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L62)
+Defined in: [types.ts:62](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L62)
 
 Name of the gated tool awaiting approval.
 
@@ -45,6 +45,6 @@ Name of the gated tool awaiting approval.
 
 > **type**: `"approval"`
 
-Defined in: [types.ts:58](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L58)
+Defined in: [types.ts:58](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L58)
 
 Discriminator marking this as an approval gate.

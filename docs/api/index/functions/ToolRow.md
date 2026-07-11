@@ -6,7 +6,7 @@
 
 > **ToolRow**(`__namedParameters`): `Element`
 
-Defined in: [components/ToolRow.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/components/ToolRow.tsx#L29)
+Defined in: [components/ToolRow.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ToolRow.tsx#L29)
 
 Renders a single [ToolCall](../interfaces/ToolCall.md) as a collapsible row: status icon, label, an
 input summary, and — when expanded — the formatted result (a [MiniTable](MiniTable.md)

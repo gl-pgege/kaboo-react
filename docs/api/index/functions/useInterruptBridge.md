@@ -6,7 +6,7 @@
 
 > **useInterruptBridge**(): `object`
 
-Defined in: [context/InterruptBridge.tsx:92](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L92)
+Defined in: [context/InterruptBridge.tsx:92](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L92)
 
 Reads the InterruptBridge: the list of open interrupts plus `publish`. Most
 consumers want [useInterruptFor](useInterruptFor.md) instead; use this to inspect or drive

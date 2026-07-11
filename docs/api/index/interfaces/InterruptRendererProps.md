@@ -4,7 +4,7 @@
 
 # Interface: InterruptRendererProps
 
-Defined in: [types.ts:102](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L102)
+Defined in: [types.ts:102](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L102)
 
 Props for a custom interrupt renderer supplied via `interruptRenderers`.
 Receives the reason plus resolve/cancel callbacks so a bespoke UI can drive
@@ -16,7 +16,7 @@ the gate.
 
 > **onCancel**: () => `void`
 
-Defined in: [types.ts:108](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L108)
+Defined in: [types.ts:108](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L108)
 
 Cancel/reject the gate, resuming the run without a positive answer.
 
@@ -30,7 +30,7 @@ Cancel/reject the gate, resuming the run without a positive answer.
 
 > **onResolve**: (`payload`) => `void`
 
-Defined in: [types.ts:106](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L106)
+Defined in: [types.ts:106](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L106)
 
 Resume the run with the user's answer/approval payload.
 
@@ -50,7 +50,7 @@ Resume the run with the user's answer/approval payload.
 
 > **reason**: [`InterruptReason`](../type-aliases/InterruptReason.md)
 
-Defined in: [types.ts:104](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L104)
+Defined in: [types.ts:104](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L104)
 
 Why the run paused, and what input it needs.
 
@@ -60,7 +60,7 @@ Why the run paused, and what input it needs.
 
 > `optional` **toolCallId?**: `string`
 
-Defined in: [types.ts:114](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L114)
+Defined in: [types.ts:114](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L114)
 
 The interrupt's originating tool-call id, when available. Used to correlate
 the answered form with the durable tool-call card that renders the Q&A

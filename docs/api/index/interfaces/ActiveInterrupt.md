@@ -4,7 +4,7 @@
 
 # Interface: ActiveInterrupt
 
-Defined in: [context/InterruptBridge.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L17)
+Defined in: [context/InterruptBridge.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L17)
 
 An open interrupt published onto the InterruptBridge so an owning agent card
 can render its prompt inline (rather than only in the chat slot). Carries the
@@ -16,7 +16,7 @@ reason plus resolve/cancel callbacks bound to this specific interrupt id.
 
 > **id**: `string`
 
-Defined in: [context/InterruptBridge.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L23)
+Defined in: [context/InterruptBridge.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L23)
 
 Unique interrupt id (from the AG-UI interrupt). Distinguishes concurrent
 gates that may share a single tool-call id (e.g. two parallel sub-agent
@@ -28,7 +28,7 @@ gates re-keyed onto one delegating call), so each resolves independently.
 
 > **onCancel**: () => `void`
 
-Defined in: [context/InterruptBridge.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L29)
+Defined in: [context/InterruptBridge.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L29)
 
 Cancel/reject this gate, resuming the run without a positive answer.
 
@@ -42,7 +42,7 @@ Cancel/reject this gate, resuming the run without a positive answer.
 
 > **onResolve**: (`payload`) => `void`
 
-Defined in: [context/InterruptBridge.tsx:27](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L27)
+Defined in: [context/InterruptBridge.tsx:27](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L27)
 
 Resume the run with the user's answer/approval payload.
 
@@ -62,7 +62,7 @@ Resume the run with the user's answer/approval payload.
 
 > **reason**: [`InterruptReason`](../type-aliases/InterruptReason.md)
 
-Defined in: [context/InterruptBridge.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L25)
+Defined in: [context/InterruptBridge.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L25)
 
 Why the run paused, and what input it needs.
 
@@ -72,7 +72,7 @@ Why the run paused, and what input it needs.
 
 > `optional` **toolCallId?**: `string`
 
-Defined in: [context/InterruptBridge.tsx:36](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/context/InterruptBridge.tsx#L36)
+Defined in: [context/InterruptBridge.tsx:36](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L36)
 
 The originating tool-call id, when the interrupt was raised by a tool (e.g.
 `ask_user` or a gated tool). Lets the owning agent card render the live

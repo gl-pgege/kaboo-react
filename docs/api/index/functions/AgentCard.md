@@ -6,7 +6,7 @@
 
 > **AgentCard**(`__namedParameters`): `Element`
 
-Defined in: [components/AgentCard.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/components/AgentCard.tsx#L50)
+Defined in: [components/AgentCard.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L50)
 
 Card for a single agent run: title, status badge, task, chronological timeline
 (text + tool rows), result/structured output, and a "View details" drill

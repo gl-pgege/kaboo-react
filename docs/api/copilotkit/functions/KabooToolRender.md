@@ -6,7 +6,7 @@
 
 > **KabooToolRender**(): `null`
 
-Defined in: [integrations/KabooToolRender.tsx:45](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/integrations/KabooToolRender.tsx#L45)
+Defined in: [integrations/KabooToolRender.tsx:45](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooToolRender.tsx#L45)
 
 Wildcard (`"*"`) tool-call renderer: persists any plain tool call inline in
 the chat transcript. Tools with a dedicated renderer (`ask_user`, delegate

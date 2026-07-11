@@ -33,6 +33,10 @@ yarn dev
 Then open the printed URL. Update `agent` in `src/main.tsx` to your workflow's
 entry agent id (the demo backend serves it at `/api/manifest`).
 
+The Vite dev server proxies `/api` to `http://localhost:4000` (the
+kaboo-workflows-demo backend port). If your runtime listens elsewhere, change
+the proxy target in [`vite.config.ts`](./vite.config.ts).
+
 ## A fuller example
 
 For a production-shaped app (theming, manifest loading, layout), see the demo
