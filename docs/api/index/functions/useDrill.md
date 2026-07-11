@@ -1,0 +1,29 @@
+[**kaboo-react**](../../README.md)
+
+***
+
+# Function: useDrill()
+
+> **useDrill**(): [`DrillState`](../interfaces/DrillState.md)
+
+Defined in: [hooks/useDrill.ts:21](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/hooks/useDrill.ts#L21)
+
+Reads the drill-down navigation state ([DrillState](../interfaces/DrillState.md)) from the nearest
+[DrillProvider](DrillProvider.md): the current path plus `drillIn`/`drillUp`/`drillToRoot`/
+`drillToLevel`.
+
+## Returns
+
+[`DrillState`](../interfaces/DrillState.md)
+
+## Example
+
+```tsx
+import { useDrill } from "kaboo-react";
+
+function BackButton() {
+  const { drillUp, activeDrill } = useDrill();
+  if (!activeDrill) return null;
+  return <button onClick={drillUp}>Back</button>;
+}
+```

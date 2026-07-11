@@ -1,0 +1,12 @@
+[**kaboo-react**](../../README.md)
+
+***
+
+# Type Alias: InterruptReason
+
+> **InterruptReason** = [`ApprovalReason`](../interfaces/ApprovalReason.md) \| [`FormReason`](../interfaces/FormReason.md)
+
+Defined in: [types.ts:82](https://github.com/gl-pgege/kaboo-react/blob/ff0be174d037081f4a92375207a54f19f9aa8b43/src/types.ts#L82)
+
+The reason a run paused for human input — either an [ApprovalReason](../interfaces/ApprovalReason.md)
+(approve/reject a gated tool) or a [FormReason](../interfaces/FormReason.md) (answer questions).

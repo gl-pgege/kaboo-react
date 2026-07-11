@@ -1,18 +1,28 @@
 {
   "name": "kaboo-react",
   "version": "0.1.0",
-  "description": "Reusable React components and hooks for kaboo-workflows agent activity UI",
+  "description": "React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.",
+  "author": "gl-pgege",
   "license": "MIT",
+  "packageManager": "yarn@4.12.0",
   "type": "module",
   "sideEffects": [
     "*.css"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kaboo/kaboo-workflows.git",
-    "directory": "kaboo-react"
+    "url": "git+https://github.com/gl-pgege/kaboo-react.git"
   },
-  "homepage": "https://github.com/kaboo/kaboo-workflows/tree/main/kaboo-react#readme",
+  "homepage": "https://gl-pgege.github.io/kaboo-react/",
+  "bugs": {
+    "url": "https://github.com/gl-pgege/kaboo-react/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "react",
     "copilotkit",
@@ -38,23 +48,33 @@
     "./styles.css": "./dist/styles.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "llms.txt",
+    "llms-full.txt",
+    "!docs/**",
+    "!examples/**"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "docs:api": "typedoc && node scripts/generate-inventory.mjs",
+    "docs:llms": "node scripts/generate-llms.mjs",
+    "docs:verify": "node scripts/verify-docs.mjs",
+    "docs": "yarn docs:api && yarn docs:llms",
+    "examples:typecheck": "node scripts/typecheck-examples.mjs",
+    "prepack": "yarn build && yarn docs:api && yarn docs:llms && yarn docs:verify && yarn test"
   },
   "peerDependencies": {
     "@copilotkit/react-core": ">=1.62.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@copilotkit/react-core": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@copilotkit/react-core": "^1.62.0",
@@ -68,6 +88,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tsup": "^8.5.0",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^5.8.3",
     "vitest": "^2"
   }

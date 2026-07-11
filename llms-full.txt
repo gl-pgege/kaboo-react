@@ -1,0 +1,757 @@
+# README.md
+
+# kaboo-react
+
+> React components + hooks for rendering kaboo multi-agent activity in a
+> [CopilotKit](https://copilotkit.ai) app, with batteries-included CopilotKit
+> integrations.
+
+[![npm version](https://img.shields.io/npm/v/kaboo-react.svg)](https://www.npmjs.com/package/kaboo-react)
+[![license](https://img.shields.io/npm/l/kaboo-react.svg)](./LICENSE)
+[![docs](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://gl-pgege.github.io/kaboo-react/)
+[![CI](https://github.com/gl-pgege/kaboo-react/actions/workflows/ci.yml/badge.svg)](https://github.com/gl-pgege/kaboo-react/actions/workflows/ci.yml)
+
+kaboo-react renders a live, hierarchical view of what your agents are doing —
+sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
+navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
+stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
+
+## Features
+
+- **Live hierarchical activity** — nested agent/tool cards that stream in as work
+  happens, inside the chat transcript.
+- **Drill-down navigation** — breadcrumb + detail view to explore any sub-agent.
+- **Human-in-the-loop** — approval gates and forms, with N parallel interrupts
+  resolved independently.
+- **Structured renderers** — plug custom UI for schema-shaped agent output.
+- **Batteries included** — one `KabooProvider` renders `<CopilotKit>` and mounts
+  every context and handler for you.
+- **Themeable** — styled with CSS variables and `--kaboo-*` tokens.
+
+## Install
+
+```bash
+yarn add kaboo-react
+```
+
+Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.62).
+
+Import the stylesheet once, near your app root:
+
+```ts
+import "kaboo-react/styles.css";
+```
+
+## Quick start
+
+`KabooProvider` renders `<CopilotKit>` for you and mounts every kaboo context and
+handler inside it. Give it the runtime URL, the entry agent, and a thread id —
+then drop in the components.
+
+<!-- source: examples/minimal/src/App.tsx#quickstart -->
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+import { KabooMessageView } from "kaboo-react/copilotkit";
+import "kaboo-react/styles.css";
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent={agent} threadId={threadId}>
+      <GlassTabs />
+      <CopilotChat messageView={KabooMessageView} />
+      <DrillDetailView />
+    </KabooProvider>
+  );
+}
+```
+
+That's it — `KabooProvider` nests the three contexts (`KabooActivityProvider`,
+`DrillProvider`, `InterruptBridgeProvider`) plus the built-in `KabooInlineCards`
+and `KabooInterruptHandler`. Disable the auto-mounted handlers with
+`disableInlineCards` / `disableInterruptHandler`, and forward extra CopilotKit
+props via `copilotKitProps`.
+
+## Core concepts
+
+- **Activity rides the run stream.** The backend emits activity as
+  `ACTIVITY_SNAPSHOT` events on the same AG-UI run stream as the chat, so there is
+  no separate activity endpoint. `KabooActivityProvider` subscribes to the
+  CopilotKit agent and exposes it via `useActivity()`.
+- **Providers nest under `KabooProvider`.** Activity → drill → interrupt bridge,
+  with the built-in handlers mounted inside.
+- **Two barrels.** Import framework-agnostic pieces from `kaboo-react`, and the
+  CopilotKit-coupled integrations from `kaboo-react/copilotkit`.
+- **The `threadId` scopes everything.** Each conversation gets its own
+  hierarchical activity view automatically.
+- **Theming via CSS variables.** Components read standard design-system tokens and
+  accept `--kaboo-*` overrides.
+
+## Guides
+
+- [Getting started](./docs/getting-started.md)
+- [Theming](./docs/theming.md)
+- [Structured renderers](./docs/structured-renderers.md)
+- [Human-in-the-loop](./docs/hitl.md)
+- [Activity panel & drill-down](./docs/activity-panel.md)
+- [The `kaboo-react/copilotkit` subpath](./docs/copilotkit-subpath.md)
+
+## API reference
+
+Full, auto-generated API docs for both barrels live on the
+[documentation site](https://gl-pgege.github.io/kaboo-react/api/). A flat index
+of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
+
+## Examples
+
+- [`examples/minimal`](./examples/minimal) — the smallest end-to-end wiring
+  (this README's quick start).
+- The [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo)
+  frontend is the canonical, production-shaped consumer.
+
+## Compatibility & versioning
+
+- **React** 18 and 19 (`react` / `react-dom` >= 18 as peer deps).
+- **CopilotKit** `@copilotkit/react-core` >= 1.62 (peer dep).
+- Follows [semantic versioning](https://semver.org). See
+  [CHANGELOG.md](./CHANGELOG.md).
+
+## The kaboo stack
+
+kaboo-react is one of three libraries:
+
+- [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) — Python
+  multi-agent orchestration.
+- [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime) — CopilotKit runtime
+  persistence/orchestration plugin.
+- **kaboo-react** — this library, the UI layer.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) (humans) and [AGENTS.md](./AGENTS.md)
+(AI contributors).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
+
+---
+
+# docs/index.md
+
+# kaboo-react
+
+> React components + hooks for rendering kaboo multi-agent activity in a
+> [CopilotKit](https://copilotkit.ai) app, with batteries-included CopilotKit
+> integrations.
+
+kaboo-react renders a live, hierarchical view of what your agents are doing —
+sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
+navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
+stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+endpoint to wire up.
+
+## Install
+
+```bash
+yarn add kaboo-react
+```
+
+Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
+
+Import the stylesheet once, near your app root:
+
+```ts
+import "kaboo-react/styles.css";
+```
+
+## Quick start
+
+<!-- source: examples/minimal/src/App.tsx#quickstart -->
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+import { KabooMessageView } from "kaboo-react/copilotkit";
+import "kaboo-react/styles.css";
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent={agent} threadId={threadId}>
+      <GlassTabs />
+      <CopilotChat messageView={KabooMessageView} />
+      <DrillDetailView />
+    </KabooProvider>
+  );
+}
+```
+
+## Next steps
+
+- [Getting started](getting-started.md) — a step-by-step walkthrough.
+- [Theming](theming.md) — CSS variables and `--kaboo-*` tokens.
+- [Structured renderers](structured-renderers.md) — custom UI for schema output.
+- [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
+- [Activity panel & drill-down](activity-panel.md) — the activity tree.
+- [CopilotKit subpath](copilotkit-subpath.md) — the `kaboo-react/copilotkit` barrel.
+- [API inventory](api-inventory.md) and the [API reference](api/README.md).
+
+---
+
+# docs/getting-started.md
+
+# Getting started
+
+This guide wires kaboo-react into a CopilotKit app from scratch.
+
+## Prerequisites
+
+You need a **CopilotKit runtime endpoint** that streams kaboo activity as
+`ACTIVITY_SNAPSHOT` events on the AG-UI run stream. The
+[kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime) package (a CopilotKit
+runtime persistence/orchestration plugin) plus a
+[kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) backend is the
+canonical server; the
+[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) shows a
+complete setup.
+
+## Install
+
+```bash
+yarn add kaboo-react
+```
+
+Peer dependencies (install if you don't already have them):
+
+```bash
+yarn add react react-dom @copilotkit/react-core
+```
+
+## Import the stylesheet
+
+Import it once, near your app root:
+
+```ts
+import "kaboo-react/styles.css";
+```
+
+## Wrap your app in `KabooProvider`
+
+`KabooProvider` renders `<CopilotKit>` and nests every kaboo context and handler.
+Pass the runtime URL, the entry agent id, and a thread id:
+
+<!-- source: examples/minimal/src/App.tsx#quickstart -->
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+import { KabooMessageView } from "kaboo-react/copilotkit";
+import "kaboo-react/styles.css";
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent={agent} threadId={threadId}>
+      <GlassTabs />
+      <CopilotChat messageView={KabooMessageView} />
+      <DrillDetailView />
+    </KabooProvider>
+  );
+}
+```
+
+## Render the chat with `KabooMessageView`
+
+Pass `KabooMessageView` to `CopilotChat`'s `messageView` slot. It renders the
+normal message list **and** live agent activity cards inside the transcript, from
+the moment the first agent starts:
+
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooMessageView } from "kaboo-react/copilotkit";
+
+export function Chat() {
+  return <CopilotChat messageView={KabooMessageView} />;
+}
+```
+
+## Add drill-down
+
+`GlassTabs` renders a breadcrumb once you drill into a sub-agent, and
+`DrillDetailView` renders the selected group's detail. Place them alongside the
+chat (as in the quick start above).
+
+## What auto-mounts
+
+`KabooProvider` mounts these for you:
+
+- `KabooInlineCards` — inline delegate sub-agent cards at their tool-call
+  position.
+- `KabooInterruptHandler` — the human-in-the-loop handler.
+
+Escape hatches:
+
+```tsx
+import { KabooProvider } from "kaboo-react";
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      disableInlineCards={false}
+      disableInterruptHandler={false}
+      copilotKitProps={{}}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+- `disableInlineCards` / `disableInterruptHandler` — skip an auto-mounted handler
+  (e.g. to render your own).
+- `copilotKitProps` — forward extra props to the underlying `<CopilotKit>`.
+
+---
+
+# docs/theming.md
+
+# Theming
+
+kaboo-react ships a single stylesheet and styles everything with CSS variables,
+so it blends into your app's design system and is easy to override.
+
+## How styling works
+
+Components read standard design-system tokens with neutral fallbacks:
+
+- `--background`, `--foreground`
+- `--card`
+- `--muted`, `--muted-foreground`
+- `--border`
+
+If your app already defines these (as most design systems / shadcn setups do),
+kaboo-react inherits them automatically. Otherwise it falls back to sensible
+neutral defaults.
+
+## Import the stylesheet
+
+Import it once, near your app root:
+
+```ts
+import "kaboo-react/styles.css";
+```
+
+The package sets `"sideEffects": ["*.css"]`, so bundlers keep the stylesheet even
+with tree-shaking enabled.
+
+## Override tokens
+
+Status colors and other accents are exposed as `--kaboo-*` variables. Set them on
+any parent element (e.g. `:root`) to override:
+
+```css
+:root {
+  --kaboo-running: #d97706;
+  --kaboo-warning: #f59e0b;
+  --kaboo-success: #16a34a;
+}
+```
+
+## Dark mode
+
+Because components read `--background` / `--foreground` / `--card` etc., dark mode
+works by toggling those tokens the same way you do for the rest of your app (for
+example, a `.dark` class on `<html>` that redefines the variables). No
+kaboo-specific dark-mode configuration is required.
+
+---
+
+# docs/structured-renderers.md
+
+# Structured renderers
+
+Agents can emit **structured output** — a schema-shaped JSON object plus the
+schema's name. Structured renderers let you render that object with a custom React
+component instead of the default collapsible JSON view.
+
+## What they are
+
+A `StructuredRenderers` map is keyed by the output schema name. Each renderer
+receives the structured output object (`Record<string, unknown>`) and returns a
+`ReactElement`:
+
+```ts
+import { createElement } from "react";
+import type { StructuredRenderers } from "kaboo-react";
+
+const renderers: StructuredRenderers = {
+  WeatherReport: (data) => createElement("div", null, String(data.summary)),
+};
+```
+
+## Provide renderers
+
+Pass the map to `KabooProvider` (or `KabooActivityProvider` if you compose
+providers by hand):
+
+```tsx
+import { KabooProvider } from "kaboo-react";
+import type { StructuredRenderers } from "kaboo-react";
+
+const renderers: StructuredRenderers = {
+  WeatherReport: (data) => <div>Summary: {String(data.summary)}</div>,
+};
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      structuredRenderers={renderers}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+## How a renderer is selected
+
+When an activity group carries both `structuredOutput` (the data) and
+`outputSchemaName` (the key), kaboo-react looks up `renderers[outputSchemaName]`:
+
+- **Match found** → your component renders the data.
+- **No match** → a collapsible "Structured output (`<schemaName>`)" JSON view is
+  shown instead.
+
+This means you can add renderers incrementally: unrendered schemas degrade
+gracefully to JSON.
+
+---
+
+# docs/hitl.md
+
+# Human-in-the-loop
+
+When a run pauses for human input, kaboo-react surfaces the prompt in the UI and
+resumes the run once the user answers. This works for a single gate and for many
+gates open at once.
+
+## Interrupt model
+
+An interrupt's `reason` is one of two shapes (`InterruptReason`):
+
+- **`ApprovalReason`** — approve or reject a gated tool call (`type: "approval"`).
+- **`FormReason`** — answer one or more questions (`type: "form"`).
+
+Each open interrupt has a unique `id` and is resolved independently.
+
+## The built-in handler
+
+`KabooProvider` mounts `KabooInterruptHandler` for you. CopilotKit can surface
+**several** open interrupts at once (e.g. two gated tools called in parallel); the
+handler renders one card per interrupt and resolves each by its own `id`, so N
+parallel gates never wedge.
+
+## Inline vs chat-slot placement
+
+- If an interrupt is anchored to a tool call that is still visible on screen, the
+  prompt renders **inline at that tool's position**, in chronological order.
+- Otherwise it renders in a fallback slot in the chat.
+
+You don't configure this — it's automatic — but it's why prompts appear "in the
+right place" rather than floating on top of the turn.
+
+## The InterruptBridge
+
+The bridge lets an owning agent card (and the drill-down view) render a prompt
+inline. Use `useInterruptFor(toolCallId)` to find the open interrupt anchored to a
+specific tool call:
+
+```tsx
+import { useInterruptFor } from "kaboo-react";
+
+function GateBadge({ toolCallId }: { toolCallId: string }) {
+  const interrupt = useInterruptFor(toolCallId);
+  return <span>{interrupt ? "Awaiting input" : "OK"}</span>;
+}
+```
+
+`InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
+pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.
+
+## Custom renderers
+
+Override the default approval/form UI per interrupt type via `interruptRenderers`.
+A renderer receives `InterruptRendererProps` (the `reason` plus
+`onResolve`/`onCancel`):
+
+```tsx
+import { KabooProvider, InterruptRenderer } from "kaboo-react";
+import type { InterruptRendererProps } from "kaboo-react";
+
+function MyApproval(props: InterruptRendererProps) {
+  // Wrap or fully replace the default UI.
+  return <InterruptRenderer {...props} />;
+}
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      interruptRenderers={{ approval: MyApproval }}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+---
+
+# docs/activity-panel.md
+
+# Activity panel & drill-down
+
+kaboo-react models agent work as a **tree of groups** and gives you components to
+render and navigate it.
+
+## The activity tree
+
+Activity is a set of `StreamGroup`s keyed by group id, exposed by `useActivity()`.
+Each group links to its parent via `parentGroup`, forming the hierarchy. Read the
+root groups with `topLevelGroups`:
+
+```tsx
+import { useActivity, topLevelGroups } from "kaboo-react";
+
+export function RootAgents() {
+  const { groups } = useActivity();
+  return <div>{topLevelGroups(groups).length} root agents</div>;
+}
+```
+
+## Rendering primitives
+
+- **`ActivityPanel`** — renders the current level of the tree as a list of
+  `AgentCard`s. Use it for a standalone activity view (outside the chat).
+- **`AgentCard`** — one agent run: title, status, task, timeline, result.
+- **`Timeline`** — the chronological text/tool stream inside a card.
+- **`ToolRow`** — a single tool call (input summary + result).
+- **`MiniTable`** — tabular tool results.
+
+```tsx
+import { ActivityPanel } from "kaboo-react";
+
+export function Sidebar() {
+  return (
+    <aside>
+      <ActivityPanel />
+    </aside>
+  );
+}
+```
+
+## Drill-down
+
+To let users explore sub-agents, pair the breadcrumb and detail components:
+
+```tsx
+import { GlassTabs, DrillDetailView } from "kaboo-react";
+
+export function DrillArea() {
+  return (
+    <>
+      <GlassTabs />
+      <DrillDetailView />
+    </>
+  );
+}
+```
+
+- **`GlassTabs`** — breadcrumb of the drill path (renders nothing at the root).
+- **`DrillDetailView`** — the drilled-in group's full detail.
+- **`useDrill()`** — the navigation state and actions (`drillIn`, `drillUp`,
+  `drillToRoot`, `drillToLevel`).
+
+```tsx
+import { useDrill } from "kaboo-react";
+
+export function BackButton() {
+  const { drillUp, activeDrill } = useDrill();
+  if (!activeDrill) return null;
+  return <button onClick={drillUp}>Back</button>;
+}
+```
+
+## Group helpers
+
+- **`topLevelGroups(groups)`** — the parentless roots.
+- **`directChildren(groups, parentId)`** — one level of children.
+
+```ts
+import { directChildren } from "kaboo-react";
+
+export function childCount(
+  groups: Parameters<typeof directChildren>[0],
+  parentId: string,
+) {
+  return directChildren(groups, parentId).length;
+}
+```
+
+---
+
+# docs/copilotkit-subpath.md
+
+# The `kaboo-react/copilotkit` subpath
+
+kaboo-react ships two barrels:
+
+- **`kaboo-react`** — framework-agnostic contexts, hooks, components, and utils.
+- **`kaboo-react/copilotkit`** — integrations coupled to CopilotKit's chat
+  surfaces.
+
+## Why a separate barrel
+
+The `copilotkit` integrations plug into specific slots of `CopilotChat` and depend
+on CopilotKit's v2 APIs. Keeping them behind a subpath makes that coupling
+explicit and keeps the main barrel usable in more contexts.
+
+## The exports
+
+| Export | Purpose | Wiring |
+| --- | --- | --- |
+| `KabooMessageView` | Live in-chat member cards, from the first agent. | `CopilotChat` `messageView` slot. |
+| `KabooAssistantMessage` | Cards above a settled assistant reply. | Used by `KabooMessageView` (assistant-message slot). |
+| `KabooInlineCards` | Delegate sub-agent cards at the tool-call position. | Auto-mounted by `KabooProvider`. |
+| `KabooInterruptHandler` | Human-in-the-loop handler. | Auto-mounted by `KabooProvider`. |
+| `KabooAskUser` | Answered `ask_user` prompts, inline. | Used by the interrupt handler. |
+| `KabooToolRender` | Wildcard tool renderer. | Used by `KabooInlineCards`. |
+
+Most apps only import **`KabooMessageView`** directly — the rest are auto-mounted
+by `KabooProvider`.
+
+## Wiring `KabooMessageView`
+
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooMessageView } from "kaboo-react/copilotkit";
+
+export function Chat() {
+  return <CopilotChat messageView={KabooMessageView} />;
+}
+```
+
+`KabooMessageView` is a drop-in `messageView`: it carries a `Cursor` static like
+CopilotKit's own message view, so it satisfies the slot type directly.
+
+## Using the handlers yourself
+
+If you disable an auto-mounted handler on `KabooProvider`
+(`disableInterruptHandler` / `disableInlineCards`), you can mount your own from
+this subpath:
+
+```tsx
+import { KabooProvider } from "kaboo-react";
+import { KabooInterruptHandler } from "kaboo-react/copilotkit";
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      disableInterruptHandler
+    >
+      <KabooInterruptHandler agentId={agent} />
+    </KabooProvider>
+  );
+}
+```
+
+---
+
+# docs/api-inventory.md
+
+# API inventory
+
+Generated by `yarn docs:api` from the TypeDoc output. Every public export of both barrels is listed here. Do not edit by hand.
+
+## `kaboo-react`
+
+### Functions / components / hooks
+
+- [`ActivityPanel`](api/index/functions/ActivityPanel.md)
+- [`AgentCard`](api/index/functions/AgentCard.md)
+- [`directChildren`](api/index/functions/directChildren.md)
+- [`DrillDetailView`](api/index/functions/DrillDetailView.md)
+- [`DrillProvider`](api/index/functions/DrillProvider.md)
+- [`formatToolInput`](api/index/functions/formatToolInput.md)
+- [`formatToolResult`](api/index/functions/formatToolResult.md)
+- [`GlassTabs`](api/index/functions/GlassTabs.md)
+- [`InterruptBridgeProvider`](api/index/functions/InterruptBridgeProvider.md)
+- [`InterruptBridgePublisher`](api/index/functions/InterruptBridgePublisher.md)
+- [`InterruptRenderer`](api/index/functions/InterruptRenderer.md)
+- [`KabooActivityProvider`](api/index/functions/KabooActivityProvider.md)
+- [`KabooProvider`](api/index/functions/KabooProvider.md)
+- [`MarkdownContent`](api/index/functions/MarkdownContent.md)
+- [`MiniTable`](api/index/functions/MiniTable.md)
+- [`normalizeResult`](api/index/functions/normalizeResult.md)
+- [`Timeline`](api/index/functions/Timeline.md)
+- [`ToolRow`](api/index/functions/ToolRow.md)
+- [`topLevelGroups`](api/index/functions/topLevelGroups.md)
+- [`useActivity`](api/index/functions/useActivity.md)
+- [`useDrill`](api/index/functions/useDrill.md)
+- [`useInterruptBridge`](api/index/functions/useInterruptBridge.md)
+- [`useInterruptFor`](api/index/functions/useInterruptFor.md)
+
+### Variables
+
+- [`StructuredRenderersContext`](api/index/variables/StructuredRenderersContext.md)
+
+### Interfaces
+
+- [`ActiveInterrupt`](api/index/interfaces/ActiveInterrupt.md)
+- [`ActivityState`](api/index/interfaces/ActivityState.md)
+- [`AgentCardProps`](api/index/interfaces/AgentCardProps.md)
+- [`ApprovalReason`](api/index/interfaces/ApprovalReason.md)
+- [`DrillState`](api/index/interfaces/DrillState.md)
+- [`FormQuestion`](api/index/interfaces/FormQuestion.md)
+- [`FormReason`](api/index/interfaces/FormReason.md)
+- [`InterruptData`](api/index/interfaces/InterruptData.md)
+- [`InterruptRendererProps`](api/index/interfaces/InterruptRendererProps.md)
+- [`KabooActivityProviderProps`](api/index/interfaces/KabooActivityProviderProps.md)
+- [`KabooProviderProps`](api/index/interfaces/KabooProviderProps.md)
+- [`StreamGroup`](api/index/interfaces/StreamGroup.md)
+- [`TimelineProps`](api/index/interfaces/TimelineProps.md)
+- [`ToolCall`](api/index/interfaces/ToolCall.md)
+
+### Type aliases
+
+- [`GroupEntry`](api/index/type-aliases/GroupEntry.md)
+- [`InterruptReason`](api/index/type-aliases/InterruptReason.md)
+- [`StructuredRenderers`](api/index/type-aliases/StructuredRenderers.md)
+- [`TimelineEntry`](api/index/type-aliases/TimelineEntry.md)
+
+## `kaboo-react/copilotkit`
+
+### Functions / components / hooks
+
+- [`KabooAskUser`](api/copilotkit/functions/KabooAskUser.md)
+- [`KabooAssistantMessage`](api/copilotkit/functions/KabooAssistantMessage.md)
+- [`KabooInlineCards`](api/copilotkit/functions/KabooInlineCards.md)
+- [`KabooInterruptHandler`](api/copilotkit/functions/KabooInterruptHandler.md)
+- [`KabooToolRender`](api/copilotkit/functions/KabooToolRender.md)
+
+### Variables
+
+- [`KabooMessageView`](api/copilotkit/variables/KabooMessageView.md)
+
+### Interfaces
+
+- [`KabooInterruptHandlerProps`](api/copilotkit/interfaces/KabooInterruptHandlerProps.md)

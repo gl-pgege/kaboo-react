@@ -1,0 +1,31 @@
+# kaboo-react
+
+> React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.
+
+kaboo-react renders a live, hierarchical view of agent activity — sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down, and human-in-the-loop interrupts — inside a CopilotKit chat. Activity rides the AG-UI run stream (as `ACTIVITY_SNAPSHOT` events); there is no separate endpoint. It ships two barrels (`kaboo-react`, `kaboo-react/copilotkit`) and a `kaboo-react/styles.css` stylesheet.
+
+## Docs
+
+- [Home](https://gl-pgege.github.io/kaboo-react/)
+- [Getting started](https://gl-pgege.github.io/kaboo-react/getting-started/)
+- [Theming](https://gl-pgege.github.io/kaboo-react/theming/)
+- [Structured renderers](https://gl-pgege.github.io/kaboo-react/structured-renderers/)
+- [Human-in-the-loop](https://gl-pgege.github.io/kaboo-react/hitl/)
+- [Activity panel](https://gl-pgege.github.io/kaboo-react/activity-panel/)
+- [CopilotKit subpath](https://gl-pgege.github.io/kaboo-react/copilotkit-subpath/)
+- [API inventory](https://gl-pgege.github.io/kaboo-react/api-inventory/)
+
+## API
+
+- [API reference](https://gl-pgege.github.io/kaboo-react/api/): auto-generated TypeDoc for both barrels.
+- [API inventory](https://gl-pgege.github.io/kaboo-react/api-inventory/): every public export.
+
+## Examples
+
+- [examples/minimal](https://github.com/gl-pgege/kaboo-react/tree/main/examples/minimal): smallest end-to-end wiring.
+- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo): full demo app.
+
+## Related
+
+- [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows): Python multi-agent orchestration.
+- [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime): CopilotKit runtime persistence/orchestration plugin.

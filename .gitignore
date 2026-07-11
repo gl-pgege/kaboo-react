@@ -11,6 +11,12 @@ node_modules/
 # Build output
 dist/
 
+# Docs site build output
+site/
+
+# Docs verification scratch
+.docs-verify/
+
 # Logs
 *.log
 npm-debug.log*

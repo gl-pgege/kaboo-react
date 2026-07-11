@@ -1,0 +1,38 @@
+site_name: kaboo-react
+site_url: https://gl-pgege.github.io/kaboo-react/
+site_description: React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app.
+repo_url: https://github.com/gl-pgege/kaboo-react
+docs_dir: docs
+
+theme:
+  name: material
+  logo: assets/kaboo-icon.svg
+  favicon: assets/kaboo-icon.svg
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - awesome-pages
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Theming: theming.md
+  - Structured renderers: structured-renderers.md
+  - Human-in-the-loop: hitl.md
+  - Activity panel: activity-panel.md
+  - CopilotKit subpath: copilotkit-subpath.md
+  - API inventory: api-inventory.md
+  - ...
