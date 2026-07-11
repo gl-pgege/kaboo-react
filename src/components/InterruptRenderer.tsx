@@ -290,6 +290,35 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
   );
 }
 
+/**
+ * Default human-in-the-loop interrupt UI. Renders an Approve/Reject panel for an
+ * {@link ApprovalReason} and a (optionally multi-step) form with radio/checkbox/
+ * text inputs for a {@link FormReason}, calling `onResolve`/`onCancel` with the
+ * answer payload. Override per type via `interruptRenderers` on
+ * {@link KabooProvider}.
+ *
+ * @example
+ * ```tsx
+ * import { InterruptRenderer } from "kaboo-react";
+ * import type { InterruptReason } from "kaboo-react";
+ *
+ * const reason: InterruptReason = {
+ *   type: "approval",
+ *   message: "Run this query?",
+ *   tool_name: "run_sql",
+ * };
+ *
+ * function Example() {
+ *   return (
+ *     <InterruptRenderer
+ *       reason={reason}
+ *       onResolve={() => {}}
+ *       onCancel={() => {}}
+ *     />
+ *   );
+ * }
+ * ```
+ */
 export function InterruptRenderer(props: InterruptRendererProps): ReactElement {
   if (props.reason.type === "approval") {
     return <ApprovalVariant {...props} />;

@@ -38,6 +38,7 @@ function ChatInterruptSlot({
   );
 }
 
+/** Props for {@link KabooInterruptHandler}. */
 export interface KabooInterruptHandlerProps {
   /** Restrict handling to a single CopilotKit agent (optional). */
   agentId?: string;

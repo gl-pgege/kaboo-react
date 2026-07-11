@@ -4,6 +4,28 @@ import { formatToolInput } from "../formatters/input";
 import { formatToolResult, isCancelledResult } from "../formatters/output";
 import { MiniTable } from "./MiniTable";
 
+/**
+ * Renders a single {@link ToolCall} as a collapsible row: status icon, label, an
+ * input summary, and — when expanded — the formatted result (a {@link MiniTable}
+ * for tabular JSON, otherwise text). Used inside the {@link Timeline}.
+ *
+ * @example
+ * ```tsx
+ * import { ToolRow } from "kaboo-react";
+ * import type { ToolCall } from "kaboo-react";
+ *
+ * const tool: ToolCall = {
+ *   toolUseId: "t1",
+ *   toolName: "run_sql",
+ *   toolInput: { query: "select 1" },
+ *   status: "done",
+ * };
+ *
+ * function Example() {
+ *   return <ToolRow tool={tool} />;
+ * }
+ * ```
+ */
 export function ToolRow({ tool }: { tool: ToolCall }) {
   const [open, setOpen] = useState(false);
   const cancelled = tool.status === "cancelled" || isCancelledResult(tool.toolResult);

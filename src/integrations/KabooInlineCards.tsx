@@ -27,10 +27,9 @@ const ANY_PARAMETERS = {
  * by `(agentName, toolCallId)`.
  *
  * First-class swarm/graph entries have no delegating tool call, so their member
- * cards are rendered by {@link kabooRunCardRenderers} (a CopilotKit
- * `renderCustomMessages` renderer) which anchors them to the assistant turn via
- * its `runId`. Groups carrying a `toolCallId` are excluded there, so the two
- * paths never double-render the same group.
+ * cards are rendered by {@link KabooMessageView} / {@link KabooAssistantMessage}
+ * instead, anchored to the assistant turn. Groups carrying a `toolCallId` are
+ * excluded there, so the two paths never double-render the same group.
  */
 export function KabooInlineCards() {
   const { groups } = useActivity();

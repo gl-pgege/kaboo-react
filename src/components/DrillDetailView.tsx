@@ -11,6 +11,26 @@ import { AgentCard } from "./AgentCard";
 import { Timeline } from "./Timeline";
 import { InterruptRenderer } from "./InterruptRenderer";
 
+/**
+ * Detail pane for the currently drilled-in group: its task, full timeline
+ * (with delegated sub-agents interleaved at their tool-call position), any
+ * unanchored interrupt prompts, and a "Sub-agents" section for swarm/graph
+ * members. Renders a hidden placeholder at the root. Pair with {@link GlassTabs}.
+ *
+ * @example
+ * ```tsx
+ * import { GlassTabs, DrillDetailView } from "kaboo-react";
+ *
+ * function DrillArea() {
+ *   return (
+ *     <>
+ *       <GlassTabs />
+ *       <DrillDetailView />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 export function DrillDetailView() {
   const { activeDrill } = useDrill();
   const { groups } = useActivity();

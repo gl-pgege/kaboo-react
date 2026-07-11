@@ -21,7 +21,7 @@ import { useTurnBinding } from "../context/TurnBinding";
  * `assistantMessage` slot is the supported customization surface and is not
  * clobbered.
  *
- * Which cards to show is decided by {@link useTurnBinding} (provided by
+ * Which cards to show is decided by the turn binding (provided by
  * {@link KabooMessageView}), which resolves each reply message to its turn's
  * member cards — robust to an interrupt/resume splitting the turn across
  * multiple runIds. Delegate cards keep their tool-call path (they carry a

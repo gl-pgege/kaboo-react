@@ -1,4 +1,23 @@
-export function formatToolInput(input: unknown): { summary: string; detail: string | null } {
+/**
+ * Condenses arbitrary tool input into a short one-line `summary` for a tool row.
+ * Prefers well-known fields (`query`/`table_name`/`url`), unwraps single-key
+ * objects, and otherwise joins `key: value` pairs. `detail` is reserved for
+ * future expansion and is currently always `null`.
+ *
+ * @example
+ * ```ts
+ * import { formatToolInput } from "kaboo-react";
+ *
+ * const { summary } = formatToolInput({ query: "select 1" });
+ * // summary === "select 1"
+ * ```
+ */
+export function formatToolInput(input: unknown): {
+  /** One-line summary suitable for a tool row. */
+  summary: string;
+  /** Reserved for future detail expansion; currently always `null`. */
+  detail: string | null;
+} {
   if (input == null) return { summary: "", detail: null };
   if (typeof input === "string") return { summary: input, detail: null };
 

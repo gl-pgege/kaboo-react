@@ -71,7 +71,9 @@ function ToolTimelineRow({ tool }: { tool: ToolCall }) {
   );
 }
 
+/** Props for {@link Timeline}. */
 export interface TimelineProps {
+  /** The interleaved text/tool entries to render, in order. */
   timeline: TimelineEntry[];
   /** When true, a blinking cursor is shown after the last text segment. */
   active: boolean;

@@ -1,3 +1,17 @@
+/**
+ * Compact table for row-shaped tool results. Columns are inferred from the first
+ * row's keys; underscores in headers become spaces. Renders at most `maxRows`
+ * rows with a "+N more" footer, and nothing at all for an empty list.
+ *
+ * @example
+ * ```tsx
+ * import { MiniTable } from "kaboo-react";
+ *
+ * function Example() {
+ *   return <MiniTable rows={[{ id: "1", name: "Ada" }]} maxRows={5} />;
+ * }
+ * ```
+ */
 export function MiniTable({ rows, maxRows = 8 }: { rows: Record<string, string>[]; maxRows?: number }) {
   if (rows.length === 0) return null;
   const cols = Object.keys(rows[0]);

@@ -1,5 +1,19 @@
 import type { ReactNode } from "react";
 
+/**
+ * Minimal, dependency-free markdown renderer used for agent text: supports
+ * `#`/`##`/`###` headings, `-`/`*` list items, `**bold**` inline, and blank-line
+ * spacing. Intentionally small — it is not a full CommonMark implementation.
+ *
+ * @example
+ * ```tsx
+ * import { MarkdownContent } from "kaboo-react";
+ *
+ * function Example() {
+ *   return <MarkdownContent text={"# Title\n\nSome **bold** text."} />;
+ * }
+ * ```
+ */
 export function MarkdownContent({ text }: { text: string }) {
   const lines = text.split("\n");
   return (

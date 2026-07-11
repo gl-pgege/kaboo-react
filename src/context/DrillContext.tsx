@@ -12,6 +12,25 @@ export const DrillContext = createContext<DrillState>({
   drillToLevel: NOOP,
 });
 
+/**
+ * Provides drill-down navigation state ({@link DrillState}) to the activity
+ * components below it. Included automatically by {@link KabooProvider}; only
+ * mount it yourself if you compose the providers by hand.
+ *
+ * @example
+ * ```tsx
+ * import { DrillProvider, GlassTabs, DrillDetailView } from "kaboo-react";
+ *
+ * function Panel() {
+ *   return (
+ *     <DrillProvider>
+ *       <GlassTabs />
+ *       <DrillDetailView />
+ *     </DrillProvider>
+ *   );
+ * }
+ * ```
+ */
 export function DrillProvider({ children }: { children: ReactNode }) {
   const [drillPath, setDrillPath] = useState<string[]>([]);
 

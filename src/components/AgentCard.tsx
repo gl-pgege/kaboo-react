@@ -8,11 +8,17 @@ import { useActivity } from "../hooks/useActivity";
 import { StructuredRenderersContext } from "../context/ActivityProvider";
 import { directChildren, partitionChildrenByToolCall } from "../utils/groups";
 
+/** Props for {@link AgentCard}. */
 export interface AgentCardProps {
+  /** Id of the group this card renders. */
   groupId: string;
+  /** The activity group to render. */
   group: StreamGroup;
+  /** Task/input text to show, overriding the group's own `task`. */
   input?: string;
+  /** Raw tool result to render as the card's answer, when provided by the host. */
   result?: string;
+  /** Host-provided action status (e.g. `"complete"`) used to mark the card done. */
   actionStatus?: string;
   /**
    * When true, the card renders its `directChildren` inline as nested
@@ -24,6 +30,23 @@ export interface AgentCardProps {
   showChildren?: boolean;
 }
 
+/**
+ * Card for a single agent run: title, status badge, task, chronological timeline
+ * (text + tool rows), result/structured output, and a "View details" drill
+ * button. Delegated sub-agents are interleaved at their tool-call position; with
+ * `showChildren` the card renders its whole child tree inline.
+ *
+ * @example
+ * ```tsx
+ * import { AgentCard, useActivity } from "kaboo-react";
+ *
+ * function FirstCard() {
+ *   const { groups } = useActivity();
+ *   const [id, group] = Object.entries(groups)[0] ?? [];
+ *   return id ? <AgentCard groupId={id} group={group} /> : null;
+ * }
+ * ```
+ */
 export function AgentCard({ groupId, group, input, result, actionStatus, showChildren }: AgentCardProps) {
   const { drillIn } = useDrill();
   const { groups } = useActivity();

@@ -1,6 +1,26 @@
 import { useActivity } from "../hooks/useActivity";
 import { useDrill } from "../hooks/useDrill";
 
+/**
+ * Breadcrumb navigation for the drill-down path: a "Chat" root followed by one
+ * crumb per drilled-in group. Clicking a crumb jumps to that level; the current
+ * (last) crumb is disabled. Renders nothing at the root. Pair with
+ * {@link DrillDetailView}.
+ *
+ * @example
+ * ```tsx
+ * import { GlassTabs, DrillDetailView } from "kaboo-react";
+ *
+ * function DrillArea() {
+ *   return (
+ *     <>
+ *       <GlassTabs />
+ *       <DrillDetailView />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 export function GlassTabs() {
   const { drillPath, drillToRoot, drillToLevel } = useDrill();
   const { groups } = useActivity();

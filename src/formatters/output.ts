@@ -1,4 +1,22 @@
-export function formatToolResult(raw: string): { rows: Record<string, string>[] | null; text: string } {
+/**
+ * Parses a raw tool result into a renderable shape: `rows` (for tabular JSON —
+ * either `{ rows: [...] }` or a top-level array of objects) or `text` (a
+ * `key: value` rendering of an object, or the raw string when it isn't JSON).
+ *
+ * @example
+ * ```ts
+ * import { formatToolResult } from "kaboo-react";
+ *
+ * const { rows } = formatToolResult('{"rows":[{"id":"1"}]}');
+ * // rows?.length === 1
+ * ```
+ */
+export function formatToolResult(raw: string): {
+  /** Row-shaped result for a table view, or `null` when not tabular. */
+  rows: Record<string, string>[] | null;
+  /** Text rendering of the result when it is not tabular. */
+  text: string;
+} {
   try {
     const parsed = JSON.parse(raw);
     if (parsed.rows && Array.isArray(parsed.rows) && parsed.rows.length > 0) {
@@ -81,6 +99,19 @@ export function isControlOnlyStatus(raw: unknown): boolean {
   return false;
 }
 
+/**
+ * Normalizes a raw result string for display: unwraps one layer of JSON string
+ * encoding, converts escaped `\n` into real newlines, and returns `null` for
+ * empty/undefined input.
+ *
+ * @example
+ * ```ts
+ * import { normalizeResult } from "kaboo-react";
+ *
+ * normalizeResult('"line one\\nline two"');
+ * // "line one\nline two"
+ * ```
+ */
 export function normalizeResult(result: string | undefined): string | null {
   if (!result) return null;
   let text = typeof result === "string" ? result : JSON.stringify(result, null, 2);

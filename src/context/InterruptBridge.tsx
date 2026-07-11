@@ -9,6 +9,11 @@ import {
 } from "react";
 import type { InterruptReason } from "../types";
 
+/**
+ * An open interrupt published onto the InterruptBridge so an owning agent card
+ * can render its prompt inline (rather than only in the chat slot). Carries the
+ * reason plus resolve/cancel callbacks bound to this specific interrupt id.
+ */
 export interface ActiveInterrupt {
   /**
    * Unique interrupt id (from the AG-UI interrupt). Distinguishes concurrent
@@ -16,8 +21,11 @@ export interface ActiveInterrupt {
    * gates re-keyed onto one delegating call), so each resolves independently.
    */
   id: string;
+  /** Why the run paused, and what input it needs. */
   reason: InterruptReason;
+  /** Resume the run with the user's answer/approval payload. */
   onResolve: (payload: unknown) => void;
+  /** Cancel/reject this gate, resuming the run without a positive answer. */
   onCancel: () => void;
   /**
    * The originating tool-call id, when the interrupt was raised by a tool (e.g.
@@ -39,6 +47,20 @@ const InterruptBridgeContext = createContext<InterruptBridgeValue>({
   publish: () => {},
 });
 
+/**
+ * Holds the set of currently open interrupts so any tool row can claim and
+ * render its own gate inline (see {@link useInterruptFor}). Included
+ * automatically by {@link KabooProvider}.
+ *
+ * @example
+ * ```tsx
+ * import { InterruptBridgeProvider } from "kaboo-react";
+ *
+ * function Providers({ children }: { children: React.ReactNode }) {
+ *   return <InterruptBridgeProvider>{children}</InterruptBridgeProvider>;
+ * }
+ * ```
+ */
 export function InterruptBridgeProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState<ActiveInterrupt[]>([]);
   const publish = useCallback((interrupts: ActiveInterrupt[]) => {
@@ -52,7 +74,27 @@ export function InterruptBridgeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useInterruptBridge() {
+/**
+ * Reads the InterruptBridge: the list of open interrupts plus `publish`. Most
+ * consumers want {@link useInterruptFor} instead; use this to inspect or drive
+ * the whole set.
+ *
+ * @example
+ * ```tsx
+ * import { useInterruptBridge } from "kaboo-react";
+ *
+ * function OpenGateCount() {
+ *   const { active } = useInterruptBridge();
+ *   return <span>{active.length} open</span>;
+ * }
+ * ```
+ */
+export function useInterruptBridge(): {
+  /** Every open interrupt from the current run, in emission order. */
+  active: ActiveInterrupt[];
+  /** Replace the set of interrupts published to the bridge. */
+  publish: (interrupts: ActiveInterrupt[]) => void;
+} {
   return useContext(InterruptBridgeContext);
 }
 

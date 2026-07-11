@@ -1,29 +1,35 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import { useContext } from "react";
-import { ActivityContext, KabooActivityProvider } from "./ActivityProvider";
 import type { ActivityState, StreamGroup } from "../types";
 
-class FakeEventSource {
-  static instances: FakeEventSource[] = [];
-  url: string;
-  onmessage: ((e: { data: string }) => void) | null = null;
-  onerror: ((e: unknown) => void) | null = null;
-  closed = false;
+const { fakeAgent } = vi.hoisted(() => {
+  type Sub = { onActivitySnapshotEvent?: (p: { event: { content: unknown } }) => void };
+  const subscribers: Sub[] = [];
+  return {
+    fakeAgent: {
+      subscribers,
+      subscribe(sub: Sub) {
+        subscribers.push(sub);
+        return {
+          unsubscribe: () => {
+            const i = subscribers.indexOf(sub);
+            if (i >= 0) subscribers.splice(i, 1);
+          },
+        };
+      },
+      emit(content: unknown) {
+        for (const s of [...subscribers]) s.onActivitySnapshotEvent?.({ event: { content } });
+      },
+    },
+  };
+});
 
-  constructor(url: string) {
-    this.url = url;
-    FakeEventSource.instances.push(this);
-  }
+vi.mock("@copilotkit/react-core/v2", () => ({
+  useAgent: () => ({ agent: fakeAgent }),
+}));
 
-  emit(data: unknown): void {
-    this.onmessage?.({ data: JSON.stringify(data) });
-  }
-
-  close(): void {
-    this.closed = true;
-  }
-}
+import { ActivityContext, KabooActivityProvider } from "./ActivityProvider";
 
 function group(agentName: string, overrides: Partial<StreamGroup> = {}): StreamGroup {
   return {
@@ -44,101 +50,49 @@ function Probe() {
 }
 
 beforeEach(() => {
-  FakeEventSource.instances = [];
-  vi.stubGlobal("EventSource", FakeEventSource as unknown as typeof EventSource);
+  fakeAgent.subscribers.length = 0;
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
-describe("KabooActivityProvider — SSE ingestion", () => {
-  it("exposes the streamed groups to consumers", () => {
+describe("KabooActivityProvider — agent activity snapshots", () => {
+  it("exposes the snapshot's groups to consumers", () => {
     render(
-      <KabooActivityProvider url="/activity-stream">
+      <KabooActivityProvider>
         <Probe />
       </KabooActivityProvider>,
     );
 
     act(() => {
-      FakeEventSource.instances[0].emit({
-        groups: { g1: group("researcher"), g2: group("analyst") },
-      });
+      fakeAgent.emit({ groups: { g1: group("researcher"), g2: group("analyst") } });
     });
 
     expect(screen.getByTestId("keys").textContent).toBe("g1,g2");
   });
 
-  it("filters out the entry agent's group when entryAgent is set", () => {
+  it("replaces state with the latest snapshot", () => {
     render(
-      <KabooActivityProvider url="/activity-stream" entryAgent="coordinator">
+      <KabooActivityProvider>
         <Probe />
       </KabooActivityProvider>,
     );
 
     act(() => {
-      FakeEventSource.instances[0].emit({
-        groups: { entry: group("coordinator"), sub: group("researcher") },
-      });
+      fakeAgent.emit({ groups: { g1: group("researcher") } });
     });
-
-    expect(screen.getByTestId("keys").textContent).toBe("sub");
-  });
-
-  it("ignores malformed SSE payloads without throwing", () => {
-    render(
-      <KabooActivityProvider url="/activity-stream">
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
     act(() => {
-      FakeEventSource.instances[0].onmessage?.({ data: "not json{" });
+      fakeAgent.emit({ groups: { g2: group("analyst") } });
     });
 
-    expect(screen.getByTestId("keys").textContent).toBe("");
-  });
-});
-
-describe("KabooActivityProvider — stream URL", () => {
-  it("appends threadId as a query param, url-encoded", () => {
-    render(
-      <KabooActivityProvider url="/activity-stream" threadId="abc 123">
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
-    expect(FakeEventSource.instances[0].url).toBe("/activity-stream?threadId=abc%20123");
+    expect(screen.getByTestId("keys").textContent).toBe("g2");
   });
 
-  it("uses & when the base url already has a query string", () => {
-    render(
-      <KabooActivityProvider url="/activity-stream?x=1" threadId="t">
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
-    expect(FakeEventSource.instances[0].url).toBe("/activity-stream?x=1&threadId=t");
-  });
-
-  it("uses the bare url when no threadId is given", () => {
-    render(
-      <KabooActivityProvider url="/activity-stream">
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
-    expect(FakeEventSource.instances[0].url).toBe("/activity-stream");
-  });
-
-  it("closes the EventSource on unmount", () => {
+  it("unsubscribes from the agent on unmount", () => {
     const { unmount } = render(
-      <KabooActivityProvider url="/activity-stream">
+      <KabooActivityProvider>
         <Probe />
       </KabooActivityProvider>,
     );
-    const es = FakeEventSource.instances[0];
+    expect(fakeAgent.subscribers.length).toBe(1);
     unmount();
-    expect(es.closed).toBe(true);
+    expect(fakeAgent.subscribers.length).toBe(0);
   });
 });

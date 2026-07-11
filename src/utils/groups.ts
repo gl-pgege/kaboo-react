@@ -1,5 +1,6 @@
 import type { StreamGroup, TimelineEntry } from "../types";
 
+/** A `[groupId, group]` pair, as returned by the group-hierarchy helpers. */
 export type GroupEntry = [string, StreamGroup];
 
 /**
@@ -42,6 +43,15 @@ export function partitionChildrenByToolCall(
  * Top-level groups are those without a parent. Uses the explicit
  * `parentGroup` field rather than parsing dot-paths out of the group id, so
  * group names are free to contain any characters.
+ *
+ * @example
+ * ```ts
+ * import { topLevelGroups } from "kaboo-react";
+ *
+ * function rootCount(groups: Parameters<typeof topLevelGroups>[0]) {
+ *   return topLevelGroups(groups).length;
+ * }
+ * ```
  */
 export function topLevelGroups(
   groups: Record<string, StreamGroup>,
@@ -49,7 +59,21 @@ export function topLevelGroups(
   return Object.entries(groups).filter(([, g]) => g.parentGroup == null);
 }
 
-/** Direct children of `parentId` (one level deep) via the `parentGroup` field. */
+/**
+ * Direct children of `parentId` (one level deep) via the `parentGroup` field.
+ *
+ * @example
+ * ```ts
+ * import { directChildren } from "kaboo-react";
+ *
+ * function childCount(
+ *   groups: Parameters<typeof directChildren>[0],
+ *   parentId: string,
+ * ) {
+ *   return directChildren(groups, parentId).length;
+ * }
+ * ```
+ */
 export function directChildren(
   groups: Record<string, StreamGroup>,
   parentId: string,
