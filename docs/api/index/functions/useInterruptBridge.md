@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -39,7 +39,7 @@ Replace the set of interrupts published to the bridge.
 ## Example
 
 ```tsx
-import { useInterruptBridge } from "@kaboo/react";
+import { useInterruptBridge } from "@pgege/kaboo-react";
 
 function OpenGateCount() {
   const { active } = useInterruptBridge();

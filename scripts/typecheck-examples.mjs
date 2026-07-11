@@ -3,7 +3,7 @@
  * Smoke type-checks every example under examples/ against the BUILT package
  * types (dist/*.d.ts), mirroring how a consumer imports `kaboo-react`.
  *
- * Each example's tsconfig maps `kaboo-react` / `@kaboo/react/copilotkit` to
+ * Each example's tsconfig maps `kaboo-react` / `@pgege/kaboo-react/copilotkit` to
  * ../../dist, so this fails if the public types drift from what the docs and
  * examples claim. Run `yarn build` first.
  */

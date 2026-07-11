@@ -8,8 +8,8 @@
 
 [![npm version](https://img.shields.io/npm/v/kaboo-react.svg)](https://www.npmjs.com/package/kaboo-react)
 [![license](https://img.shields.io/npm/l/kaboo-react.svg)](./LICENSE)
-[![docs](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://gl-pgege.github.io/@kaboo/react/)
-[![CI](https://github.com/gl-pgege/@kaboo/react/actions/workflows/ci.yml/badge.svg)](https://github.com/gl-pgege/@kaboo/react/actions/workflows/ci.yml)
+[![docs](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://gl-pgege.github.io/@pgege/kaboo-react/)
+[![CI](https://github.com/gl-pgege/@pgege/kaboo-react/actions/workflows/ci.yml/badge.svg)](https://github.com/gl-pgege/@pgege/kaboo-react/actions/workflows/ci.yml)
 
 kaboo-react renders a live, hierarchical view of what your agents are doing —
 sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
@@ -32,7 +32,7 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 ## Install
 
 ```bash
-yarn add @kaboo/react
+yarn add @pgege/kaboo-react
 ```
 
 Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.62).
@@ -40,7 +40,7 @@ Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.62).
 Import the stylesheet once, near your app root:
 
 ```ts
-import "@kaboo/react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 ## Quick start
@@ -52,9 +52,9 @@ then drop in the components.
 <!-- source: examples/minimal/src/App.tsx#quickstart -->
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
-import "@kaboo/react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
+import "@pgege/kaboo-react/styles.css";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -82,7 +82,7 @@ props via `copilotKitProps`.
 - **Providers nest under `KabooProvider`.** Activity → drill → interrupt bridge,
   with the built-in handlers mounted inside.
 - **Two barrels.** Import framework-agnostic pieces from `kaboo-react`, and the
-  CopilotKit-coupled integrations from `@kaboo/react/copilotkit`.
+  CopilotKit-coupled integrations from `@pgege/kaboo-react/copilotkit`.
 - **The `threadId` scopes everything.** Each conversation gets its own
   hierarchical activity view automatically.
 - **Theming via CSS variables.** Components read standard design-system tokens and
@@ -95,12 +95,12 @@ props via `copilotKitProps`.
 - [Structured renderers](./docs/structured-renderers.md)
 - [Human-in-the-loop](./docs/hitl.md)
 - [Activity panel & drill-down](./docs/activity-panel.md)
-- [The `@kaboo/react/copilotkit` subpath](./docs/copilotkit-subpath.md)
+- [The `@pgege/kaboo-react/copilotkit` subpath](./docs/copilotkit-subpath.md)
 
 ## API reference
 
 Full, auto-generated API docs for both barrels live on the
-[documentation site](https://gl-pgege.github.io/@kaboo/react/api/). A flat index
+[documentation site](https://gl-pgege.github.io/@pgege/kaboo-react/api/). A flat index
 of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 
 ## Examples
@@ -155,11 +155,11 @@ endpoint to wire up.
 ## Install
 
 ```bash
-yarn add @kaboo/react
+yarn add @pgege/kaboo-react
 # or
-npm install @kaboo/react
+npm install @pgege/kaboo-react
 # or
-pnpm add @kaboo/react
+pnpm add @pgege/kaboo-react
 ```
 
 Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
@@ -167,7 +167,7 @@ Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
 Import the stylesheet once, near your app root:
 
 ```ts
-import "@kaboo/react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 ## Quick start
@@ -175,9 +175,9 @@ import "@kaboo/react/styles.css";
 <!-- source: examples/minimal/src/App.tsx#quickstart -->
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
-import "@kaboo/react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
+import "@pgege/kaboo-react/styles.css";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -198,7 +198,7 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 - [Structured renderers](structured-renderers.md) — custom UI for schema output.
 - [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
 - [Activity panel & drill-down](activity-panel.md) — the activity tree.
-- [CopilotKit subpath](copilotkit-subpath.md) — the `@kaboo/react/copilotkit` barrel.
+- [CopilotKit subpath](copilotkit-subpath.md) — the `@pgege/kaboo-react/copilotkit` barrel.
 - [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.
 - [API inventory](api-inventory.md) and the [API reference](api/README.md).
 
@@ -236,11 +236,11 @@ shows a complete setup.
 ## Install
 
 ```bash
-yarn add @kaboo/react
+yarn add @pgege/kaboo-react
 # or
-npm install @kaboo/react
+npm install @pgege/kaboo-react
 # or
-pnpm add @kaboo/react
+pnpm add @pgege/kaboo-react
 ```
 
 Peer dependencies (install if you don't already have them):
@@ -254,7 +254,7 @@ yarn add react react-dom @copilotkit/react-core
 Import it once, near your app root:
 
 ```ts
-import "@kaboo/react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 ## Wrap your app in `KabooProvider`
@@ -265,9 +265,9 @@ Pass the runtime URL, the entry agent id, and a thread id:
 <!-- source: examples/minimal/src/App.tsx#quickstart -->
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
-import "@kaboo/react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
+import "@pgege/kaboo-react/styles.css";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -288,7 +288,7 @@ the moment the first agent starts:
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
 
 export function Chat() {
   return <CopilotChat messageView={KabooMessageView} />;
@@ -312,7 +312,7 @@ chat (as in the quick start above).
 Escape hatches:
 
 ```tsx
-import { KabooProvider } from "@kaboo/react";
+import { KabooProvider } from "@pgege/kaboo-react";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -368,7 +368,7 @@ neutral defaults.
 Import it once, near your app root:
 
 ```ts
-import "@kaboo/react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 The package sets `"sideEffects": ["*.css"]`, so bundlers keep the stylesheet even
@@ -412,7 +412,7 @@ receives the structured output object (`Record<string, unknown>`) and returns a
 
 ```ts
 import { createElement } from "react";
-import type { StructuredRenderers } from "@kaboo/react";
+import type { StructuredRenderers } from "@pgege/kaboo-react";
 
 const renderers: StructuredRenderers = {
   WeatherReport: (data) => createElement("div", null, String(data.summary)),
@@ -425,8 +425,8 @@ Pass the map to `KabooProvider` (or `KabooActivityProvider` if you compose
 providers by hand):
 
 ```tsx
-import { KabooProvider } from "@kaboo/react";
-import type { StructuredRenderers } from "@kaboo/react";
+import { KabooProvider } from "@pgege/kaboo-react";
+import type { StructuredRenderers } from "@pgege/kaboo-react";
 
 const renderers: StructuredRenderers = {
   WeatherReport: (data) => <div>Summary: {String(data.summary)}</div>,
@@ -500,7 +500,7 @@ inline. Use `useInterruptFor(toolCallId)` to find the open interrupt anchored to
 specific tool call:
 
 ```tsx
-import { useInterruptFor } from "@kaboo/react";
+import { useInterruptFor } from "@pgege/kaboo-react";
 
 function GateBadge({ toolCallId }: { toolCallId: string }) {
   const interrupt = useInterruptFor(toolCallId);
@@ -518,8 +518,8 @@ A renderer receives `InterruptRendererProps` (the `reason` plus
 `onResolve`/`onCancel`):
 
 ```tsx
-import { KabooProvider, InterruptRenderer } from "@kaboo/react";
-import type { InterruptRendererProps } from "@kaboo/react";
+import { KabooProvider, InterruptRenderer } from "@pgege/kaboo-react";
+import type { InterruptRendererProps } from "@pgege/kaboo-react";
 
 function MyApproval(props: InterruptRendererProps) {
   // Wrap or fully replace the default UI.
@@ -556,7 +556,7 @@ Each group links to its parent via `parentGroup`, forming the hierarchy. Read th
 root groups with `topLevelGroups`:
 
 ```tsx
-import { useActivity, topLevelGroups } from "@kaboo/react";
+import { useActivity, topLevelGroups } from "@pgege/kaboo-react";
 
 export function RootAgents() {
   const { groups } = useActivity();
@@ -574,7 +574,7 @@ export function RootAgents() {
 - **`MiniTable`** — tabular tool results.
 
 ```tsx
-import { ActivityPanel } from "@kaboo/react";
+import { ActivityPanel } from "@pgege/kaboo-react";
 
 export function Sidebar() {
   return (
@@ -590,7 +590,7 @@ export function Sidebar() {
 To let users explore sub-agents, pair the breadcrumb and detail components:
 
 ```tsx
-import { GlassTabs, DrillDetailView } from "@kaboo/react";
+import { GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
 
 export function DrillArea() {
   return (
@@ -608,7 +608,7 @@ export function DrillArea() {
   `drillToRoot`, `drillToLevel`).
 
 ```tsx
-import { useDrill } from "@kaboo/react";
+import { useDrill } from "@pgege/kaboo-react";
 
 export function BackButton() {
   const { drillUp, activeDrill } = useDrill();
@@ -623,7 +623,7 @@ export function BackButton() {
 - **`directChildren(groups, parentId)`** — one level of children.
 
 ```ts
-import { directChildren } from "@kaboo/react";
+import { directChildren } from "@pgege/kaboo-react";
 
 export function childCount(
   groups: Parameters<typeof directChildren>[0],
@@ -637,12 +637,12 @@ export function childCount(
 
 # docs/copilotkit-subpath.md
 
-# The `@kaboo/react/copilotkit` subpath
+# The `@pgege/kaboo-react/copilotkit` subpath
 
 kaboo-react ships two barrels:
 
 - **`kaboo-react`** — framework-agnostic contexts, hooks, components, and utils.
-- **`@kaboo/react/copilotkit`** — integrations coupled to CopilotKit's chat
+- **`@pgege/kaboo-react/copilotkit`** — integrations coupled to CopilotKit's chat
   surfaces.
 
 ## Why a separate barrel
@@ -669,7 +669,7 @@ by `KabooProvider`.
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
 
 export function Chat() {
   return <CopilotChat messageView={KabooMessageView} />;
@@ -686,8 +686,8 @@ If you disable an auto-mounted handler on `KabooProvider`
 this subpath:
 
 ```tsx
-import { KabooProvider } from "@kaboo/react";
-import { KabooInterruptHandler } from "@kaboo/react/copilotkit";
+import { KabooProvider } from "@pgege/kaboo-react";
+import { KabooInterruptHandler } from "@pgege/kaboo-react/copilotkit";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -711,7 +711,7 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 Generated by `yarn docs:api` from the TypeDoc output. Every public export of both barrels is listed here. Do not edit by hand.
 
-## `@kaboo/react`
+## `@pgege/kaboo-react`
 
 ### Functions / components / hooks
 
@@ -767,7 +767,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`StructuredRenderers`](api/index/type-aliases/StructuredRenderers.md)
 - [`TimelineEntry`](api/index/type-aliases/TimelineEntry.md)
 
-## `@kaboo/react/copilotkit`
+## `@pgege/kaboo-react/copilotkit`
 
 ### Functions / components / hooks
 

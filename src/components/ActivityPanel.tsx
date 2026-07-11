@@ -12,7 +12,7 @@ import { AgentCard } from "./AgentCard";
  *
  * @example
  * ```tsx
- * import { ActivityPanel } from "@kaboo/react";
+ * import { ActivityPanel } from "@pgege/kaboo-react";
  *
  * function Sidebar() {
  *   return (

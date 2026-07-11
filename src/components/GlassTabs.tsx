@@ -9,7 +9,7 @@ import { useDrill } from "../hooks/useDrill";
  *
  * @example
  * ```tsx
- * import { GlassTabs, DrillDetailView } from "@kaboo/react";
+ * import { GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
  *
  * function DrillArea() {
  *   return (

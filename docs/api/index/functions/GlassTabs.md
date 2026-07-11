@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -20,7 +20,7 @@ crumb per drilled-in group. Clicking a crumb jumps to that level; the current
 ## Example
 
 ```tsx
-import { GlassTabs, DrillDetailView } from "@kaboo/react";
+import { GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
 
 function DrillArea() {
   return (

@@ -1,8 +1,8 @@
-**@kaboo/react**
+**@pgege/kaboo-react**
 
 ***
 
-# @kaboo/react
+# @pgege/kaboo-react
 
 ## Modules
 

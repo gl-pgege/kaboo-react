@@ -11,7 +11,7 @@ const EMPTY: ActivityState = { groups: {} };
  *
  * @example
  * ```tsx
- * import type { StructuredRenderers } from "@kaboo/react";
+ * import type { StructuredRenderers } from "@pgege/kaboo-react";
  *
  * const renderers: StructuredRenderers = {
  *   WeatherReport: (data) => <div>{String(data.summary)}</div>,
@@ -48,7 +48,7 @@ export interface KabooActivityProviderProps {
  *
  * @example
  * ```tsx
- * import { KabooActivityProvider, ActivityPanel } from "@kaboo/react";
+ * import { KabooActivityProvider, ActivityPanel } from "@pgege/kaboo-react";
  *
  * function Activity({ agent }: { agent: string }) {
  *   return (

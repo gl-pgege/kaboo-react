@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -27,8 +27,8 @@ answer payload. Override per type via `interruptRenderers` on
 ## Example
 
 ```tsx
-import { InterruptRenderer } from "@kaboo/react";
-import type { InterruptReason } from "@kaboo/react";
+import { InterruptRenderer } from "@pgege/kaboo-react";
+import type { InterruptReason } from "@pgege/kaboo-react";
 
 const reason: InterruptReason = {
   type: "approval",

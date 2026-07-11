@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -19,7 +19,7 @@ Reads the drill-down navigation state ([DrillState](../interfaces/DrillState.md)
 ## Example
 
 ```tsx
-import { useDrill } from "@kaboo/react";
+import { useDrill } from "@pgege/kaboo-react";
 
 function BackButton() {
   const { drillUp, activeDrill } = useDrill();

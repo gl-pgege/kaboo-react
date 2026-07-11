@@ -20,10 +20,10 @@ Initial release.
   `MiniTable`, `GlassTabs`, `DrillDetailView`, `MarkdownContent`,
   `InterruptRenderer`), group helpers (`topLevelGroups`, `directChildren`) and
   formatters (`formatToolInput`, `formatToolResult`, `normalizeResult`).
-- `@kaboo/react/copilotkit` subpath: CopilotKit-coupled integrations
+- `@pgege/kaboo-react/copilotkit` subpath: CopilotKit-coupled integrations
   (`KabooMessageView`, `KabooAssistantMessage`, `KabooInlineCards`,
   `KabooInterruptHandler`, `KabooAskUser`, `KabooToolRender`).
-- `@kaboo/react/styles.css` stylesheet with themeable `--kaboo-*` design tokens.
+- `@pgege/kaboo-react/styles.css` stylesheet with themeable `--kaboo-*` design tokens.
 
-[Unreleased]: https://github.com/gl-pgege/@kaboo/react/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/gl-pgege/@kaboo/react/releases/tag/v0.1.0
+[Unreleased]: https://github.com/gl-pgege/@pgege/kaboo-react/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/gl-pgege/@pgege/kaboo-react/releases/tag/v0.1.0

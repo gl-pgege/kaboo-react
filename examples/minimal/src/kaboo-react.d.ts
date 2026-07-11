@@ -1,3 +1,3 @@
 // The stylesheet has no type declarations; this lets TypeScript accept the
-// side-effect import `import "@kaboo/react/styles.css"`.
-declare module "@kaboo/react/styles.css";
+// side-effect import `import "@pgege/kaboo-react/styles.css"`.
+declare module "@pgege/kaboo-react/styles.css";

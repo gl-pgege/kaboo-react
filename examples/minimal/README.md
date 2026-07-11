@@ -3,7 +3,7 @@
 The smallest end-to-end wiring of `kaboo-react`: a `KabooProvider` wrapping a
 `CopilotChat` (with `KabooMessageView`), plus `GlassTabs` + `DrillDetailView` for
 drill-down. This is the same pattern documented in the
-[Quick start](https://gl-pgege.github.io/@kaboo/react/#quick-start).
+[Quick start](https://gl-pgege.github.io/@pgege/kaboo-react/#quick-start).
 
 ## What it shows
 
@@ -12,7 +12,7 @@ drill-down. This is the same pattern documented in the
 - Rendering live, hierarchical agent activity **inside the chat** via
   `KabooMessageView`.
 - Breadcrumb + detail drill-down with `GlassTabs` and `DrillDetailView`.
-- Importing the stylesheet with `import "@kaboo/react/styles.css"`.
+- Importing the stylesheet with `import "@pgege/kaboo-react/styles.css"`.
 
 ## Prerequisites
 

@@ -861,32 +861,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kaboo/react@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@kaboo/react@workspace:."
-  dependencies:
-    "@copilotkit/react-core": "npm:^1.62.0"
-    "@testing-library/dom": "npm:^10.4.1"
-    "@testing-library/jest-dom": "npm:^6.9.1"
-    "@testing-library/react": "npm:^16.3.2"
-    "@testing-library/user-event": "npm:^14.6.1"
-    "@types/react": "npm:^19.1.8"
-    "@types/react-dom": "npm:^19.1.6"
-    jsdom: "npm:^29.1.1"
-    react: "npm:^19.1.0"
-    react-dom: "npm:^19.1.0"
-    tsup: "npm:^8.5.0"
-    typedoc: "npm:^0.28.20"
-    typedoc-plugin-markdown: "npm:^4.12.0"
-    typescript: "npm:^5.8.3"
-    vitest: "npm:^2"
-  peerDependencies:
-    "@copilotkit/react-core": ">=1.62.0"
-    react: ">=18.0.0"
-    react-dom: ">=18.0.0"
-  languageName: unknown
-  linkType: soft
-
 "@lit-labs/react@npm:^2.0.2":
   version: 2.1.3
   resolution: "@lit-labs/react@npm:2.1.3"
@@ -945,6 +919,32 @@ __metadata:
   checksum: 10c0/907d41167b23160c88f292b0dd79162d2543445ecf1d784ed09747467705666669f818e3ab91e1182da2127720fb40cb707e6fd56e8a445020fd3e7b8b16f013
   languageName: node
   linkType: hard
+
+"@pgege/kaboo-react@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@pgege/kaboo-react@workspace:."
+  dependencies:
+    "@copilotkit/react-core": "npm:^1.62.0"
+    "@testing-library/dom": "npm:^10.4.1"
+    "@testing-library/jest-dom": "npm:^6.9.1"
+    "@testing-library/react": "npm:^16.3.2"
+    "@testing-library/user-event": "npm:^14.6.1"
+    "@types/react": "npm:^19.1.8"
+    "@types/react-dom": "npm:^19.1.6"
+    jsdom: "npm:^29.1.1"
+    react: "npm:^19.1.0"
+    react-dom: "npm:^19.1.0"
+    tsup: "npm:^8.5.0"
+    typedoc: "npm:^0.28.20"
+    typedoc-plugin-markdown: "npm:^4.12.0"
+    typescript: "npm:^5.8.3"
+    vitest: "npm:^2"
+  peerDependencies:
+    "@copilotkit/react-core": ">=1.62.0"
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  languageName: unknown
+  linkType: soft
 
 "@preact/signals-core@npm:^1.13.0":
   version: 1.14.4

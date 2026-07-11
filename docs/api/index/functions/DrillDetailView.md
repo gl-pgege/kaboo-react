@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -20,7 +20,7 @@ members. Renders a hidden placeholder at the root. Pair with [GlassTabs](GlassTa
 ## Example
 
 ```tsx
-import { GlassTabs, DrillDetailView } from "@kaboo/react";
+import { GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
 
 function DrillArea() {
   return (

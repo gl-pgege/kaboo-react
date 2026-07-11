@@ -1,5 +1,5 @@
 {
-  "name": "@kaboo/react",
+  "name": "@pgege/kaboo-react",
   "version": "0.1.0",
   "description": "React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.",
   "author": "gl-pgege",
@@ -13,9 +13,9 @@
     "type": "git",
     "url": "git+https://github.com/gl-pgege/kaboo-react.git"
   },
-  "homepage": "https://gl-pgege.github.io/@kaboo/react/",
+  "homepage": "https://gl-pgege.github.io/@pgege/kaboo-react/",
   "bugs": {
-    "url": "https://github.com/gl-pgege/@kaboo/react/issues"
+    "url": "https://github.com/gl-pgege/@pgege/kaboo-react/issues"
   },
   "engines": {
     "node": ">=18"

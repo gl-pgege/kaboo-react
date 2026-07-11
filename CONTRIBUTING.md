@@ -32,7 +32,7 @@ yarn examples:typecheck
 
 - **Two barrels.** Framework-agnostic code goes in the `kaboo-react` barrel
   (`src/index.ts`); CopilotKit-coupled integrations go behind
-  `@kaboo/react/copilotkit` (`src/copilotkit.ts`).
+  `@pgege/kaboo-react/copilotkit` (`src/copilotkit.ts`).
 - **Theming via CSS variables only.** No CSS-in-JS. Read design tokens
   (`--background`, `--foreground`, `--card`, `--muted`, `--border`) and expose
   `--kaboo-*` overrides.

@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -25,7 +25,7 @@ empty/undefined input.
 ## Example
 
 ```ts
-import { normalizeResult } from "@kaboo/react";
+import { normalizeResult } from "@pgege/kaboo-react";
 
 normalizeResult('"line one\\nline two"');
 // "line one\nline two"

@@ -5,7 +5,7 @@
  * Extracts fenced ```tsx / ```ts / ```typescript blocks from README.md and
  * docs/**\/*.md, writes each to a temp file, and type-checks them all with
  * `tsc --noEmit` against the BUILT package types (dist/*.d.ts) for both barrels
- * plus a `@kaboo/react/styles.css` module stub. Snippets that are illustrative
+ * plus a `@pgege/kaboo-react/styles.css` module stub. Snippets that are illustrative
  * fragments opt out with an info-string flag: ```tsx no-verify.
  *
  * Blocks preceded by `<!-- source: <path>#<region> -->` are also drift-checked
@@ -85,7 +85,7 @@ mkdirSync(WORK, { recursive: true });
 
 writeFileSync(
   join(WORK, "styles-stub.d.ts"),
-  'declare module "@kaboo/react/styles.css";\n',
+  'declare module "@pgege/kaboo-react/styles.css";\n',
 );
 writeFileSync(
   join(WORK, "tsconfig.json"),
@@ -103,8 +103,8 @@ writeFileSync(
         types: ["react"],
         baseUrl: ".",
         paths: {
-          "@kaboo/react": ["../dist/index.d.ts"],
-          "@kaboo/react/copilotkit": ["../dist/copilotkit.d.ts"],
+          "@pgege/kaboo-react": ["../dist/index.d.ts"],
+          "@pgege/kaboo-react/copilotkit": ["../dist/copilotkit.d.ts"],
         },
       },
       include: ["**/*.ts", "**/*.tsx"],

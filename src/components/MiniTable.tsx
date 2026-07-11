@@ -5,7 +5,7 @@
  *
  * @example
  * ```tsx
- * import { MiniTable } from "@kaboo/react";
+ * import { MiniTable } from "@pgege/kaboo-react";
  *
  * function Example() {
  *   return <MiniTable rows={[{ id: "1", name: "Ada" }]} maxRows={5} />;

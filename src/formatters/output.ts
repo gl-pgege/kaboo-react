@@ -5,7 +5,7 @@
  *
  * @example
  * ```ts
- * import { formatToolResult } from "@kaboo/react";
+ * import { formatToolResult } from "@pgege/kaboo-react";
  *
  * const { rows } = formatToolResult('{"rows":[{"id":"1"}]}');
  * // rows?.length === 1
@@ -106,7 +106,7 @@ export function isControlOnlyStatus(raw: unknown): boolean {
  *
  * @example
  * ```ts
- * import { normalizeResult } from "@kaboo/react";
+ * import { normalizeResult } from "@pgege/kaboo-react";
  *
  * normalizeResult('"line one\\nline two"');
  * // "line one\nline two"

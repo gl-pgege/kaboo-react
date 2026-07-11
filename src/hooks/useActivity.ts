@@ -9,7 +9,7 @@ import type { ActivityState } from "../types";
  *
  * @example
  * ```tsx
- * import { useActivity } from "@kaboo/react";
+ * import { useActivity } from "@pgege/kaboo-react";
  *
  * function GroupCount() {
  *   const { groups } = useActivity();

@@ -44,7 +44,7 @@ card's text twice when the agent's reply already appears in the chat bubble.
 `useActivity()` returns the groups; helpers navigate them:
 
 ```tsx
-import { useActivity, topLevelGroups, directChildren } from "@kaboo/react";
+import { useActivity, topLevelGroups, directChildren } from "@pgege/kaboo-react";
 
 export function RootCount() {
   const { groups } = useActivity();

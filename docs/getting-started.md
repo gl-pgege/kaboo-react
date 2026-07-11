@@ -20,11 +20,11 @@ shows a complete setup.
 ## Install
 
 ```bash
-yarn add @kaboo/react
+yarn add @pgege/kaboo-react
 # or
-npm install @kaboo/react
+npm install @pgege/kaboo-react
 # or
-pnpm add @kaboo/react
+pnpm add @pgege/kaboo-react
 ```
 
 Peer dependencies (install if you don't already have them):
@@ -38,7 +38,7 @@ yarn add react react-dom @copilotkit/react-core
 Import it once, near your app root:
 
 ```ts
-import "@kaboo/react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 ## Wrap your app in `KabooProvider`
@@ -49,9 +49,9 @@ Pass the runtime URL, the entry agent id, and a thread id:
 <!-- source: examples/minimal/src/App.tsx#quickstart -->
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooProvider, GlassTabs, DrillDetailView } from "@kaboo/react";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
-import "@kaboo/react/styles.css";
+import { KabooProvider, GlassTabs, DrillDetailView } from "@pgege/kaboo-react";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
+import "@pgege/kaboo-react/styles.css";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (
@@ -72,7 +72,7 @@ the moment the first agent starts:
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
 
 export function Chat() {
   return <CopilotChat messageView={KabooMessageView} />;
@@ -96,7 +96,7 @@ chat (as in the quick start above).
 Escape hatches:
 
 ```tsx
-import { KabooProvider } from "@kaboo/react";
+import { KabooProvider } from "@pgege/kaboo-react";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (

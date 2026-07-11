@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -31,7 +31,7 @@ rows with a "+N more" footer, and nothing at all for an empty list.
 ## Example
 
 ```tsx
-import { MiniTable } from "@kaboo/react";
+import { MiniTable } from "@pgege/kaboo-react";
 
 function Example() {
   return <MiniTable rows={[{ id: "1", name: "Ada" }]} maxRows={5} />;

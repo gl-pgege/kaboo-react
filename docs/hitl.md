@@ -36,7 +36,7 @@ inline. Use `useInterruptFor(toolCallId)` to find the open interrupt anchored to
 specific tool call:
 
 ```tsx
-import { useInterruptFor } from "@kaboo/react";
+import { useInterruptFor } from "@pgege/kaboo-react";
 
 function GateBadge({ toolCallId }: { toolCallId: string }) {
   const interrupt = useInterruptFor(toolCallId);
@@ -54,8 +54,8 @@ A renderer receives `InterruptRendererProps` (the `reason` plus
 `onResolve`/`onCancel`):
 
 ```tsx
-import { KabooProvider, InterruptRenderer } from "@kaboo/react";
-import type { InterruptRendererProps } from "@kaboo/react";
+import { KabooProvider, InterruptRenderer } from "@pgege/kaboo-react";
+import type { InterruptRendererProps } from "@pgege/kaboo-react";
 
 function MyApproval(props: InterruptRendererProps) {
   // Wrap or fully replace the default UI.

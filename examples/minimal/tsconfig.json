@@ -10,8 +10,8 @@
     "noEmit": true,
     "types": ["react", "react-dom"],
     "paths": {
-      "@kaboo/react": ["../../dist/index.d.ts"],
-      "@kaboo/react/copilotkit": ["../../dist/copilotkit.d.ts"]
+      "@pgege/kaboo-react": ["../../dist/index.d.ts"],
+      "@pgege/kaboo-react/copilotkit": ["../../dist/copilotkit.d.ts"]
     }
   },
   "include": ["src"]

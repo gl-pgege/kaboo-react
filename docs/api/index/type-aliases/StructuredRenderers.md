@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -15,7 +15,7 @@ schema name. When a group carries `structuredOutput` and a matching
 ## Example
 
 ```tsx
-import type { StructuredRenderers } from "@kaboo/react";
+import type { StructuredRenderers } from "@pgege/kaboo-react";
 
 const renderers: StructuredRenderers = {
   WeatherReport: (data) => <div>{String(data.summary)}</div>,

@@ -14,8 +14,8 @@ const API_DIR = join(ROOT, "docs", "api");
 const OUT = join(ROOT, "docs", "api-inventory.md");
 
 const BARRELS = [
-  { dir: "index", pkg: "@kaboo/react" },
-  { dir: "copilotkit", pkg: "@kaboo/react/copilotkit" },
+  { dir: "index", pkg: "@pgege/kaboo-react" },
+  { dir: "copilotkit", pkg: "@pgege/kaboo-react/copilotkit" },
 ];
 
 const KINDS = [

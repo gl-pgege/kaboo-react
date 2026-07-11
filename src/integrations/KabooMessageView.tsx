@@ -114,7 +114,7 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
  * @example
  * ```tsx
  * import { CopilotChat } from "@copilotkit/react-core/v2";
- * import { KabooMessageView } from "@kaboo/react/copilotkit";
+ * import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
  *
  * function Chat() {
  *   return <CopilotChat messageView={KabooMessageView} />;

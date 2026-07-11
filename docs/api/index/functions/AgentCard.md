@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -26,7 +26,7 @@ button. Delegated sub-agents are interleaved at their tool-call position; with
 ## Example
 
 ```tsx
-import { AgentCard, useActivity } from "@kaboo/react";
+import { AgentCard, useActivity } from "@pgege/kaboo-react";
 
 function FirstCard() {
   const { groups } = useActivity();

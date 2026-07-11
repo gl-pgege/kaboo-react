@@ -1,9 +1,9 @@
-# The `@kaboo/react/copilotkit` subpath
+# The `@pgege/kaboo-react/copilotkit` subpath
 
 kaboo-react ships two barrels:
 
 - **`kaboo-react`** — framework-agnostic contexts, hooks, components, and utils.
-- **`@kaboo/react/copilotkit`** — integrations coupled to CopilotKit's chat
+- **`@pgege/kaboo-react/copilotkit`** — integrations coupled to CopilotKit's chat
   surfaces.
 
 ## Why a separate barrel
@@ -30,7 +30,7 @@ by `KabooProvider`.
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";
-import { KabooMessageView } from "@kaboo/react/copilotkit";
+import { KabooMessageView } from "@pgege/kaboo-react/copilotkit";
 
 export function Chat() {
   return <CopilotChat messageView={KabooMessageView} />;
@@ -47,8 +47,8 @@ If you disable an auto-mounted handler on `KabooProvider`
 this subpath:
 
 ```tsx
-import { KabooProvider } from "@kaboo/react";
-import { KabooInterruptHandler } from "@kaboo/react/copilotkit";
+import { KabooProvider } from "@pgege/kaboo-react";
+import { KabooInterruptHandler } from "@pgege/kaboo-react/copilotkit";
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
   return (

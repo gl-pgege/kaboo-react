@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -19,7 +19,7 @@ from the nearest [KabooActivityProvider](KabooActivityProvider.md). Re-renders o
 ## Example
 
 ```tsx
-import { useActivity } from "@kaboo/react";
+import { useActivity } from "@pgege/kaboo-react";
 
 function GroupCount() {
   const { groups } = useActivity();

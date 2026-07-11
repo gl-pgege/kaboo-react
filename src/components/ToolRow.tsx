@@ -11,8 +11,8 @@ import { MiniTable } from "./MiniTable";
  *
  * @example
  * ```tsx
- * import { ToolRow } from "@kaboo/react";
- * import type { ToolCall } from "@kaboo/react";
+ * import { ToolRow } from "@pgege/kaboo-react";
+ * import type { ToolCall } from "@pgege/kaboo-react";
  *
  * const tool: ToolCall = {
  *   toolUseId: "t1",

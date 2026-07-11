@@ -1,4 +1,4 @@
-[**@kaboo/react**](../../README.md)
+[**@pgege/kaboo-react**](../../README.md)
 
 ***
 
@@ -36,7 +36,7 @@ One-line summary suitable for a tool row.
 ## Example
 
 ```ts
-import { formatToolInput } from "@kaboo/react";
+import { formatToolInput } from "@pgege/kaboo-react";
 
 const { summary } = formatToolInput({ query: "select 1" });
 // summary === "select 1"
