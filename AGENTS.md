@@ -96,6 +96,6 @@ yarn examples:typecheck    # type-check examples/ against built types
 
 - [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows)
 - [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime)
-- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) — the
+- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo) — the
   runnable, end-to-end reference that consumes this library.
 - [The kaboo stack](https://gl-pgege.github.io/kaboo-docs/) — umbrella landing.

@@ -18,7 +18,7 @@ drill-down. This is the same pattern documented in the
 
 You need a running **CopilotKit runtime endpoint** that streams kaboo activity as
 `ACTIVITY_SNAPSHOT` events. The
-[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) backend
+[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo) backend
 (a CopilotKit runtime backed by
 [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime) and
 [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows)) is the canonical
@@ -42,7 +42,7 @@ the proxy target in [`vite.config.ts`](./vite.config.ts).
 
 For a production-shaped app (theming, manifest loading, layout), see the demo
 frontend:
-[kaboo-workflows-demo/frontend/src/App.tsx](https://github.com/gl-pgege/kaboo-workflows-demo/blob/main/frontend/src/App.tsx).
+[kaboo-workflows-demo/frontend/src/App.tsx](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/frontend/src/App.tsx).
 
 > Note: any `../../../kaboo-workflows-demo` relative paths only resolve when the
 > repos are cloned as siblings in the same parent directory; otherwise use the

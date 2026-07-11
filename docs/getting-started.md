@@ -14,8 +14,8 @@ You need a **CopilotKit runtime endpoint** that streams kaboo activity as
 runtime persistence/orchestration plugin) plus a
 [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) backend is the
 canonical server; the
-[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) shows a
-complete setup.
+[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo)
+shows a complete setup.
 
 ## Install
 

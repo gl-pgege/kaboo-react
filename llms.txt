@@ -23,7 +23,7 @@ kaboo-react renders a live, hierarchical view of agent activity — sub-agent ca
 ## Examples
 
 - [examples/minimal](https://github.com/gl-pgege/kaboo-react/tree/main/examples/minimal): smallest end-to-end wiring.
-- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo): full demo app.
+- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo): full demo app.
 
 ## Related
 

@@ -56,7 +56,7 @@ llms += `- [API inventory](${PAGES}api-inventory/): every public export.\n`;
 
 llms += "\n## Examples\n\n";
 llms += `- [examples/minimal](${REPO}/tree/main/examples/minimal): smallest end-to-end wiring.\n`;
-llms += `- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo): full demo app.\n`;
+llms += `- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo): full demo app.\n`;
 
 llms += "\n## Related\n\n";
 llms += "- [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows): Python multi-agent orchestration.\n";

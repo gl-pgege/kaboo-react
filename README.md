@@ -105,7 +105,7 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 
 - [`examples/minimal`](./examples/minimal) — the smallest end-to-end wiring
   (this README's quick start).
-- The [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo)
+- The [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo)
   frontend is the canonical, production-shaped consumer.
 
 ## Compatibility & versioning

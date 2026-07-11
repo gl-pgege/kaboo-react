@@ -107,7 +107,7 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 
 - [`examples/minimal`](./examples/minimal) — the smallest end-to-end wiring
   (this README's quick start).
-- The [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo)
+- The [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo)
   frontend is the canonical, production-shaped consumer.
 
 ## Compatibility & versioning
@@ -216,6 +216,10 @@ the whole picture.
 
 # Getting started
 
+!!! note "Compatibility"
+    kaboo-react needs **React 18+**, **Node.js 18+**, and
+    **`@copilotkit/react-core` >= 1.62** as peers.
+
 This guide wires kaboo-react into a CopilotKit app from scratch.
 
 ## Prerequisites
@@ -226,8 +230,8 @@ You need a **CopilotKit runtime endpoint** that streams kaboo activity as
 runtime persistence/orchestration plugin) plus a
 [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) backend is the
 canonical server; the
-[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) shows a
-complete setup.
+[kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo)
+shows a complete setup.
 
 ## Install
 
