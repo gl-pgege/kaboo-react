@@ -1,6 +1,7 @@
 import {
   CopilotChatMessageView,
   CopilotChatAssistantMessage,
+  CopilotChatUserMessage,
   useCopilotKit,
   useCopilotChatConfiguration,
   type CopilotChatMessageViewProps,
@@ -10,6 +11,7 @@ import { AgentCard } from "../components/AgentCard";
 import { chatRootGroups, groupTurnKey, type GroupEntry } from "../utils/groups";
 import { TurnBindingProvider } from "../context/TurnBinding";
 import { KabooAssistantMessage } from "./KabooAssistantMessage";
+import { KabooUserMessage } from "./KabooUserMessage";
 
 function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
   const { groups } = useActivity();
@@ -24,6 +26,7 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
       assistantMessage={
         KabooAssistantMessage as unknown as typeof CopilotChatAssistantMessage
       }
+      userMessage={KabooUserMessage as unknown as typeof CopilotChatUserMessage}
     >
       {({ messages, messageElements, interruptElement, isRunning }) => {
         const roots = chatRootGroups(groups);

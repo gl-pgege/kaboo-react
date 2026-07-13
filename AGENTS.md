@@ -25,11 +25,11 @@ yarn examples:typecheck    # type-check examples/ against built types
 - **Two barrels.**
   - `kaboo-react` (`src/index.ts`) — framework-agnostic contexts, hooks,
     components, utils, formatters, types.
-  - `@pgege/kaboo-react/copilotkit` (`src/copilotkit.ts`) — integrations coupled to
+  - `kaboo-react/copilotkit` (`src/copilotkit.ts`) — integrations coupled to
     CopilotKit. **Put any CopilotKit-dependent code here, never in the main
     barrel.**
 - **Stylesheet.** `src/styles.css` is copied to `dist/styles.css` by tsup and
-  exported as `@pgege/kaboo-react/styles.css`. Theming is via CSS variables only
+  exported as `kaboo-react/styles.css`. Theming is via CSS variables only
   (`--background`/`--foreground`/`--card`/`--muted`/`--border` + `--kaboo-*`
   overrides). Do not add a CSS-in-JS dependency.
 - **Peer deps.** `react`, `react-dom`, `@copilotkit/react-core`. Do not add
@@ -96,6 +96,6 @@ yarn examples:typecheck    # type-check examples/ against built types
 
 - [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows)
 - [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime)
-- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-docs/tree/main/examples/kaboo-workflows-demo) — the
+- [kaboo-workflows-demo](https://github.com/gl-pgege/kaboo-workflows-demo) — the
   runnable, end-to-end reference that consumes this library.
 - [The kaboo stack](https://gl-pgege.github.io/kaboo-docs/) — umbrella landing.

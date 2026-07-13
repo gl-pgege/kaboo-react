@@ -6,7 +6,7 @@
 
 > **formatToolResult**(`raw`): `object`
 
-Defined in: [formatters/output.ts:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L14)
+Defined in: [src/formatters/output.ts:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L14)
 
 Parses a raw tool result into a renderable shape: `rows` (for tabular JSON —
 either `{ rows: [...] }` or a top-level array of objects) or `text` (a

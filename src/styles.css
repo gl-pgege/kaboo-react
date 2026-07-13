@@ -708,5 +708,324 @@
   animation: kaboo-blink 1s step-end infinite;
 }
 
+/* ── Reference input (native + / @ → one popover) ── */
+.kaboo-ref-input {
+  position: relative;
+  width: 100%;
+}
+
+/* Hidden picker used by the "attach a file" action. */
+.kaboo-ref-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+/* Tray of references added via the + button (never inline). Sits just above
+   the input, like a native attachment strip. */
+.kaboo-ref-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+.kaboo-chip-tray {
+  font-size: 0.85rem;
+  padding: 3px 5px 3px 7px;
+}
+
+/* Object-reference chips shown in a sent user bubble. Object references ride
+   agent state (not the message content), so they're rendered here alongside
+   CopilotKit's native file attachment cards. */
+.kaboo-user-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.kaboo-msg-refs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 6px;
+  max-width: 80%;
+}
+
+/* Non-interactive reference chips shown in a sent user bubble. Same visual
+   language as the composer chips, but static (no hover/click affordance). */
+.kaboo-msg-chip {
+  cursor: default;
+  user-select: text;
+  max-width: 240px;
+  padding: 3px 9px 3px 7px;
+}
+
+.kaboo-msg-chip:hover {
+  border-color: var(--kaboo-border);
+  background: var(--kaboo-muted);
+}
+
+.kaboo-msg-chip .kaboo-chip-thumb {
+  width: 20px;
+  height: 20px;
+}
+
+/* Inline chip sits within the message text, so align it to the text baseline
+   and keep it compact. */
+.kaboo-msg-chip-inline {
+  vertical-align: baseline;
+  margin: 0 1px;
+  padding: 1px 7px 1px 5px;
+  font-size: 0.92em;
+  translate: 0 2px;
+}
+
+/* contentEditable editor that replaces the plain textarea. Inherits the
+   CopilotKit textarea classes (transparent bg, font size) via className. */
+.kaboo-ref-editor {
+  min-height: 1.5em;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  outline: none;
+  cursor: text;
+}
+
+.kaboo-ref-editor[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, var(--kaboo-muted-fg) 85%, transparent);
+  pointer-events: none;
+}
+
+/* Inline reference chip (object mentions + file attachments). */
+.kaboo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 220px;
+  margin: 0 1px;
+  padding: 1px 4px 1px 6px;
+  border-radius: 7px;
+  border: 1px solid var(--kaboo-border);
+  background: var(--kaboo-muted);
+  color: var(--kaboo-fg);
+  font-size: 0.9em;
+  line-height: 1.4;
+  vertical-align: baseline;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.kaboo-chip:hover {
+  border-color: var(--kaboo-accent);
+  background: color-mix(in srgb, var(--kaboo-accent) 12%, var(--kaboo-muted));
+}
+
+.kaboo-chip-ic {
+  display: inline-flex;
+  align-items: center;
+  color: var(--kaboo-fg);
+  opacity: 0.9;
+}
+
+.kaboo-chip-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  object-fit: cover;
+  display: block;
+}
+
+.kaboo-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kaboo-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--kaboo-muted-fg);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.kaboo-chip-x:hover {
+  background: color-mix(in srgb, var(--kaboo-fg) 12%, transparent);
+  color: var(--kaboo-fg);
+}
+
+/* Native "+" replacement — mirrors the built-in add button. */
+.kaboo-ref-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  color: var(--kaboo-muted-fg);
+  background: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+  pointer-events: auto;
+}
+
+.kaboo-ref-add:hover:not(:disabled) {
+  background: var(--kaboo-muted);
+  color: var(--kaboo-fg);
+}
+
+.kaboo-ref-add[aria-expanded="true"] {
+  background: var(--kaboo-accent);
+  color: var(--kaboo-accent-fg);
+}
+
+.kaboo-ref-add:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Shared popover for both + and @. Portaled to <body>; left/bottom/width are
+   set inline from the input's measured position (see computePosition). */
+.kaboo-refmenu {
+  position: fixed;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--kaboo-border);
+  border-radius: 12px;
+  background: var(--kaboo-card);
+  color: var(--kaboo-card-fg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  z-index: 9999;
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Search box — keeps the list usable as providers/items grow. */
+.kaboo-refmenu-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  background: var(--kaboo-muted);
+}
+
+.kaboo-refmenu-search-icon {
+  display: inline-flex;
+  color: var(--kaboo-muted-fg);
+  flex: 0 0 auto;
+}
+
+.kaboo-refmenu-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--kaboo-fg);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.kaboo-refmenu-search-input::placeholder {
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-refmenu-empty {
+  padding: 12px 10px;
+  font-size: 0.8rem;
+  color: var(--kaboo-muted-fg);
+  text-align: center;
+}
+
+.kaboo-refmenu-group {
+  padding: 8px 8px 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-refmenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.kaboo-refmenu-item.is-active {
+  background: var(--kaboo-accent);
+  color: var(--kaboo-accent-fg);
+}
+
+.kaboo-refmenu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  background: var(--kaboo-muted);
+  color: var(--kaboo-fg);
+}
+
+.kaboo-refmenu-item.is-active .kaboo-refmenu-icon {
+  background: var(--kaboo-card);
+}
+
+.kaboo-refmenu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.kaboo-refmenu-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kaboo-refmenu-sub {
+  font-size: 0.72rem;
+  color: var(--kaboo-muted-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kaboo-refmenu-item.is-active .kaboo-refmenu-sub {
+  color: var(--kaboo-accent-fg);
+  opacity: 0.75;
+}
+
 /* ── Animations ── */
 @keyframes kaboo-blink { 50% { opacity: 0; } }

@@ -6,7 +6,7 @@
 
 > **ActivityPanel**(): `Element` \| `null`
 
-Defined in: [components/ActivityPanel.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ActivityPanel.tsx#L26)
+Defined in: [src/components/ActivityPanel.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ActivityPanel.tsx#L26)
 
 Standalone panel that renders the current activity tree as a list of
 [AgentCard](AgentCard.md)s — top-level groups at the root, or the drilled-in group's

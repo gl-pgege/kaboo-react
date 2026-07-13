@@ -38,6 +38,7 @@ nav:
   - Concepts: concepts.md
   - Theming: theming.md
   - Structured renderers: structured-renderers.md
+  - References & providers: references.md
   - Human-in-the-loop: hitl.md
   - Activity panel: activity-panel.md
   - CopilotKit subpath: copilotkit-subpath.md

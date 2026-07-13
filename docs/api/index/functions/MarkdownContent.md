@@ -6,7 +6,7 @@
 
 > **MarkdownContent**(`__namedParameters`): `Element`
 
-Defined in: [components/MarkdownContent.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/MarkdownContent.tsx#L17)
+Defined in: [src/components/MarkdownContent.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/MarkdownContent.tsx#L17)
 
 Minimal, dependency-free markdown renderer used for agent text: supports
 `#`/`##`/`###` headings, `-`/`*` list items, `**bold**` inline, and blank-line

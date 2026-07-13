@@ -6,7 +6,7 @@
 
 > `const` **KabooMessageView**: (`props`) => `Element` & `object`
 
-Defined in: [integrations/KabooMessageView.tsx:124](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L124)
+Defined in: [src/integrations/KabooMessageView.tsx:127](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L127)
 
 Drop-in replacement for `CopilotChat`'s `messageView` that renders swarm/graph
 member cards **live, inside the chat, from the moment the first agent starts**

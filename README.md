@@ -23,6 +23,8 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 - **Human-in-the-loop** — approval gates and forms, with N parallel interrupts
   resolved independently.
 - **Structured renderers** — plug custom UI for schema-shaped agent output.
+- **References & attachments** — files and your own objects (tables, dashboards,
+  …) as interactive inline chips, added from one shared **+** / **@** popover.
 - **Batteries included** — one `KabooProvider` renders `<CopilotKit>` and mounts
   every context and handler for you.
 - **Themeable** — styled with CSS variables and `--kaboo-*` tokens.
@@ -86,9 +88,65 @@ props via `copilotKitProps`.
 - **Theming via CSS variables.** Components read standard design-system tokens and
   accept `--kaboo-*` overrides.
 
+## References & attachments
+
+Let users attach things to a message. Everything is driven by **reference
+providers** registered on `<KabooProvider references={…}>` and rendered by the
+`KabooReferenceInput` slot. There are two transports:
+
+- **Attachment** — a file/blob. Register the built-in `uploadProvider({ onUpload })`;
+  choosing "Attach a file" (from **+** or **@**) opens the picker, uploads, and
+  drops a file chip inline. Files ride the message as parts stamped with
+  `kaboo_id` / `kaboo_kind` / `kaboo_name`.
+- **Object** — a pointer to one of *your* entities (`table`, `dashboard`, …).
+  Register a `ReferenceProvider`; selected objects sync into
+  `state.kaboo_references` for the backend to resolve, and appear inline as
+  `@name`.
+
+```tsx no-verify
+import {
+  KabooProvider,
+  KabooReferenceInput,
+  uploadProvider,
+  type ReferenceProvider,
+} from "@pgege/kaboo-react";
+
+// A custom object reference: three fields make it work.
+const tableProvider: ReferenceProvider = {
+  id: "table",
+  label: "Tables",
+  icon: <Table2 size={16} />,
+  search: (q) => TABLES.filter((t) => t.label.includes(q)),          // items under @
+  toReference: (item) => ({ transport: "object", kind: "table", id: item.id, name: item.label }),
+};
+
+<KabooProvider
+  runtimeUrl="/api/copilotkit"
+  agent={agent}
+  references={[uploadProvider({ accept: "image/*,.pdf", onUpload }), tableProvider]}
+>
+  <CopilotChat input={KabooReferenceInput} messageView={KabooMessageView} />
+</KabooProvider>;
+```
+
+`KabooReferenceInput` is a drop-in `<CopilotChat input={…}>` slot. It keeps
+CopilotKit's native input chrome (send button, disclaimer, theme) but swaps the
+plain textarea for a lightweight editor where every reference renders as an
+**interactive inline chip**: click a chip to swap it for another, or its `×` to
+remove it. The **+** button and the **@** key open the *same* searchable
+popover; it dismisses on outside-click / `Escape`. On submit the editor builds
+the multimodal message (files as attachment parts, objects on
+`state.kaboo_references`, cleared only after the run starts) and runs the agent.
+`onUpload` should return a fetchable URL (not base64) so the transport and
+persisted event log stay small. See [References & providers](./docs/references.md)
+for the full provider contract (both transports, searchable vs action-only,
+`toReference`), and kaboo-workflows' *Attachments & Multimodal* chapter for how
+references reach each agent.
+
 ## Guides
 
 - [Getting started](./docs/getting-started.md)
+- [References & providers](./docs/references.md)
 - [Theming](./docs/theming.md)
 - [Structured renderers](./docs/structured-renderers.md)
 - [Human-in-the-loop](./docs/hitl.md)

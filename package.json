@@ -1,6 +1,6 @@
 {
   "name": "@pgege/kaboo-react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.",
   "author": "gl-pgege",
   "license": "MIT",

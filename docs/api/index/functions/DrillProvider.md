@@ -6,7 +6,7 @@
 
 > **DrillProvider**(`__namedParameters`): `Element`
 
-Defined in: [context/DrillContext.tsx:34](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/DrillContext.tsx#L34)
+Defined in: [src/context/DrillContext.tsx:34](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/DrillContext.tsx#L34)
 
 Provides drill-down navigation state ([DrillState](../interfaces/DrillState.md)) to the activity
 components below it. Included automatically by [KabooProvider](KabooProvider.md); only

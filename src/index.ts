@@ -19,6 +19,39 @@ export type { ActiveInterrupt } from "./context/InterruptBridge";
 
 export { useActivity } from "./hooks/useActivity";
 export { useDrill } from "./hooks/useDrill";
+
+export { ReferencesProvider, ReferenceStateSync, useReferences } from "./references/ReferencesProvider";
+export type { ReferencesContextValue, ReferencesProviderProps } from "./references/ReferencesProvider";
+export { KabooReferenceInput } from "./references/ReferenceInput";
+export type { KabooReferenceInputProps } from "./references/ReferenceInput";
+export {
+  uploadProvider,
+  isUploadProvider,
+  buildAttachmentsConfig,
+  uploadFileToReference,
+  UPLOAD_MARKER,
+} from "./references/uploadProvider";
+export type { UploadProviderConfig, UploadReferenceProvider } from "./references/uploadProvider";
+export {
+  mintReferenceId,
+  referenceMarker,
+  attachmentToInputContent,
+  objectToStateEntry,
+  serializeReferences,
+  withReferenceState,
+  buildUserContent,
+} from "./references/serialize";
+export type { SerializedObjectReference, SerializedReferences } from "./references/serialize";
+export {
+  REFERENCE_METADATA_KEYS,
+  REFERENCES_STATE_KEY,
+} from "./references/types";
+export type {
+  ReferenceProvider,
+  ReferenceItem,
+  PendingReference,
+  ReferenceTransport,
+} from "./references/types";
 export { topLevelGroups, directChildren } from "./utils/groups";
 export type { GroupEntry } from "./utils/groups";
 

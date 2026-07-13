@@ -5,7 +5,7 @@
 Import the stylesheet **once**, near your app root:
 
 ```ts
-import "@pgege/kaboo-react/styles.css";
+import "kaboo-react/styles.css";
 ```
 
 Without it, cards, tabs, and the activity panel have no layout or theme. See

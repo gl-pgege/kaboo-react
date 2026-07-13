@@ -6,7 +6,7 @@
 
 > **InterruptBridgePublisher**(`__namedParameters`): `null`
 
-Defined in: [context/InterruptBridge.tsx:121](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L121)
+Defined in: [src/context/InterruptBridge.tsx:121](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L121)
 
 Publishes the current set of open interrupts to the bridge so each owning
 agent card can render its prompt inline at the matching tool-call position.

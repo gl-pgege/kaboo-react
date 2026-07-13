@@ -4,7 +4,7 @@
 
 # Interface: AgentCardProps
 
-Defined in: [components/AgentCard.tsx:12](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L12)
+Defined in: [src/components/AgentCard.tsx:12](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L12)
 
 Props for [AgentCard](../functions/AgentCard.md).
 
@@ -14,7 +14,7 @@ Props for [AgentCard](../functions/AgentCard.md).
 
 > `optional` **actionStatus?**: `string`
 
-Defined in: [components/AgentCard.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L22)
+Defined in: [src/components/AgentCard.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L22)
 
 Host-provided action status (e.g. `"complete"`) used to mark the card done.
 
@@ -24,7 +24,7 @@ Host-provided action status (e.g. `"complete"`) used to mark the card done.
 
 > **group**: [`StreamGroup`](StreamGroup.md)
 
-Defined in: [components/AgentCard.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L16)
+Defined in: [src/components/AgentCard.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L16)
 
 The activity group to render.
 
@@ -34,7 +34,7 @@ The activity group to render.
 
 > **groupId**: `string`
 
-Defined in: [components/AgentCard.tsx:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L14)
+Defined in: [src/components/AgentCard.tsx:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L14)
 
 Id of the group this card renders.
 
@@ -44,7 +44,7 @@ Id of the group this card renders.
 
 > `optional` **input?**: `string`
 
-Defined in: [components/AgentCard.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L18)
+Defined in: [src/components/AgentCard.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L18)
 
 Task/input text to show, overriding the group's own `task`.
 
@@ -54,7 +54,7 @@ Task/input text to show, overriding the group's own `task`.
 
 > `optional` **result?**: `string`
 
-Defined in: [components/AgentCard.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L20)
+Defined in: [src/components/AgentCard.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L20)
 
 Raw tool result to render as the card's answer, when provided by the host.
 
@@ -64,7 +64,7 @@ Raw tool result to render as the card's answer, when provided by the host.
 
 > `optional` **showChildren?**: `boolean`
 
-Defined in: [components/AgentCard.tsx:30](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L30)
+Defined in: [src/components/AgentCard.tsx:30](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/AgentCard.tsx#L30)
 
 When true, the card renders its `directChildren` inline as nested
 [AgentCard](../functions/AgentCard.md)s (recursively). Used by the first-class swarm/graph inline

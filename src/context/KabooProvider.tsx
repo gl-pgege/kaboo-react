@@ -5,6 +5,8 @@ import { DrillProvider } from "./DrillContext";
 import { InterruptBridgeProvider } from "./InterruptBridge";
 import { KabooInterruptHandler, type KabooInterruptHandlerProps } from "../integrations/KabooInterruptHandler";
 import { KabooInlineCards } from "../integrations/KabooInlineCards";
+import { ReferencesProvider } from "../references/ReferencesProvider";
+import type { ReferenceProvider } from "../references/types";
 
 /** Props for {@link KabooProvider}. */
 export interface KabooProviderProps {
@@ -22,6 +24,11 @@ export interface KabooProviderProps {
   disableInterruptHandler?: boolean;
   /** Skip auto-mounting the built-in {@link KabooInlineCards}. */
   disableInlineCards?: boolean;
+  /**
+   * `@` reference providers made available to the composer / `useReferences`.
+   * File upload is not implicit — include `uploadProvider()` to offer uploads.
+   */
+  references?: ReferenceProvider[];
   /** Extra props forwarded to the underlying `<CopilotKit>`. */
   copilotKitProps?: Partial<Omit<CopilotKitProps, "children" | "runtimeUrl" | "agent" | "threadId">>;
   /** Your app subtree, rendered inside all kaboo contexts. */
@@ -61,6 +68,7 @@ export function KabooProvider({
   interruptRenderers,
   disableInterruptHandler = false,
   disableInlineCards = false,
+  references,
   copilotKitProps,
   children,
 }: KabooProviderProps) {
@@ -75,11 +83,13 @@ export function KabooProvider({
       <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
         <DrillProvider>
           <InterruptBridgeProvider>
-            {!disableInterruptHandler && (
-              <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
-            )}
-            {!disableInlineCards && <KabooInlineCards />}
-            {children}
+            <ReferencesProvider providers={references} syncObjectStateTo={agent}>
+              {!disableInterruptHandler && (
+                <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
+              )}
+              {!disableInlineCards && <KabooInlineCards />}
+              {children}
+            </ReferencesProvider>
           </InterruptBridgeProvider>
         </DrillProvider>
       </KabooActivityProvider>
