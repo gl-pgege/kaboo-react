@@ -6,7 +6,7 @@
 
 > **KabooReferenceInput**(`__namedParameters`): `Element`
 
-Defined in: src/references/ReferenceInput.tsx:148
+Defined in: [src/references/ReferenceInput.tsx:148](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferenceInput.tsx#L148)
 
 A `<CopilotChat input={…}>` slot that keeps CopilotKit's native input chrome
 (send button, disclaimer, theme, layout) but replaces the plain textarea with

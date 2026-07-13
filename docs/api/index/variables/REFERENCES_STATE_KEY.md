@@ -6,6 +6,6 @@
 
 > `const` **REFERENCES\_STATE\_KEY**: `"kaboo_references"` = `"kaboo_references"`
 
-Defined in: src/references/types.ts:19
+Defined in: [src/references/types.ts:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/types.ts#L19)
 
 AG-UI `state` key under which object-transport references travel.

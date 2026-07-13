@@ -6,7 +6,7 @@
 
 > `const` **REFERENCE\_METADATA\_KEYS**: `object`
 
-Defined in: src/references/types.ts:9
+Defined in: [src/references/types.ts:9](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/types.ts#L9)
 
 Wire keys shared with kaboo-workflows. A file attachment carries its id/kind/
 name in the CopilotKit `InputContent` part `metadata` under these keys; the

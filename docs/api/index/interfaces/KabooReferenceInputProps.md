@@ -4,7 +4,7 @@
 
 # Interface: KabooReferenceInputProps
 
-Defined in: src/references/ReferenceInput.tsx:31
+Defined in: [src/references/ReferenceInput.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferenceInput.tsx#L31)
 
 Props for [KabooReferenceInput](../functions/KabooReferenceInput.md). This is a drop-in value for
 `<CopilotChat input={…}>`, so it receives every prop CopilotKit hands the
@@ -3945,7 +3945,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2811
 
 > `optional` **trigger?**: `string`
 
-Defined in: src/references/ReferenceInput.tsx:33
+Defined in: [src/references/ReferenceInput.tsx:33](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferenceInput.tsx#L33)
 
 Character that opens the reference popover from the editor. Default `"@"`.
 

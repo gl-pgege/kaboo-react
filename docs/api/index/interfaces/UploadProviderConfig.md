@@ -4,7 +4,7 @@
 
 # Interface: UploadProviderConfig
 
-Defined in: src/references/uploadProvider.tsx:7
+Defined in: [src/references/uploadProvider.tsx:7](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L7)
 
 Configuration for the built-in file [uploadProvider](../functions/uploadProvider.md).
 
@@ -14,7 +14,7 @@ Configuration for the built-in file [uploadProvider](../functions/uploadProvider
 
 > `optional` **accept?**: `string`
 
-Defined in: src/references/uploadProvider.tsx:15
+Defined in: [src/references/uploadProvider.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L15)
 
 `accept` filter for the file picker (e.g. `"image/*,.pdf"`).
 
@@ -24,7 +24,7 @@ Defined in: src/references/uploadProvider.tsx:15
 
 > `optional` **id?**: `string`
 
-Defined in: src/references/uploadProvider.tsx:9
+Defined in: [src/references/uploadProvider.tsx:9](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L9)
 
 Provider id in the `@` menu. Default `"upload"`.
 
@@ -34,7 +34,7 @@ Provider id in the `@` menu. Default `"upload"`.
 
 > `optional` **kind?**: `string`
 
-Defined in: src/references/uploadProvider.tsx:13
+Defined in: [src/references/uploadProvider.tsx:13](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L13)
 
 Reference kind stamped on emitted attachments. Default `"file"`.
 
@@ -44,7 +44,7 @@ Reference kind stamped on emitted attachments. Default `"file"`.
 
 > `optional` **label?**: `string`
 
-Defined in: src/references/uploadProvider.tsx:11
+Defined in: [src/references/uploadProvider.tsx:11](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L11)
 
 Group label in the `@` menu. Default `"Upload"`.
 
@@ -54,7 +54,7 @@ Group label in the `@` menu. Default `"Upload"`.
 
 > `optional` **maxSize?**: `number`
 
-Defined in: src/references/uploadProvider.tsx:17
+Defined in: [src/references/uploadProvider.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L17)
 
 Max file size in bytes. Files above this are rejected. Default 20MB.
 
@@ -64,7 +64,7 @@ Max file size in bytes. Files above this are rejected. Default 20MB.
 
 > `optional` **onUpload?**: (`file`) => `AttachmentUploadResult` \| `Promise`\<`AttachmentUploadResult`\>
 
-Defined in: src/references/uploadProvider.tsx:24
+Defined in: [src/references/uploadProvider.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L24)
 
 Store the file and return a fetchable source. Return a `url` (presigned or
 public — the server fetches it with no auth) or inline `data` (base64).

@@ -6,7 +6,7 @@
 
 > **objectToStateEntry**(`ref`): [`SerializedObjectReference`](../interfaces/SerializedObjectReference.md)
 
-Defined in: src/references/serialize.ts:78
+Defined in: [src/references/serialize.ts:78](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/serialize.ts#L78)
 
 Project an `object`-transport reference to its wire shape.
 

@@ -6,7 +6,7 @@
 
 > **ReferenceTransport** = `"attachment"` \| `"object"`
 
-Defined in: src/references/types.ts:31
+Defined in: [src/references/types.ts:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/types.ts#L31)
 
 How a reference reaches the agent.
 

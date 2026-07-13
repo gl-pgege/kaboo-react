@@ -4,7 +4,7 @@
 
 # Interface: ReferencesContextValue
 
-Defined in: src/references/ReferencesProvider.tsx:16
+Defined in: [src/references/ReferencesProvider.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L16)
 
 Value exposed by [useReferences](../functions/useReferences.md).
 
@@ -14,7 +14,7 @@ Value exposed by [useReferences](../functions/useReferences.md).
 
 > **addReference**: (`ref`) => `void`
 
-Defined in: src/references/ReferencesProvider.tsx:22
+Defined in: [src/references/ReferencesProvider.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L22)
 
 Stage a reference (deduped by id).
 
@@ -34,7 +34,7 @@ Stage a reference (deduped by id).
 
 > **clearReferences**: () => `void`
 
-Defined in: src/references/ReferencesProvider.tsx:26
+Defined in: [src/references/ReferencesProvider.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L26)
 
 Clear all staged references (call after a message is sent).
 
@@ -48,7 +48,7 @@ Clear all staged references (call after a message is sent).
 
 > **messageReferences**: `Record`\<`string`, [`PendingReference`](../type-aliases/PendingReference.md)[]\>
 
-Defined in: src/references/ReferencesProvider.tsx:33
+Defined in: [src/references/ReferencesProvider.tsx:33](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L33)
 
 Object references sent with each user message, keyed by message id. Object
 references ride `state.kaboo_references` rather than the message content, so
@@ -61,7 +61,7 @@ message renderer show them as chips.
 
 > **pending**: [`PendingReference`](../type-aliases/PendingReference.md)[]
 
-Defined in: src/references/ReferencesProvider.tsx:20
+Defined in: [src/references/ReferencesProvider.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L20)
 
 References currently staged on the composer.
 
@@ -71,7 +71,7 @@ References currently staged on the composer.
 
 > **providers**: [`ReferenceProvider`](ReferenceProvider.md)\<`unknown`\>[]
 
-Defined in: src/references/ReferencesProvider.tsx:18
+Defined in: [src/references/ReferencesProvider.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L18)
 
 Registered `@` providers (upload built-in + app-defined).
 
@@ -81,7 +81,7 @@ Registered `@` providers (upload built-in + app-defined).
 
 > **recordMessageReferences**: (`messageId`, `refs`) => `void`
 
-Defined in: src/references/ReferencesProvider.tsx:35
+Defined in: [src/references/ReferencesProvider.tsx:35](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L35)
 
 Record the object references attached to a sent user message.
 
@@ -105,7 +105,7 @@ Record the object references attached to a sent user message.
 
 > **removeReference**: (`id`) => `void`
 
-Defined in: src/references/ReferencesProvider.tsx:24
+Defined in: [src/references/ReferencesProvider.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/ReferencesProvider.tsx#L24)
 
 Remove a staged reference by id.
 

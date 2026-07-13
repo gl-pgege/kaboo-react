@@ -6,7 +6,7 @@
 
 > **withReferenceState**(`state`, `objectReferences`): `Record`\<`string`, `unknown`\>
 
-Defined in: src/references/serialize.ts:111
+Defined in: [src/references/serialize.ts:111](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/serialize.ts#L111)
 
 Merge object references into an existing AG-UI `state` under
 [REFERENCES\_STATE\_KEY](../variables/REFERENCES_STATE_KEY.md). Returns a new object; empty input clears the key

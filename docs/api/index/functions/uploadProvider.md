@@ -6,7 +6,7 @@
 
 > **uploadProvider**(`config?`): [`UploadReferenceProvider`](../interfaces/UploadReferenceProvider.md)
 
-Defined in: src/references/uploadProvider.tsx:96
+Defined in: [src/references/uploadProvider.tsx:96](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L96)
 
 Built-in file-upload [ReferenceProvider](../interfaces/ReferenceProvider.md). Action-only: choosing it in
 the `@` menu opens the file picker; the composer uploads the file (via

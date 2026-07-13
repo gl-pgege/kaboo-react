@@ -6,7 +6,7 @@
 
 > **buildAttachmentsConfig**(`config?`): `AttachmentsConfig`
 
-Defined in: src/references/uploadProvider.tsx:122
+Defined in: [src/references/uploadProvider.tsx:122](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/uploadProvider.tsx#L122)
 
 Build a CopilotKit `AttachmentsConfig` from an upload config, wrapping
 `onUpload` so every uploaded file carries kaboo id/kind/name in its

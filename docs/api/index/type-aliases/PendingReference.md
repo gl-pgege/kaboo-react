@@ -6,7 +6,7 @@
 
 > **PendingReference** = \{ `id`: `string`; `kind`: `string`; `mimeType`: `string`; `name`: `string`; `source`: \{ `url`: `string`; \} \| \{ `data`: `string`; \}; `transport`: `"attachment"`; \} \| \{ `id`: `string`; `kind`: `string`; `meta?`: `Record`\<`string`, `unknown`\>; `name`: `string`; `transport`: `"object"`; \}
 
-Defined in: src/references/types.ts:52
+Defined in: [src/references/types.ts:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/references/types.ts#L52)
 
 A reference that has been selected and is pending on the composer, before it
 is serialized onto the outgoing message.
