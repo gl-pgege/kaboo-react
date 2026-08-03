@@ -6,7 +6,7 @@
 
 > **ToolRenderers** = `Record`\<`string`, `ComponentType`\<[`ToolRendererProps`](../interfaces/ToolRendererProps.md)\>\>
 
-Defined in: src/context/ToolRenderers.tsx:22
+Defined in: [src/context/ToolRenderers.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ToolRenderers.tsx#L22)
 
 Per-tool-name renderer overrides, keyed by the exact tool name (e.g.
 `create_work_item`). A registered renderer replaces the built-in

@@ -6,7 +6,7 @@
 
 > **InterruptRenderersProvider**(`__namedParameters`): `Element`
 
-Defined in: src/context/InterruptRenderers.tsx:19
+Defined in: [src/context/InterruptRenderers.tsx:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptRenderers.tsx#L19)
 
 Makes the app's `interruptRenderers` overrides available to every surface
 that renders an interrupt prompt — the chat-level slot, a Timeline's inline
