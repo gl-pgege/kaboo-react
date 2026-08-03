@@ -16,6 +16,16 @@ export {
   useInterruptFor,
 } from "./context/InterruptBridge";
 export type { ActiveInterrupt } from "./context/InterruptBridge";
+export {
+  InterruptRenderersProvider,
+  useInterruptRenderer,
+} from "./context/InterruptRenderers";
+export type { InterruptRenderers } from "./context/InterruptRenderers";
+export {
+  ToolRenderersProvider,
+  useToolRenderer,
+} from "./context/ToolRenderers";
+export type { ToolRenderers, ToolRendererProps } from "./context/ToolRenderers";
 
 export { useActivity } from "./hooks/useActivity";
 export { useDrill } from "./hooks/useDrill";

@@ -3,8 +3,9 @@ import type { TimelineEntry, ToolCall } from "../types";
 import { ToolRow } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
 import { AskUserSummary } from "./AskUserSummary";
-import { InterruptRenderer } from "./InterruptRenderer";
 import { useInterruptFor } from "../context/InterruptBridge";
+import { useInterruptRenderer } from "../context/InterruptRenderers";
+import { useToolRenderer } from "../context/ToolRenderers";
 import { normalizeQuestions, parseAnswers, type AskUserParams } from "../formatters/askUser";
 import { isCancelledResult } from "../formatters/output";
 
@@ -19,6 +20,7 @@ import { isCancelledResult } from "../formatters/output";
  */
 function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
   const interrupt = useInterruptFor(tool.toolUseId);
+  const Renderer = useInterruptRenderer("form");
   const questions = normalizeQuestions(tool.toolInput as AskUserParams | undefined);
   const answers = parseAnswers(tool.toolResult);
 
@@ -29,7 +31,7 @@ function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
 
   if (interrupt && interrupt.reason.type === "form") {
     return (
-      <InterruptRenderer
+      <Renderer
         reason={interrupt.reason}
         toolCallId={interrupt.toolCallId}
         onResolve={interrupt.onResolve}
@@ -53,14 +55,21 @@ function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
  * tool-call id; the Approve/Reject prompt renders directly under the row so it
  * sits at the request it governs. With N tools gated in parallel each row owns
  * its own card and resolves independently.
+ *
+ * A `toolRenderers` registration for this tool's name replaces the built-in
+ * row with the app's custom card (the inline gate still renders under it), so
+ * per-tool interactive cards apply inside activity timelines exactly as they
+ * do in the chat transcript.
  */
 function ToolTimelineRow({ tool }: { tool: ToolCall }) {
   const interrupt = useInterruptFor(tool.toolUseId);
+  const Renderer = useInterruptRenderer("approval");
+  const CustomTool = useToolRenderer(tool.toolName);
   return (
     <>
-      <ToolRow tool={tool} />
+      {CustomTool ? <CustomTool tool={tool} /> : <ToolRow tool={tool} />}
       {interrupt && interrupt.reason.type === "approval" && (
-        <InterruptRenderer
+        <Renderer
           reason={interrupt.reason}
           toolCallId={interrupt.toolCallId}
           onResolve={interrupt.onResolve}

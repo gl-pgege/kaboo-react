@@ -1,6 +1,8 @@
 import { useDefaultRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { ToolRow } from "../components/ToolRow";
+import { useInterruptFor } from "../context/InterruptBridge";
+import { useInterruptRenderer } from "../context/InterruptRenderers";
 import { isControlOnlyStatus } from "../formatters/output";
 import type { StreamGroup, ToolCall } from "../types";
 
@@ -28,6 +30,27 @@ function isDelegateSpawn(
     if (group.toolCallId === toolCallId || group.agentName === name) return true;
   }
   return false;
+}
+
+/**
+ * The live gate for a wildcard-rendered tool row. A plain agent's tools are
+ * rendered by the host chat (this wildcard), not by a kaboo Timeline — yet the
+ * chat-level interrupt slot defers to the tool anchor whenever the pending tool
+ * exists in the activity groups. Without this, a gated call on a plain agent
+ * would have an anchor that nothing renders and the prompt would never appear.
+ */
+function InlineToolGate({ toolCallId }: { toolCallId: string }) {
+  const interrupt = useInterruptFor(toolCallId);
+  const Renderer = useInterruptRenderer(interrupt?.reason.type ?? "approval");
+  if (!interrupt) return null;
+  return (
+    <Renderer
+      reason={interrupt.reason}
+      toolCallId={interrupt.toolCallId}
+      onResolve={interrupt.onResolve}
+      onCancel={interrupt.onCancel}
+    />
+  );
 }
 
 /**
@@ -68,6 +91,7 @@ export function KabooToolRender() {
         return (
           <div className="kaboo-inline-tool">
             <ToolRow tool={tool} />
+            <InlineToolGate toolCallId={toolCallId} />
           </div>
         );
       },

@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
+### Added
+
+- **Per-tool-name renderers inside activity timelines.** New `toolRenderers`
+  registry (`ToolRenderersProvider` / `useToolRenderer`, plus a `toolRenderers`
+  prop on `KabooProvider`) mirrors the `interruptRenderers` pattern: a renderer
+  registered for an exact tool name replaces the built-in `ToolRow` everywhere
+  a `Timeline` draws that tool — top-level `AgentCard`s, nested drill views,
+  and sub-agent activity. Chat-transcript tool calls already support custom
+  cards via CopilotKit's `useRenderTool`; this closes the gap for multi-agent
+  activity surfaces so interactive tool cards look the same at every depth.
+  An inline approval gate anchored to the tool call still renders under the
+  custom card.
+
+## [0.3.0]
+
+### Fixed
+
+- **Gated tools on plain agents now render their approval prompt.** A plain
+  (non-swarm) agent's tool rows are rendered by the wildcard tool renderer, not
+  by an `AgentCard` timeline — but the chat-level interrupt slot deferred to the
+  tool anchor whenever the pending tool existed in the activity groups, so the
+  prompt was never drawn anywhere. `KabooToolRender` now renders the anchored
+  interrupt gate inline under the tool row, matching the `Timeline` behaviour.
+
+### Changed
+
+- **`interruptRenderers` now apply everywhere.** The per-type renderer overrides
+  passed to `KabooProvider` were only used by the chat-level slot; timeline
+  anchors and the wildcard tool row hardcoded the built-in `InterruptRenderer`.
+  The overrides now flow through a new `InterruptRenderersProvider` context and
+  are honoured by every surface (`useInterruptRenderer` resolves the override or
+  falls back to the built-in renderer).
+
+### Added
+
+- `InterruptRenderersProvider`, `useInterruptRenderer`, and the
+  `InterruptRenderers` type are exported for hosts that mount surfaces outside
+  `KabooProvider`.
+
 ## [0.2.0]
 
 ### Added

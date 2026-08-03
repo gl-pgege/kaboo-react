@@ -27,6 +27,7 @@
 - [StreamGroup](interfaces/StreamGroup.md)
 - [TimelineProps](interfaces/TimelineProps.md)
 - [ToolCall](interfaces/ToolCall.md)
+- [ToolRendererProps](interfaces/ToolRendererProps.md)
 - [UploadProviderConfig](interfaces/UploadProviderConfig.md)
 - [UploadReferenceProvider](interfaces/UploadReferenceProvider.md)
 
@@ -34,10 +35,12 @@
 
 - [GroupEntry](type-aliases/GroupEntry.md)
 - [InterruptReason](type-aliases/InterruptReason.md)
+- [InterruptRenderers](type-aliases/InterruptRenderers.md)
 - [PendingReference](type-aliases/PendingReference.md)
 - [ReferenceTransport](type-aliases/ReferenceTransport.md)
 - [StructuredRenderers](type-aliases/StructuredRenderers.md)
 - [TimelineEntry](type-aliases/TimelineEntry.md)
+- [ToolRenderers](type-aliases/ToolRenderers.md)
 
 ## Variables
 
@@ -62,6 +65,7 @@
 - [InterruptBridgeProvider](functions/InterruptBridgeProvider.md)
 - [InterruptBridgePublisher](functions/InterruptBridgePublisher.md)
 - [InterruptRenderer](functions/InterruptRenderer.md)
+- [InterruptRenderersProvider](functions/InterruptRenderersProvider.md)
 - [isUploadProvider](functions/isUploadProvider.md)
 - [KabooActivityProvider](functions/KabooActivityProvider.md)
 - [KabooProvider](functions/KabooProvider.md)
@@ -76,6 +80,7 @@
 - [ReferenceStateSync](functions/ReferenceStateSync.md)
 - [serializeReferences](functions/serializeReferences.md)
 - [Timeline](functions/Timeline.md)
+- [ToolRenderersProvider](functions/ToolRenderersProvider.md)
 - [ToolRow](functions/ToolRow.md)
 - [topLevelGroups](functions/topLevelGroups.md)
 - [uploadFileToReference](functions/uploadFileToReference.md)
@@ -84,5 +89,7 @@
 - [useDrill](functions/useDrill.md)
 - [useInterruptBridge](functions/useInterruptBridge.md)
 - [useInterruptFor](functions/useInterruptFor.md)
+- [useInterruptRenderer](functions/useInterruptRenderer.md)
 - [useReferences](functions/useReferences.md)
+- [useToolRenderer](functions/useToolRenderer.md)
 - [withReferenceState](functions/withReferenceState.md)

@@ -6,6 +6,9 @@ import {
   InterruptBridgeProvider,
   InterruptBridgePublisher,
 } from "../context/InterruptBridge";
+import { InterruptRenderersProvider } from "../context/InterruptRenderers";
+import { ToolRenderersProvider } from "../context/ToolRenderers";
+import type { InterruptRendererProps } from "../types";
 
 describe("Timeline ask_user rendering", () => {
   it("renders a nested ask_user as a durable Q&A summary (question + answer)", () => {
@@ -210,6 +213,114 @@ describe("Timeline parallel approval rendering", () => {
     });
     expect(resolved).toEqual(["search"]);
     expect(screen.getAllByText("Approve")).toHaveLength(1);
+  });
+});
+
+describe("Timeline custom interrupt renderer", () => {
+  it("renders the anchored approval gate with the app's interruptRenderers override", () => {
+    const tool: ToolCall = {
+      toolUseId: "tc-gated",
+      toolName: "create_work_item",
+      status: "running",
+      toolInput: { title: "T" },
+    };
+    const Custom = ({ reason }: InterruptRendererProps) => (
+      <div data-testid="custom-approval">
+        {reason.type === "approval" ? reason.message : ""}
+      </div>
+    );
+
+    render(
+      <InterruptBridgeProvider>
+        <InterruptRenderersProvider renderers={{ approval: Custom }}>
+          <InterruptBridgePublisher
+            interrupts={[
+              {
+                id: "i-gated",
+                reason: {
+                  type: "approval",
+                  message: "Agent wants to call create_work_item",
+                  tool_name: "create_work_item",
+                },
+                toolCallId: "tc-gated",
+                onResolve: () => {},
+                onCancel: () => {},
+              },
+            ]}
+          />
+          <Timeline timeline={[{ type: "tool", tool }]} active={true} />
+        </InterruptRenderersProvider>
+      </InterruptBridgeProvider>,
+    );
+
+    expect(screen.getByTestId("custom-approval").textContent).toBe(
+      "Agent wants to call create_work_item",
+    );
+    expect(screen.queryByText("Approve")).toBeNull();
+  });
+});
+
+describe("Timeline per-tool-name renderers (toolRenderers)", () => {
+  const tool: ToolCall = {
+    toolUseId: "tc-create",
+    toolName: "create_work_item",
+    toolLabel: "Create work item",
+    status: "success",
+    toolInput: { body: { title: "T" } },
+    toolResult: JSON.stringify({ status: "pending_approval", proposalId: "p1" }),
+  };
+
+  it("replaces the built-in tool row with the registered card", () => {
+    const Card = ({ tool: rendered }: import("../context/ToolRenderers").ToolRendererProps) => (
+      <div data-testid="custom-tool-card">{rendered.toolUseId}</div>
+    );
+    const { container } = render(
+      <ToolRenderersProvider renderers={{ create_work_item: Card }}>
+        <Timeline timeline={[{ type: "tool", tool }]} active={false} />
+      </ToolRenderersProvider>,
+    );
+
+    expect(screen.getByTestId("custom-tool-card").textContent).toBe("tc-create");
+    expect(container.querySelector(".kaboo-tool-row")).toBeNull();
+  });
+
+  it("falls back to the built-in row for unregistered tools", () => {
+    render(
+      <ToolRenderersProvider renderers={{ other_tool: () => <div /> }}>
+        <Timeline timeline={[{ type: "tool", tool }]} active={false} />
+      </ToolRenderersProvider>,
+    );
+
+    expect(screen.getByText(/Create work item/)).toBeInTheDocument();
+  });
+
+  it("still renders the anchored approval gate under a custom card", () => {
+    const Card = () => <div data-testid="custom-tool-card" />;
+    render(
+      <InterruptBridgeProvider>
+        <ToolRenderersProvider renderers={{ create_work_item: Card }}>
+          <InterruptBridgePublisher
+            interrupts={[
+              {
+                id: "i-c",
+                reason: {
+                  type: "approval",
+                  message: "Approve create_work_item",
+                  tool_name: "create_work_item",
+                },
+                toolCallId: "tc-create",
+                onResolve: () => {},
+                onCancel: () => {},
+              },
+            ]}
+          />
+          <Timeline timeline={[{ type: "tool", tool }]} active={true} />
+        </ToolRenderersProvider>
+      </InterruptBridgeProvider>,
+    );
+
+    expect(screen.getByTestId("custom-tool-card")).toBeInTheDocument();
+    expect(screen.getByText("Approve")).toBeInTheDocument();
   });
 });
 

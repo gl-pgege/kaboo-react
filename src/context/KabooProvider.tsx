@@ -3,6 +3,8 @@ import { CopilotKit, type CopilotKitProps } from "@copilotkit/react-core/v2";
 import { KabooActivityProvider, type StructuredRenderers } from "./ActivityProvider";
 import { DrillProvider } from "./DrillContext";
 import { InterruptBridgeProvider } from "./InterruptBridge";
+import { InterruptRenderersProvider } from "./InterruptRenderers";
+import { ToolRenderersProvider, type ToolRenderers } from "./ToolRenderers";
 import { KabooInterruptHandler, type KabooInterruptHandlerProps } from "../integrations/KabooInterruptHandler";
 import { KabooInlineCards } from "../integrations/KabooInlineCards";
 import { ReferencesProvider } from "../references/ReferencesProvider";
@@ -20,6 +22,12 @@ export interface KabooProviderProps {
   structuredRenderers?: StructuredRenderers;
   /** Per-interrupt-type renderer overrides for the built-in HITL handler. */
   interruptRenderers?: KabooInterruptHandlerProps["renderers"];
+  /**
+   * Per-tool-name renderer overrides applied inside every {@link Timeline}
+   * surface (agent cards, drill views). Keyed by exact tool name; a match
+   * replaces the built-in tool row with the app's custom card.
+   */
+  toolRenderers?: ToolRenderers;
   /** Skip auto-mounting the built-in {@link KabooInterruptHandler}. */
   disableInterruptHandler?: boolean;
   /** Skip auto-mounting the built-in {@link KabooInlineCards}. */
@@ -66,6 +74,7 @@ export function KabooProvider({
   threadId,
   structuredRenderers,
   interruptRenderers,
+  toolRenderers,
   disableInterruptHandler = false,
   disableInlineCards = false,
   references,
@@ -83,13 +92,17 @@ export function KabooProvider({
       <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
         <DrillProvider>
           <InterruptBridgeProvider>
-            <ReferencesProvider providers={references} syncObjectStateTo={agent}>
-              {!disableInterruptHandler && (
-                <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
-              )}
-              {!disableInlineCards && <KabooInlineCards />}
-              {children}
-            </ReferencesProvider>
+            <InterruptRenderersProvider renderers={interruptRenderers}>
+              <ToolRenderersProvider renderers={toolRenderers}>
+                <ReferencesProvider providers={references} syncObjectStateTo={agent}>
+                  {!disableInterruptHandler && (
+                    <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
+                  )}
+                  {!disableInlineCards && <KabooInlineCards />}
+                  {children}
+                </ReferencesProvider>
+              </ToolRenderersProvider>
+            </InterruptRenderersProvider>
           </InterruptBridgeProvider>
         </DrillProvider>
       </KabooActivityProvider>

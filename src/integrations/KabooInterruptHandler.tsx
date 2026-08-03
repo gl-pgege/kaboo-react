@@ -1,10 +1,10 @@
 import type { ReactElement } from "react";
 import { useInterrupt } from "@copilotkit/react-core/v2";
-import { InterruptRenderer } from "../components/InterruptRenderer";
 import {
   InterruptBridgePublisher,
   type ActiveInterrupt,
 } from "../context/InterruptBridge";
+import { useInterruptRenderer } from "../context/InterruptRenderers";
 import { useActivity } from "../hooks/useActivity";
 import { pendingToolAnchorExists } from "../utils/groups";
 import { KabooAskUser } from "./KabooAskUser";
@@ -19,12 +19,14 @@ import type { InterruptReason, InterruptRendererProps } from "../types";
  */
 function ChatInterruptSlot({
   interrupt,
-  Renderer,
+  Renderer: RendererOverride,
 }: {
   interrupt: ActiveInterrupt;
-  Renderer: React.ComponentType<InterruptRendererProps>;
+  Renderer?: React.ComponentType<InterruptRendererProps>;
 }): ReactElement | null {
   const { groups } = useActivity();
+  const ContextRenderer = useInterruptRenderer(interrupt.reason.type);
+  const Renderer = RendererOverride ?? ContextRenderer;
   if (pendingToolAnchorExists(groups, interrupt.toolCallId)) {
     return null;
   }
@@ -99,7 +101,7 @@ export function KabooInterruptHandler({
             <ChatInterruptSlot
               key={a.id}
               interrupt={a}
-              Renderer={renderers?.[a.reason.type] ?? InterruptRenderer}
+              Renderer={renderers?.[a.reason.type]}
             />
           ))}
         </>
