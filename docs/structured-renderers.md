@@ -57,3 +57,6 @@ When an activity group carries both `structuredOutput` (the data) and
 
 This means you can add renderers incrementally: unrendered schemas degrade
 gracefully to JSON.
+
+To replace how a *tool call* draws rather than how a result object draws, see
+[custom tool cards](tool-cards.md).

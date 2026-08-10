@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.1]
 
+### Added
+
+- **"Custom tool cards" guide** (`docs/tool-cards.md`) — the `toolRenderers`
+  registry shipped in 0.4.0 with only a changelog entry and TSDoc. The page
+  covers both registration points (timelines via `toolRenderers`, the chat
+  transcript via `useRenderTool`), the `ToolCall` fields a card receives, and
+  when a structured renderer is the better fit.
+
 ### Fixed
 
 - **The `@` menu shows the query you typed, not the one you typed before it.**

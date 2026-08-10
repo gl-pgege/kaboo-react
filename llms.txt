@@ -11,6 +11,7 @@ kaboo-react renders a live, hierarchical view of agent activity — sub-agent ca
 - [Concepts](https://gl-pgege.github.io/kaboo-react/concepts/)
 - [Theming](https://gl-pgege.github.io/kaboo-react/theming/)
 - [Structured renderers](https://gl-pgege.github.io/kaboo-react/structured-renderers/)
+- [Custom tool cards](https://gl-pgege.github.io/kaboo-react/tool-cards/)
 - [References & providers](https://gl-pgege.github.io/kaboo-react/references/)
 - [Human-in-the-loop](https://gl-pgege.github.io/kaboo-react/hitl/)
 - [Activity panel](https://gl-pgege.github.io/kaboo-react/activity-panel/)

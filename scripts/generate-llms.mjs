@@ -30,6 +30,7 @@ const NAV = [
   { title: "Concepts", path: "docs/concepts.md", url: `${PAGES}concepts/` },
   { title: "Theming", path: "docs/theming.md", url: `${PAGES}theming/` },
   { title: "Structured renderers", path: "docs/structured-renderers.md", url: `${PAGES}structured-renderers/` },
+  { title: "Custom tool cards", path: "docs/tool-cards.md", url: `${PAGES}tool-cards/` },
   { title: "References & providers", path: "docs/references.md", url: `${PAGES}references/` },
   { title: "Human-in-the-loop", path: "docs/hitl.md", url: `${PAGES}hitl/` },
   { title: "Activity panel", path: "docs/activity-panel.md", url: `${PAGES}activity-panel/` },
