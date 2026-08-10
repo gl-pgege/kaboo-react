@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1]
+
+### Fixed
+
+- **The `@` menu shows the query you typed, not the one you typed before it.**
+  Provider searches are async and fire on every keystroke, so a slow provider
+  answering an earlier query could resolve last and replace the rows for the
+  current one. Each refresh now carries a sequence number and a stale answer is
+  discarded.
+- **Providers are searched concurrently.** The menu awaited each provider in
+  turn, so the slowest search delayed every provider after it in the list. They
+  now run together, and one provider throwing still lists the rest.
+
 ## [0.4.0]
 
 ### Added

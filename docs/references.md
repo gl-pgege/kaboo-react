@@ -139,6 +139,12 @@ providers with distinct `kind`s.
     and is available to your resolver tool — handy for extra context the id
     alone doesn't capture.
 
+`search` may be async and is called on every keystroke. Every provider is
+searched at once, a search that rejects drops that provider's rows rather than
+the menu, and an answer that arrives after the user has typed further is
+discarded — so a slow provider costs latency, never wrong rows. Debouncing or
+caching on your side is still worth it if the query hits a network.
+
 ## Files: the built-in `uploadProvider`
 
 File upload ships as a provider. Register it with your `onUpload`:

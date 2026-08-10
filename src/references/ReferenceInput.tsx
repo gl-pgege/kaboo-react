@@ -218,22 +218,33 @@ export function KabooReferenceInput({ trigger = "@", ...inputProps }: KabooRefer
           next.push({ kind: "action", group: label, provider });
         }
       }
-      for (const provider of searchable) {
-        try {
-          const items = await provider.search!(q);
-          for (const item of items) next.push({ kind: "item", group: provider.label, provider, item });
-        } catch {
-          /* a provider's search failure shouldn't break the menu */
-        }
+      const searched = await Promise.all(
+        searchable.map(async (provider) => {
+          try {
+            return { provider, items: await provider.search!(q) };
+          } catch {
+            /* a provider's search failure shouldn't break the menu */
+            return { provider, items: [] as ReferenceItem[] };
+          }
+        }),
+      );
+      for (const { provider, items } of searched) {
+        for (const item of items) next.push({ kind: "item", group: provider.label, provider, item });
       }
       return next;
     },
     [actionProviders, searchable],
   );
 
+  // Provider searches are async and fire on every keystroke; without a
+  // sequence guard a slow earlier query can resolve last and clobber the
+  // rows for the query the user actually typed.
+  const refreshSeq = useRef(0);
   const refresh = useCallback(
     async (q: string) => {
+      const seq = ++refreshSeq.current;
       const next = await buildRows(q);
+      if (seq !== refreshSeq.current) return;
       setRows(next);
       setActive(0);
     },
