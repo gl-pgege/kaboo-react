@@ -27,11 +27,14 @@ const SUMMARY =
 const NAV = [
   { title: "Home", path: "docs/index.md", url: PAGES },
   { title: "Getting started", path: "docs/getting-started.md", url: `${PAGES}getting-started/` },
+  { title: "Concepts", path: "docs/concepts.md", url: `${PAGES}concepts/` },
   { title: "Theming", path: "docs/theming.md", url: `${PAGES}theming/` },
   { title: "Structured renderers", path: "docs/structured-renderers.md", url: `${PAGES}structured-renderers/` },
+  { title: "References & providers", path: "docs/references.md", url: `${PAGES}references/` },
   { title: "Human-in-the-loop", path: "docs/hitl.md", url: `${PAGES}hitl/` },
   { title: "Activity panel", path: "docs/activity-panel.md", url: `${PAGES}activity-panel/` },
   { title: "CopilotKit subpath", path: "docs/copilotkit-subpath.md", url: `${PAGES}copilotkit-subpath/` },
+  { title: "Troubleshooting", path: "docs/troubleshooting.md", url: `${PAGES}troubleshooting/` },
   { title: "API inventory", path: "docs/api-inventory.md", url: `${PAGES}api-inventory/` },
 ];
 

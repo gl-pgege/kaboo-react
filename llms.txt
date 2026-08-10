@@ -8,11 +8,14 @@ kaboo-react renders a live, hierarchical view of agent activity — sub-agent ca
 
 - [Home](https://gl-pgege.github.io/kaboo-react/)
 - [Getting started](https://gl-pgege.github.io/kaboo-react/getting-started/)
+- [Concepts](https://gl-pgege.github.io/kaboo-react/concepts/)
 - [Theming](https://gl-pgege.github.io/kaboo-react/theming/)
 - [Structured renderers](https://gl-pgege.github.io/kaboo-react/structured-renderers/)
+- [References & providers](https://gl-pgege.github.io/kaboo-react/references/)
 - [Human-in-the-loop](https://gl-pgege.github.io/kaboo-react/hitl/)
 - [Activity panel](https://gl-pgege.github.io/kaboo-react/activity-panel/)
 - [CopilotKit subpath](https://gl-pgege.github.io/kaboo-react/copilotkit-subpath/)
+- [Troubleshooting](https://gl-pgege.github.io/kaboo-react/troubleshooting/)
 - [API inventory](https://gl-pgege.github.io/kaboo-react/api-inventory/)
 
 ## API
