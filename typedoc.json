@@ -13,5 +13,10 @@
     "invalidLink": true,
     "notDocumented": true
   },
+  "externalSymbolLinkMappings": {
+    "@copilotkit/react-core": {
+      "IntelligenceIndicator": "#"
+    }
+  },
   "treatValidationWarningsAsErrors": true
 }

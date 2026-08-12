@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useActivity } from "../hooks/useActivity";
 import { useDrill } from "../hooks/useDrill";
-import { useInterruptBridge } from "../context/InterruptBridge";
+import {
+  useInterruptBridge,
+  type ActiveInterrupt,
+} from "../context/InterruptBridge";
+import { useInterruptRenderer } from "../context/InterruptRenderers";
 import {
   directChildren,
   partitionChildrenByToolCall,
@@ -9,7 +13,24 @@ import {
 } from "../utils/groups";
 import { AgentCard } from "./AgentCard";
 import { Timeline } from "./Timeline";
-import { InterruptRenderer } from "./InterruptRenderer";
+import { cachedShare, formatCost, formatTokenCount } from "../formatters/tokens";
+
+/**
+ * Renders one unanchored interrupt through the renderer registered for its
+ * reason type, so the drill view presents the same prompt UI as the chat
+ * surface ({@link ChatInterruptSlot}) and the anchored timeline rows.
+ */
+function DrillInterruptSlot({ interrupt }: { interrupt: ActiveInterrupt }) {
+  const Renderer = useInterruptRenderer(interrupt.reason.type);
+  return (
+    <Renderer
+      reason={interrupt.reason}
+      toolCallId={interrupt.toolCallId}
+      onResolve={interrupt.onResolve}
+      onCancel={interrupt.onCancel}
+    />
+  );
+}
 
 /**
  * Detail pane for the currently drilled-in group: its task, full timeline
@@ -81,6 +102,30 @@ export function DrillDetailView() {
           </div>
         )}
 
+        {group?.usage && group.usage.totalTokens > 0 && (
+          <div className="kaboo-drill-usage">
+            <span className="kaboo-drill-usage-item">
+              <strong>{formatTokenCount(group.usage.inputTokens)}</strong> in
+            </span>
+            <span className="kaboo-drill-usage-item">
+              <strong>{formatTokenCount(group.usage.outputTokens)}</strong> out
+            </span>
+            <span className="kaboo-drill-usage-item">
+              <strong>{formatTokenCount(group.usage.totalTokens)}</strong> total tokens
+            </span>
+            {cachedShare(group.usage) != null && (
+              <span className="kaboo-drill-usage-item">
+                <strong>{cachedShare(group.usage)}%</strong> cached
+              </span>
+            )}
+            {group.usage.cost != null && group.usage.cost > 0 && (
+              <span className="kaboo-drill-usage-item">
+                <strong>{formatCost(group.usage.cost)}</strong> cost
+              </span>
+            )}
+          </div>
+        )}
+
         {group && timeline.length > 0 && (
           <div className="kaboo-drill-timeline">
             <Timeline
@@ -95,13 +140,7 @@ export function DrillDetailView() {
         {unanchoredInterrupts.length > 0 && (
           <div className="kaboo-drill-interrupt">
             {unanchoredInterrupts.map((it) => (
-              <InterruptRenderer
-                key={it.id}
-                reason={it.reason}
-                toolCallId={it.toolCallId}
-                onResolve={it.onResolve}
-                onCancel={it.onCancel}
-              />
+              <DrillInterruptSlot key={it.id} interrupt={it} />
             ))}
           </div>
         )}

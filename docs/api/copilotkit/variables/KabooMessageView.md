@@ -4,9 +4,9 @@
 
 # Variable: KabooMessageView
 
-> `const` **KabooMessageView**: (`props`) => `Element` & `object`
+> `const` **KabooMessageView**: (`__namedParameters`) => `Element` & `object`
 
-Defined in: [src/integrations/KabooMessageView.tsx:127](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L127)
+Defined in: [src/integrations/KabooMessageView.tsx:168](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L168)
 
 Drop-in replacement for `CopilotChat`'s `messageView` that renders swarm/graph
 member cards **live, inside the chat, from the moment the first agent starts**
@@ -25,6 +25,11 @@ activity groups have appeared but which has **no assistant bubble yet**. As
 soon as the run's assistant message mounts, that run becomes "covered" and its
 cards render inside the message instead — so there's a seamless hand-off with
 no duplication.
+
+App-supplied [KabooSlots](../../index/interfaces/KabooSlots.md) (from `KabooProvider` or the `slots` prop)
+plug in here: `runStartIndicator` replaces the bare cursor shown between
+send and the first activity, and `turnFooter` / message footers render via
+[KabooAssistantMessage](../functions/KabooAssistantMessage.md) / [KabooUserMessage](../functions/KabooUserMessage.md).
 
 Wire it via the `messageView` slot of `CopilotChat`:
 

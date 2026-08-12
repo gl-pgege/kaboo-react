@@ -4,7 +4,16 @@ import { useContext } from "react";
 import type { ActivityState, StreamGroup } from "../types";
 
 const { fakeAgent } = vi.hoisted(() => {
-  type Sub = { onActivitySnapshotEvent?: (p: { event: { content: unknown } }) => void };
+  type Sub = {
+    onActivitySnapshotEvent?: (p: { event: { content: unknown } }) => void;
+    onCustomEvent?: (p: { event: { name: string; value: unknown } }) => void;
+    onRunStartedEvent?: (p: { event: { runId?: string } }) => void;
+    onTextMessageStartEvent?: (p: { event: { messageId?: string; timestamp?: number } }) => void;
+    onToolCallStartEvent?: (p: { event: { toolCallId: string; parentMessageId?: string } }) => void;
+    onRunFinishedEvent?: (p: { outcome?: string }) => void;
+    onRunErrorEvent?: (p: { event: unknown }) => void;
+    onRunFailed?: (p: { error: Error }) => void;
+  };
   const subscribers: Sub[] = [];
   return {
     fakeAgent: {
@@ -21,6 +30,24 @@ const { fakeAgent } = vi.hoisted(() => {
       emit(content: unknown) {
         for (const s of [...subscribers]) s.onActivitySnapshotEvent?.({ event: { content } });
       },
+      emitCustom(name: string, value: unknown) {
+        for (const s of [...subscribers]) s.onCustomEvent?.({ event: { name, value } });
+      },
+      emitTextStart(messageId: string, timestamp?: number) {
+        for (const s of [...subscribers]) s.onTextMessageStartEvent?.({ event: { messageId, timestamp } });
+      },
+      emitRunStarted(runId: string) {
+        for (const s of [...subscribers]) s.onRunStartedEvent?.({ event: { runId } });
+      },
+      emitToolCallStart(toolCallId: string, parentMessageId?: string) {
+        for (const s of [...subscribers]) s.onToolCallStartEvent?.({ event: { toolCallId, parentMessageId } });
+      },
+      emitRunFinished(outcome?: string) {
+        for (const s of [...subscribers]) s.onRunFinishedEvent?.(outcome ? { outcome } : {});
+      },
+      emitRunError() {
+        for (const s of [...subscribers]) s.onRunErrorEvent?.({ event: {} });
+      },
     },
   };
 });
@@ -30,6 +57,7 @@ vi.mock("@copilotkit/react-core/v2", () => ({
 }));
 
 import { ActivityContext, KabooActivityProvider } from "./ActivityProvider";
+import { useMessageMeta, MESSAGE_META_EVENT } from "./MessageMeta";
 
 function group(agentName: string, overrides: Partial<StreamGroup> = {}): StreamGroup {
   return {
@@ -94,5 +122,171 @@ describe("KabooActivityProvider — agent activity snapshots", () => {
     expect(fakeAgent.subscribers.length).toBe(1);
     unmount();
     expect(fakeAgent.subscribers.length).toBe(0);
+  });
+});
+
+function StatusProbe() {
+  const { groups } = useContext<ActivityState>(ActivityContext);
+  return (
+    <div data-testid="statuses">
+      {Object.entries(groups)
+        .map(([id, g]) => `${id}=${g.status}`)
+        .sort()
+        .join(",")}
+    </div>
+  );
+}
+
+describe("KabooActivityProvider — settling groups when a run ends", () => {
+  it("marks still-active groups stopped on RUN_ERROR", () => {
+    render(
+      <KabooActivityProvider>
+        <StatusProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("a"), g2: group("b", { status: "completed" }) } });
+    });
+    act(() => {
+      fakeAgent.emitRunError();
+    });
+    expect(screen.getByTestId("statuses").textContent).toBe("g1=stopped,g2=completed");
+  });
+
+  it("marks still-active groups stopped on a successful RUN_FINISHED", () => {
+    render(
+      <KabooActivityProvider>
+        <StatusProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("a") } });
+    });
+    act(() => {
+      fakeAgent.emitRunFinished("success");
+    });
+    expect(screen.getByTestId("statuses").textContent).toBe("g1=stopped");
+  });
+
+  it("leaves active groups alone when the run pauses for an interrupt", () => {
+    render(
+      <KabooActivityProvider>
+        <StatusProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("a") } });
+    });
+    act(() => {
+      fakeAgent.emitRunFinished("interrupt");
+    });
+    expect(screen.getByTestId("statuses").textContent).toBe("g1=active");
+  });
+});
+
+function MetaProbe() {
+  const meta = useMessageMeta();
+  return (
+    <div data-testid="meta">
+      {Object.entries(meta)
+        .map(
+          ([id, m]) =>
+            `${id}:${m.createdAt ?? "-"}:${Array.isArray(m.references) ? m.references.length : 0}`,
+        )
+        .sort()
+        .join(",")}
+    </div>
+  );
+}
+
+describe("KabooActivityProvider — message metadata from the event stream", () => {
+  it("records createdAt and references from kaboo.message_meta events", () => {
+    render(
+      <KabooActivityProvider>
+        <MetaProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitCustom(MESSAGE_META_EVENT, {
+        messageId: "u1",
+        role: "user",
+        createdAt: 1000,
+        references: [{ name: "assets-db" }],
+      });
+    });
+    expect(screen.getByTestId("meta").textContent).toBe("u1:1000:1");
+  });
+
+  it("records assistant message times from TEXT_MESSAGE_START timestamps without clobbering meta", () => {
+    render(
+      <KabooActivityProvider>
+        <MetaProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitTextStart("a1", 2000);
+    });
+    act(() => {
+      fakeAgent.emitTextStart("a1", 3000); // later start must not overwrite
+    });
+    act(() => {
+      fakeAgent.emitTextStart("a2"); // no timestamp -> ignored
+    });
+    expect(screen.getByTestId("meta").textContent).toBe("a1:2000:0");
+  });
+
+  it("attributes messages to the enclosing run, across multiple replayed runs", () => {
+    function RunProbe() {
+      const meta = useMessageMeta();
+      return (
+        <div data-testid="runs">
+          {Object.entries(meta)
+            .map(([id, m]) => `${id}=${m.runId ?? "-"}`)
+            .sort()
+            .join(",")}
+        </div>
+      );
+    }
+    render(
+      <KabooActivityProvider>
+        <RunProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitRunStarted("run-1");
+      fakeAgent.emitToolCallStart("tc1", "a1");
+      fakeAgent.emitTextStart("a2", 100);
+      fakeAgent.emitRunStarted("run-2");
+      fakeAgent.emitTextStart("a3", 200);
+    });
+    expect(screen.getByTestId("runs").textContent).toBe("a1=run-1,a2=run-1,a3=run-2");
+  });
+
+  it("records no runId before any run has started", () => {
+    function RunProbe() {
+      const meta = useMessageMeta();
+      return <div data-testid="runs2">{Object.keys(meta).join(",")}</div>;
+    }
+    render(
+      <KabooActivityProvider>
+        <RunProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitToolCallStart("tc1", "a1");
+    });
+    expect(screen.getByTestId("runs2").textContent).toBe("");
+  });
+
+  it("ignores custom events with other names", () => {
+    render(
+      <KabooActivityProvider>
+        <MetaProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitCustom("something.else", { messageId: "u1", createdAt: 1 });
+    });
+    expect(screen.getByTestId("meta").textContent).toBe("");
   });
 });

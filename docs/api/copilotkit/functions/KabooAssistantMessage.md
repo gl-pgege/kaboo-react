@@ -6,7 +6,7 @@
 
 > **KabooAssistantMessage**(`props`): `Element`
 
-Defined in: [src/integrations/KabooAssistantMessage.tsx:30](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooAssistantMessage.tsx#L30)
+Defined in: [src/integrations/KabooAssistantMessage.tsx:36](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooAssistantMessage.tsx#L36)
 
 Drop-in replacement for CopilotKit's assistant-message renderer that prepends
 a first-class swarm/graph turn's member cards ABOVE the assistant's text —
@@ -28,6 +28,11 @@ Which cards to show is decided by the turn binding (provided by
 member cards — robust to an interrupt/resume splitting the turn across
 multiple runIds. Delegate cards keep their tool-call path (they carry a
 `toolCallId` and are excluded from `chatRootGroups`).
+
+Below the reply it renders the app's `KabooSlots` when provided: the
+`turnFooter` (once, anchored on the turn's final assistant message, with all
+of the turn's groups) and then the `assistantMessageFooter`. Both default to
+nothing.
 
 ## Parameters
 

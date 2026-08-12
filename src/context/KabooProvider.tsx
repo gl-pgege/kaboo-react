@@ -9,6 +9,7 @@ import { KabooInterruptHandler, type KabooInterruptHandlerProps } from "../integ
 import { KabooInlineCards } from "../integrations/KabooInlineCards";
 import { ReferencesProvider } from "../references/ReferencesProvider";
 import type { ReferenceProvider } from "../references/types";
+import { KabooSlotsProvider, type KabooSlots } from "./KabooSlots";
 
 /** Props for {@link KabooProvider}. */
 export interface KabooProviderProps {
@@ -37,6 +38,12 @@ export interface KabooProviderProps {
    * File upload is not implicit — include `uploadProvider()` to offer uploads.
    */
   references?: ReferenceProvider[];
+  /**
+   * App-supplied render slots for the chat surfaces (end-of-turn footer,
+   * per-message footers, run-start indicator). All optional; nothing is
+   * rendered in those positions unless provided.
+   */
+  slots?: KabooSlots;
   /** Extra props forwarded to the underlying `<CopilotKit>`. */
   copilotKitProps?: Partial<Omit<CopilotKitProps, "children" | "runtimeUrl" | "agent" | "threadId">>;
   /** Your app subtree, rendered inside all kaboo contexts. */
@@ -78,6 +85,7 @@ export function KabooProvider({
   disableInterruptHandler = false,
   disableInlineCards = false,
   references,
+  slots,
   copilotKitProps,
   children,
 }: KabooProviderProps) {
@@ -95,11 +103,13 @@ export function KabooProvider({
             <InterruptRenderersProvider renderers={interruptRenderers}>
               <ToolRenderersProvider renderers={toolRenderers}>
                 <ReferencesProvider providers={references} syncObjectStateTo={agent}>
-                  {!disableInterruptHandler && (
-                    <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
-                  )}
-                  {!disableInlineCards && <KabooInlineCards />}
-                  {children}
+                  <KabooSlotsProvider value={slots ?? {}}>
+                    {!disableInterruptHandler && (
+                      <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
+                    )}
+                    {!disableInlineCards && <KabooInlineCards />}
+                    {children}
+                  </KabooSlotsProvider>
                 </ReferencesProvider>
               </ToolRenderersProvider>
             </InterruptRenderersProvider>

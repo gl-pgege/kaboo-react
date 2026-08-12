@@ -9,14 +9,28 @@ import {
 import { useActivity } from "../hooks/useActivity";
 import { AgentCard } from "../components/AgentCard";
 import { chatRootGroups, groupTurnKey, type GroupEntry } from "../utils/groups";
+import { useMessageMeta } from "../context/MessageMeta";
 import { TurnBindingProvider } from "../context/TurnBinding";
+import { useKabooSlots, type KabooSlots } from "../context/KabooSlots";
 import { KabooAssistantMessage } from "./KabooAssistantMessage";
 import { KabooUserMessage } from "./KabooUserMessage";
 
-function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
+/** Props for {@link KabooMessageView}: CopilotKit's message-view props plus per-view slot overrides. */
+export interface KabooMessageViewProps extends CopilotChatMessageViewProps {
+  /**
+   * Per-view {@link KabooSlots} overrides. Merged over the slots provided on
+   * `KabooProvider`; individual keys win over the provider's.
+   */
+  slots?: KabooSlots;
+}
+
+function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageViewProps) {
   const { groups } = useActivity();
   const { copilotkit } = useCopilotKit();
+  const messageMeta = useMessageMeta();
   const config = useCopilotChatConfiguration();
+  const contextSlots = useKabooSlots();
+  const slots = { ...contextSlots, ...slotOverrides };
   const agentId = config?.agentId;
   const threadId = config?.threadId;
 
@@ -52,15 +66,24 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
         // whose reply hasn't streamed yet stays unbound and renders live below.
         const rootsByMessageId = new Map<string, GroupEntry[]>();
         const boundTurns = new Set<string>();
+        // The LAST assistant message of each turn, in transcript order — the
+        // anchor for the turn footer slot and `useTurnGroups`.
+        const lastMessageOfTurn = new Map<string, string>();
         const list = messages as Array<{ id?: string; role?: string }>;
         for (const m of list) {
           if (m?.role !== "assistant" || !m.id) continue;
+          // Prefer the run id recovered from the event stream: it is correct
+          // on replay too, where CopilotKit's registry attributes every
+          // replayed message to the synthetic connect run and the turn
+          // binding (inline cards, turn footer) would silently come apart.
           const runId =
-            agentId && threadId
+            messageMeta[m.id]?.runId ??
+            (agentId && threadId
               ? copilotkit.getRunIdForMessage(agentId, threadId, m.id)
-              : undefined;
+              : undefined);
           const key = runId ? runToTurn.get(runId) ?? runId : undefined;
           if (!key) continue;
+          lastMessageOfTurn.set(key, m.id);
           const turnRoots = rootsByTurn.get(key);
           if (turnRoots) {
             rootsByMessageId.set(m.id, turnRoots);
@@ -68,14 +91,26 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
           }
         }
 
+        // Every group of the turn (roots AND nested members), keyed by the
+        // turn's final assistant message, so end-of-turn surfaces can see
+        // structured outputs regardless of how deep the producing agent sat.
+        const turnGroupsByMessageId = new Map<string, GroupEntry[]>();
+        for (const [key, messageId] of lastMessageOfTurn) {
+          const entries = Object.entries(groups).filter(
+            ([, g]) => groupTurnKey(g) === key,
+          ) as GroupEntry[];
+          if (entries.length > 0) turnGroupsByMessageId.set(messageId, entries);
+        }
+
         const pending = roots.filter(([, g]) => {
           const key = groupTurnKey(g);
           return !key || !boundTurns.has(key);
         });
-        const showStartCursor = isRunning && pending.length === 0;
+        const showStartIndicator = isRunning && pending.length === 0;
+        const StartIndicator = slots.runStartIndicator;
 
         return (
-          <TurnBindingProvider value={{ rootsByMessageId }}>
+          <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId }}>
             {messageElements}
             {pending.length > 0 && (
               <div className="kaboo-inline-cards">
@@ -85,7 +120,8 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
               </div>
             )}
             {interruptElement}
-            {showStartCursor && <CopilotChatMessageView.Cursor />}
+            {showStartIndicator &&
+              (StartIndicator ? <StartIndicator /> : <CopilotChatMessageView.Cursor />)}
           </TurnBindingProvider>
         );
       }}
@@ -111,6 +147,11 @@ function KabooMessageViewImpl(props: CopilotChatMessageViewProps) {
  * soon as the run's assistant message mounts, that run becomes "covered" and its
  * cards render inside the message instead — so there's a seamless hand-off with
  * no duplication.
+ *
+ * App-supplied {@link KabooSlots} (from `KabooProvider` or the `slots` prop)
+ * plug in here: `runStartIndicator` replaces the bare cursor shown between
+ * send and the first activity, and `turnFooter` / message footers render via
+ * {@link KabooAssistantMessage} / {@link KabooUserMessage}.
  *
  * Wire it via the `messageView` slot of `CopilotChat`:
  *

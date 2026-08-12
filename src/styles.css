@@ -191,6 +191,12 @@
 .kaboo-status-done { color: var(--kaboo-success); background: var(--kaboo-success-bg); }
 .kaboo-status-active { color: var(--kaboo-active); background: var(--kaboo-active-bg); }
 .kaboo-status-interrupted { color: var(--kaboo-warning); background: var(--kaboo-warning-bg); }
+.kaboo-status-error { color: var(--kaboo-error); background: color-mix(in srgb, var(--kaboo-error) 12%, transparent); }
+.kaboo-status-stopped { color: var(--kaboo-muted-fg); background: var(--kaboo-muted); }
+
+/* App-slot wrappers: the library adds no visuals, only stable hooks. */
+.kaboo-turn-footer { min-width: 0; }
+.kaboo-message-footer { min-width: 0; }
 
 /* ── Tool Count ── */
 .kaboo-tool-count {
@@ -203,6 +209,26 @@
   flex-shrink: 0;
 }
 .kaboo-tool-count-done { background: var(--kaboo-success-bg); color: var(--kaboo-success); }
+
+.kaboo-token-chip {
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: var(--kaboo-muted);
+  color: var(--kaboo-muted-fg);
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.kaboo-drill-usage {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--kaboo-muted-fg);
+  padding: 6px 0;
+}
+.kaboo-drill-usage-item strong { color: var(--kaboo-accent-fg); font-weight: 600; }
 
 /* ── Chevron ── */
 .kaboo-chevron {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import type { StreamGroup } from "../types";
+import type { StreamGroup, TokenUsage } from "../types";
 import { isControlOnlyStatus, normalizeResult } from "../formatters/output";
+import { cachedShare, formatCost, formatTokenCount } from "../formatters/tokens";
 import { MarkdownContent } from "./MarkdownContent";
 import { Timeline } from "./Timeline";
 import { useDrill } from "../hooks/useDrill";
@@ -30,6 +31,16 @@ export interface AgentCardProps {
   showChildren?: boolean;
 }
 
+function tokenChipTitle(usage: TokenUsage): string {
+  const parts = [
+    `${usage.inputTokens.toLocaleString()} in / ${usage.outputTokens.toLocaleString()} out tokens`,
+  ];
+  const cached = cachedShare(usage);
+  if (cached != null) parts.push(`${cached}% cached`);
+  if (usage.cost != null && usage.cost > 0) parts.push(formatCost(usage.cost));
+  return parts.join(" · ");
+}
+
 /**
  * Card for a single agent run: title, status badge, task, chronological timeline
  * (text + tool rows), result/structured output, and a "View details" drill
@@ -54,6 +65,10 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   const childEntries = showChildren ? directChildren(groups, groupId) : [];
   const isDone = group.status === "completed" || actionStatus === "complete";
   const isInterrupted = group.status === "interrupted" && group.interrupt;
+  const isStopped = group.status === "stopped";
+  const isError = group.status === "error";
+  // Anything not actively running: stops timeline animation and auto-scroll.
+  const isSettled = isDone || isStopped || isError;
   const [expanded, setExpanded] = useState(true);
   const prevDone = useRef(isDone);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -83,10 +98,10 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
       : (group.timeline ?? []);
 
   useEffect(() => {
-    if (expanded && !isDone && bodyRef.current) {
+    if (expanded && !isSettled && bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
-  }, [expanded, isDone, timeline]);
+  }, [expanded, isSettled, timeline]);
 
   // Interleave delegated children at their delegating tool-call position so a
   // sub-agent's card stays in order with the parent's surrounding text, instead
@@ -110,7 +125,7 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
         <div className="kaboo-agent-card-title-area">
           <div className="kaboo-agent-card-title-row">
             <span className="kaboo-agent-card-title">{group.title}</span>
-            <span className={`kaboo-status-badge ${isDone ? "kaboo-status-done" : isInterrupted ? "kaboo-status-interrupted" : "kaboo-status-active"}`}>
+            <span className={`kaboo-status-badge ${isDone ? "kaboo-status-done" : isInterrupted ? "kaboo-status-interrupted" : isError ? "kaboo-status-error" : isStopped ? "kaboo-status-stopped" : "kaboo-status-active"}`}>
               {isDone ? (
                 <svg width={10} height={10} viewBox="0 0 16 16">
                   <path d="M3.5 8.5L6.5 11.5L12.5 4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -121,6 +136,14 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
                   <path d="M8 4.5v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   <circle cx="8" cy="11" r="0.75" fill="currentColor" />
                 </svg>
+              ) : isError ? (
+                <svg width={10} height={10} viewBox="0 0 16 16">
+                  <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              ) : isStopped ? (
+                <svg width={10} height={10} viewBox="0 0 16 16">
+                  <rect x="4.5" y="4.5" width="7" height="7" rx="1.5" fill="currentColor" />
+                </svg>
               ) : (
                 <svg width={10} height={10} viewBox="0 0 16 16">
                   <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="22" strokeDashoffset="6">
@@ -128,11 +151,18 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
                   </circle>
                 </svg>
               )}
-              {isDone ? "done" : isInterrupted ? "needs input" : "working..."}
+              {isDone ? "done" : isInterrupted ? "needs input" : isError ? "error" : isStopped ? "stopped" : "working..."}
             </span>
           </div>
           <div className="kaboo-agent-card-subtitle">{group.agentName}</div>
         </div>
+
+        {group.usage && group.usage.totalTokens > 0 && (
+          <span className="kaboo-token-chip" title={tokenChipTitle(group.usage)}>
+            {formatTokenCount(group.usage.totalTokens)} tok
+            {group.usage.cost != null && group.usage.cost > 0 && ` · ${formatCost(group.usage.cost)}`}
+          </span>
+        )}
 
         {group.tools.length > 0 && (
           <span className={`kaboo-tool-count ${isDone ? "kaboo-tool-count-done" : ""}`}>
@@ -164,7 +194,7 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
 
           {timeline.length > 0 && (
             <div className="kaboo-agent-card-timeline">
-              <Timeline timeline={timeline} active={!isDone} variant="card" renderToolCard={renderToolCard} />
+              <Timeline timeline={timeline} active={!isSettled} variant="card" renderToolCard={renderToolCard} />
             </div>
           )}
 

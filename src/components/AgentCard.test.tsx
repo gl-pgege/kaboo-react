@@ -63,6 +63,31 @@ describe("AgentCard cancellation echo", () => {
   });
 });
 
+describe("AgentCard token usage chip", () => {
+  it("renders a compact total-token chip when the group has usage", () => {
+    const g = group({
+      status: "completed",
+      usage: { inputTokens: 48_200, outputTokens: 3_100, totalTokens: 51_300 },
+    });
+    render(withActivity({ g1: g }, <AgentCard groupId="g1" group={g} />));
+
+    expect(screen.getByText("51.3k tok")).toBeInTheDocument();
+    expect(screen.getByTitle("48,200 in / 3,100 out tokens")).toBeInTheDocument();
+  });
+
+  it("renders no chip without usage or with zero totals", () => {
+    const bare = group({ status: "completed" });
+    const zero = group({
+      status: "completed",
+      usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+    });
+    const { rerender } = render(withActivity({ g1: bare }, <AgentCard groupId="g1" group={bare} />));
+    expect(screen.queryByText(/tok$/)).toBeNull();
+    rerender(withActivity({ g1: zero }, <AgentCard groupId="g1" group={zero} />));
+    expect(screen.queryByText(/tok$/)).toBeNull();
+  });
+});
+
 describe("AgentCard recursion", () => {
   it("renders directChildren as nested cards when showChildren is set", () => {
     const groups = {

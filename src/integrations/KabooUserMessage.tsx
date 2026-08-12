@@ -5,6 +5,8 @@ import {
 } from "@copilotkit/react-core/v2";
 import { useReferences } from "../references/ReferencesProvider";
 import type { PendingReference } from "../references/types";
+import { useMessageMeta } from "../context/MessageMeta";
+import { useKabooSlots, type SlotMessage } from "../context/KabooSlots";
 
 // CopilotKit's own wrapper/bubble classes, replicated so our custom layout
 // (via the children render-prop) matches the native user message exactly.
@@ -118,6 +120,15 @@ function renderInline(text: string, refs: PendingReference[]): ReactNode[] {
   return out;
 }
 
+/** Keep only entries that look like renderable references (a name to chip). */
+function asPendingReferences(refs: unknown[] | undefined): PendingReference[] {
+  if (!Array.isArray(refs)) return [];
+  return refs.filter(
+    (r): r is PendingReference =>
+      !!r && typeof r === "object" && typeof (r as { name?: unknown }).name === "string",
+  );
+}
+
 /**
  * Drop-in replacement for `CopilotChatMessageView`'s `userMessage` slot that
  * renders every reference the user sent as a **non-interactive chip**, so a
@@ -128,14 +139,24 @@ function renderInline(text: string, refs: PendingReference[]): ReactNode[] {
  *   bubble (files show a thumbnail/icon + filename).
  *
  * Object references ride `state.kaboo_references` (not the message content), so
- * they come from the per-message registry on {@link useReferences}; files come
- * from the message's media parts.
+ * they come from the per-message registry on {@link useReferences} — with a
+ * fallback to the durable per-message metadata recovered from the event stream
+ * ({@link useMessageMeta}), so chips survive a reload. Files come from the
+ * message's media parts.
+ *
+ * The app's `userMessageFooter` slot (when provided) renders under the bubble.
  */
 export function KabooUserMessage(props: CopilotChatUserMessageProps) {
   const { messageReferences } = useReferences();
+  const messageMeta = useMessageMeta();
+  const { userMessageFooter } = useKabooSlots();
   const message = props.message as { id?: string; content?: unknown } | undefined;
   const id = message?.id;
-  const objectRefs = (id ? messageReferences[id] : undefined) ?? [];
+  const sessionRefs = id ? messageReferences[id] : undefined;
+  const objectRefs =
+    sessionRefs && sessionRefs.length > 0
+      ? sessionRefs
+      : asPendingReferences(id ? messageMeta[id]?.references : undefined);
   const text = messageText(message?.content);
   const files = fileParts(message?.content);
 
@@ -167,6 +188,11 @@ export function KabooUserMessage(props: CopilotChatUserMessageProps) {
             </div>
           )}
           {messageRenderer}
+          {userMessageFooter && (
+            <div className="kaboo-message-footer">
+              {userMessageFooter(message as unknown as SlotMessage)}
+            </div>
+          )}
           {toolbar}
         </div>
       )}

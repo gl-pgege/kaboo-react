@@ -115,6 +115,35 @@ export interface InterruptRendererProps {
 }
 
 /**
+ * LLM token usage totals, as accumulated by kaboo-workflows from each agent
+ * completion. Appears on a {@link StreamGroup} (per-agent totals) and in
+ * {@link ActivityState.usageByRun} (per-run rollup). Counts accumulate across
+ * repeat completions (interrupt resumes, delegate re-entry).
+ */
+export interface TokenUsage {
+  /** Prompt/input tokens consumed. */
+  inputTokens: number;
+  /** Completion/output tokens produced. */
+  outputTokens: number;
+  /** Total tokens (as reported by the model provider). */
+  totalTokens: number;
+  /**
+   * Input tokens served from the provider's prompt cache (billed at a steep
+   * discount). Subset of {@link TokenUsage.inputTokens}. Absent on streams
+   * from services that predate cache accounting.
+   */
+  cacheReadInputTokens?: number;
+  /** Input tokens written to the provider's prompt cache. Absent on older streams. */
+  cacheWriteInputTokens?: number;
+  /**
+   * Accumulated dollar cost of the LLM calls, as reported by the provider's
+   * usage accounting. Absent on older streams or providers without per-call
+   * cost reporting.
+   */
+  cost?: number;
+}
+
+/**
  * One node of kaboo's hierarchical activity tree: a single agent run and its
  * streamed text, tool calls, timeline, structured output, and (optional)
  * open interrupt. Groups nest via {@link StreamGroup.parentGroup} to form the
@@ -164,8 +193,13 @@ export interface StreamGroup {
    * and must never be drawn as its own card.
    */
   inlineChatOwner?: boolean;
-  /** Lifecycle state of the group's run. */
-  status: "active" | "completed" | "error" | "interrupted";
+  /**
+   * Lifecycle state of the group's run. `"stopped"` is client-derived: when a
+   * run ends (`RUN_FINISHED`/`RUN_ERROR`) with the group still `"active"`, the
+   * activity provider settles it to `"stopped"` so no card spins forever after
+   * an abort — workflows themselves never emit it.
+   */
+  status: "active" | "completed" | "error" | "interrupted" | "stopped";
   /** Every tool call made in this group, in call order. */
   tools: ToolCall[];
   /** Accumulated streamed text tokens for this group. */
@@ -178,6 +212,8 @@ export interface StreamGroup {
   structuredOutput?: Record<string, unknown>;
   /** Name of the schema for {@link StreamGroup.structuredOutput}, selecting a renderer. */
   outputSchemaName?: string;
+  /** Accumulated LLM token usage for this agent, once it has completed at least once. */
+  usage?: TokenUsage;
 }
 
 /**
@@ -187,6 +223,36 @@ export interface StreamGroup {
 export interface ActivityState {
   /** All activity groups for the current thread, keyed by group id. */
   groups: Record<string, StreamGroup>;
+  /**
+   * Per-run token usage rollup, keyed by AG-UI `runId`. Accumulated
+   * independently of groups so run totals include every agent completion —
+   * even groupless ones. Absent on streams from older services.
+   */
+  usageByRun?: Record<string, TokenUsage>;
+}
+
+/**
+ * Durable per-message metadata, recovered from the run's event stream (the
+ * `kaboo.message_meta` CUSTOM event emitted by kaboo-runtime and event
+ * timestamps). Because it rides events — which persist verbatim and replay on
+ * reconnect — it survives reloads, unlike session-only registries.
+ */
+export interface MessageMeta {
+  /** Wall-clock time the message was accepted/streamed, epoch milliseconds. */
+  createdAt?: number;
+  /**
+   * References the message was sent with (`state.kaboo_references` at run
+   * start), for rendering reference chips on replayed transcripts.
+   */
+  references?: unknown[];
+  /**
+   * The AG-UI run that produced this message, derived from the event stream
+   * itself (the enclosing `RUN_STARTED` at the message's start event). Unlike
+   * CopilotKit's session-only message-to-run registry, this survives thread
+   * replay, where replayed messages would otherwise all be attributed to the
+   * synthetic connect run.
+   */
+  runId?: string;
 }
 
 /**

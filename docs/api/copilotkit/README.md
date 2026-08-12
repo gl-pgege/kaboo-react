@@ -7,6 +7,7 @@
 ## Interfaces
 
 - [KabooInterruptHandlerProps](interfaces/KabooInterruptHandlerProps.md)
+- [KabooMessageViewProps](interfaces/KabooMessageViewProps.md)
 
 ## Variables
 
