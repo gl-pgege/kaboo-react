@@ -6,7 +6,7 @@
 
 > **formatCost**(`cost`): `string`
 
-Defined in: src/formatters/tokens.ts:34
+Defined in: [src/formatters/tokens.ts:34](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/tokens.ts#L34)
 
 Formats a dollar cost for compact display: `2.14159` -> `"$2.14"`,
 `0.163` -> `"$0.16"`, values below half a cent -> `"<$0.01"`.

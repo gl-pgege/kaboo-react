@@ -36,7 +36,9 @@ const slots = {
   ),
 };
 
-<KabooProvider slots={slots}>…</KabooProvider>;
+<KabooProvider runtimeUrl="/api/copilotkit" agent="kaboo" slots={slots}>
+  …
+</KabooProvider>;
 ```
 
 Thumbs up submits immediately; thumbs down opens an optional "what went
@@ -96,7 +98,7 @@ invocation traces.
 The host backend owns storage and authentication. A reference implementation
 forwarding to Langfuse:
 
-```ts
+```ts no-verify
 // POST /api/feedback  (authenticated like any other app endpoint)
 import { Langfuse } from "langfuse";
 

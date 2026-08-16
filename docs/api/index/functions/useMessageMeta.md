@@ -6,7 +6,7 @@
 
 > **useMessageMeta**(): `Record`\<`string`, [`MessageMeta`](../interfaces/MessageMeta.md)\>
 
-Defined in: src/context/MessageMeta.tsx:33
+Defined in: [src/context/MessageMeta.tsx:33](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/MessageMeta.tsx#L33)
 
 Read the per-message metadata map (timestamps and per-message references)
 recovered from the run's event stream. Keys are message ids; entries exist

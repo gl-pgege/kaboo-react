@@ -4,7 +4,7 @@
 
 # Interface: KabooSlots
 
-Defined in: src/context/KabooSlots.tsx:37
+Defined in: [src/context/KabooSlots.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L43)
 
 App-supplied render slots for the chat surfaces. kaboo-react renders nothing
 in these positions by default — each slot is pure mechanism, letting hosts
@@ -20,7 +20,7 @@ Provide them once on [KabooProvider](../functions/KabooProvider.md) (or per-view
 
 > `optional` **assistantMessageFooter?**: (`message`) => `ReactNode`
 
-Defined in: src/context/KabooSlots.tsx:48
+Defined in: [src/context/KabooSlots.tsx:54](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L54)
 
 Rendered under each assistant message (e.g. a timestamp row).
 
@@ -40,7 +40,7 @@ Rendered under each assistant message (e.g. a timestamp row).
 
 > `optional` **runStartIndicator?**: `ComponentType`
 
-Defined in: src/context/KabooSlots.tsx:54
+Defined in: [src/context/KabooSlots.tsx:60](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L60)
 
 Rendered while a run is in flight but no activity has streamed yet (the
 gap right after send where the UI otherwise looks idle). Defaults to
@@ -52,7 +52,7 @@ CopilotKit's streaming cursor.
 
 > `optional` **turnFooter?**: (`ctx`) => `ReactNode`
 
-Defined in: src/context/KabooSlots.tsx:44
+Defined in: [src/context/KabooSlots.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L50)
 
 Rendered once per completed turn, after the turn's final assistant
 message, with every activity group that turn produced. The natural home
@@ -75,7 +75,7 @@ built"), derived from `structuredOutput` on the turn's groups.
 
 > `optional` **userMessageFooter?**: (`message`) => `ReactNode`
 
-Defined in: src/context/KabooSlots.tsx:46
+Defined in: [src/context/KabooSlots.tsx:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L52)
 
 Rendered under each user message bubble (e.g. a timestamp row).
 

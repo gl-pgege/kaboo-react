@@ -6,7 +6,7 @@
 
 > **cachedShare**(`usage`): `number` \| `null`
 
-Defined in: src/formatters/tokens.ts:52
+Defined in: [src/formatters/tokens.ts:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/tokens.ts#L52)
 
 Returns the cached share of input tokens as a whole percentage
 (`0`–`100`), or `null` when the usage carries no cache accounting or no

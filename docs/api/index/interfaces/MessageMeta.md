@@ -4,7 +4,7 @@
 
 # Interface: MessageMeta
 
-Defined in: [src/types.ts:240](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L240)
+Defined in: [src/types.ts:254](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L254)
 
 Durable per-message metadata, recovered from the run's event stream (the
 `kaboo.message_meta` CUSTOM event emitted by kaboo-runtime and event
@@ -17,7 +17,7 @@ reconnect — it survives reloads, unlike session-only registries.
 
 > `optional` **createdAt?**: `number`
 
-Defined in: [src/types.ts:242](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L242)
+Defined in: [src/types.ts:256](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L256)
 
 Wall-clock time the message was accepted/streamed, epoch milliseconds.
 
@@ -27,7 +27,7 @@ Wall-clock time the message was accepted/streamed, epoch milliseconds.
 
 > `optional` **references?**: `unknown`[]
 
-Defined in: [src/types.ts:247](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L247)
+Defined in: [src/types.ts:261](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L261)
 
 References the message was sent with (`state.kaboo_references` at run
 start), for rendering reference chips on replayed transcripts.
@@ -38,7 +38,7 @@ start), for rendering reference chips on replayed transcripts.
 
 > `optional` **runId?**: `string`
 
-Defined in: [src/types.ts:255](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L255)
+Defined in: [src/types.ts:269](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L269)
 
 The AG-UI run that produced this message, derived from the event stream
 itself (the enclosing `RUN_STARTED` at the message's start event). Unlike

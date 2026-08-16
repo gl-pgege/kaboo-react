@@ -26,7 +26,7 @@ export interface FeedbackPayload {
 }
 
 /** A host-provided sink for {@link FeedbackPayload}. May be async. */
-export type FeedbackHandler = (payload: FeedbackPayload) => void | Promise<void>;
+export type FeedbackHandler = (payload: FeedbackPayload) => unknown | Promise<unknown>;
 
 /** What {@link useTurnFeedback} returns. */
 export interface TurnFeedbackState {
@@ -55,7 +55,14 @@ export interface TurnFeedbackState {
 export function resolveTurnIds(
   groups: GroupEntry[],
   traceByRun?: Record<string, string>,
-): { traceId?: string; runId?: string; turnId?: string } {
+): {
+  /** OTel trace id of the turn's root run, when telemetry was enabled. */
+  traceId?: string;
+  /** AG-UI run id of the turn's first run, when known. */
+  runId?: string;
+  /** kaboo turn id (stable across interrupt/resume), when known. */
+  turnId?: string;
+} {
   let runId: string | undefined;
   let turnId: string | undefined;
   let groupTraceId: string | undefined;

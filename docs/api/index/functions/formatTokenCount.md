@@ -6,7 +6,7 @@
 
 > **formatTokenCount**(`count`): `string`
 
-Defined in: src/formatters/tokens.ts:13
+Defined in: [src/formatters/tokens.ts:13](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/tokens.ts#L13)
 
 Formats a token count for compact display: `950` -> `"950"`,
 `12_400` -> `"12.4k"`, `1_230_000` -> `"1.2M"`. Trailing `.0` is dropped

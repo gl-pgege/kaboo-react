@@ -176,6 +176,20 @@ Every tool call made in this group, in call order.
 
 ***
 
+### traceId?
+
+> `optional` **traceId?**: `string` \| `null`
+
+Defined in: [src/types.ts:224](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L224)
+
+OpenTelemetry trace id (32-char hex) of the agent invocation that produced
+this group, when the workflow service runs with telemetry enabled. The
+correlation key for attaching feedback scores to the exact trace in an
+observability backend (e.g. Langfuse). Absent when telemetry is off or the
+stream predates it.
+
+***
+
 ### turnId?
 
 > `optional` **turnId?**: `string` \| `null`
