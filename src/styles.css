@@ -1053,5 +1053,63 @@
   opacity: 0.75;
 }
 
+/* ── Turn feedback ── */
+.kaboo-feedback {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-feedback-label {
+  margin-right: 2px;
+}
+
+.kaboo-feedback-btn {
+  border: 1px solid var(--kaboo-border);
+  background: var(--kaboo-card);
+  color: var(--kaboo-fg);
+  border-radius: 7px;
+  padding: 2px 8px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.kaboo-feedback-btn:hover:not(:disabled) {
+  background: var(--kaboo-muted);
+}
+
+.kaboo-feedback-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.kaboo-feedback-btn-active {
+  background: var(--kaboo-active-bg);
+}
+
+.kaboo-feedback-comment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kaboo-feedback-input {
+  border: 1px solid var(--kaboo-border);
+  background: var(--kaboo-bg);
+  color: var(--kaboo-fg);
+  border-radius: 7px;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  min-width: 220px;
+}
+
+.kaboo-feedback-done {
+  font-style: italic;
+}
+
 /* ── Animations ── */
 @keyframes kaboo-blink { 50% { opacity: 0; } }

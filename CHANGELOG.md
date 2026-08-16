@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0]
+
+### Added
+
+- **Turn feedback.** `useTurnFeedback` and `TurnFeedback` let hosts collect
+  thumbs-up / thumbs-down (plus an optional comment) on a completed turn.
+  The library stores nothing: the host's `onFeedback` callback receives
+  `{ value, comment, traceId, runId, turnId }` and forwards it wherever
+  scores live (typically a backend that posts to Langfuse).
+- **`traceId` on activity.** `StreamGroup.traceId`, `ActivityState.traceByRun`,
+  and `TurnFooterContext.traceId` carry the OpenTelemetry trace id when the
+  workflow service runs with telemetry enabled, so a score attaches to the
+  exact run.
+
 ## [0.4.1]
 
 ### Added

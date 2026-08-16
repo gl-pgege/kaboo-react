@@ -214,6 +214,14 @@ export interface StreamGroup {
   outputSchemaName?: string;
   /** Accumulated LLM token usage for this agent, once it has completed at least once. */
   usage?: TokenUsage;
+  /**
+   * OpenTelemetry trace id (32-char hex) of the agent invocation that produced
+   * this group, when the workflow service runs with telemetry enabled. The
+   * correlation key for attaching feedback scores to the exact trace in an
+   * observability backend (e.g. Langfuse). Absent when telemetry is off or the
+   * stream predates it.
+   */
+  traceId?: string | null;
 }
 
 /**
@@ -229,6 +237,12 @@ export interface ActivityState {
    * even groupless ones. Absent on streams from older services.
    */
   usageByRun?: Record<string, TokenUsage>;
+  /**
+   * Per-run OpenTelemetry trace id (the run's root trace), keyed by AG-UI
+   * `runId`. Present only when the workflow service runs with telemetry
+   * enabled. Use it to attach run-level feedback scores to the exact trace.
+   */
+  traceByRun?: Record<string, string>;
 }
 
 /**

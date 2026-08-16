@@ -34,6 +34,15 @@ export type { ToolRenderers, ToolRendererProps } from "./context/ToolRenderers";
 export { useActivity } from "./hooks/useActivity";
 export { useDrill } from "./hooks/useDrill";
 
+export { useTurnFeedback, resolveTurnIds } from "./feedback/useTurnFeedback";
+export type {
+  FeedbackPayload,
+  FeedbackHandler,
+  TurnFeedbackState,
+} from "./feedback/useTurnFeedback";
+export { TurnFeedback } from "./feedback/TurnFeedback";
+export type { TurnFeedbackProps } from "./feedback/TurnFeedback";
+
 export { ReferencesProvider, ReferenceStateSync, useReferences } from "./references/ReferencesProvider";
 export type { ReferencesContextValue, ReferencesProviderProps } from "./references/ReferencesProvider";
 export { KabooReferenceInput } from "./references/ReferenceInput";

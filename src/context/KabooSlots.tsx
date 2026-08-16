@@ -23,6 +23,12 @@ export interface TurnFooterContext {
   message: SlotMessage;
   /** Every activity group the turn produced (roots and nested), in stream order. */
   groups: GroupEntry[];
+  /**
+   * OpenTelemetry trace id of the turn's root run, when the workflow service
+   * ran with telemetry enabled. Hosts use this to attach feedback scores to
+   * the exact trace. Absent when telemetry is off.
+   */
+  traceId?: string;
 }
 
 /**

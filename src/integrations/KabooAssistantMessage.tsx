@@ -5,6 +5,8 @@ import {
 import { AgentCard } from "../components/AgentCard";
 import { useTurnBinding } from "../context/TurnBinding";
 import { useKabooSlots, type SlotMessage } from "../context/KabooSlots";
+import { resolveTurnIds } from "../feedback/useTurnFeedback";
+import { useActivity } from "../hooks/useActivity";
 
 /**
  * Drop-in replacement for CopilotKit's assistant-message renderer that prepends
@@ -37,9 +39,13 @@ export function KabooAssistantMessage(props: CopilotChatAssistantMessageProps) {
   const { message } = props;
   const { rootsByMessageId, turnGroupsByMessageId } = useTurnBinding();
   const { turnFooter, assistantMessageFooter } = useKabooSlots();
+  const activity = useActivity();
   const messageId = (message as { id?: string })?.id;
   const mine = messageId ? rootsByMessageId.get(messageId) ?? [] : [];
   const turnGroups = messageId ? turnGroupsByMessageId.get(messageId) : undefined;
+  const turnTraceId = turnGroups
+    ? resolveTurnIds(turnGroups, activity.traceByRun).traceId
+    : undefined;
 
   return (
     <>
@@ -57,6 +63,7 @@ export function KabooAssistantMessage(props: CopilotChatAssistantMessageProps) {
             messageId,
             message: message as unknown as SlotMessage,
             groups: turnGroups,
+            traceId: turnTraceId,
           })}
         </div>
       )}
