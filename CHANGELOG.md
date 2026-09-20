@@ -27,6 +27,13 @@ producer. The reverse does not hold.
 - **`resolveTimelineTool`** and **`timelineToolUseId`** resolve a timeline entry
   to its `ToolCall` from either shape.
 - **`applyActivityPatch`** for hosts that maintain their own activity state.
+- **Continuation pauses are resumed automatically.** A run too large for one
+  HTTP response now stops at a tool call and continues in the next one, which
+  it signals as an interrupt with `reason: "continuation"`.
+  `KabooInterruptHandler` resolves those the moment they arrive and renders
+  nothing for them, so the split is invisible: no prompt, no card, and the turn
+  keeps its id. Real gates opened alongside one still prompt as usual. Needs
+  kaboo-workflows 0.21 or later to be sent any.
 
 ### Changed
 

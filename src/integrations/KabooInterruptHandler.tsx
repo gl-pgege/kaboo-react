@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { useEffect, useRef, type ReactElement } from "react";
 import { useInterrupt } from "@copilotkit/react-core/v2";
 import {
   InterruptBridgePublisher,
@@ -40,6 +40,44 @@ function ChatInterruptSlot({
   );
 }
 
+/**
+ * The interrupt type a run raises when it has filled its response budget and
+ * stopped at a tool boundary. It asks nothing of the user, so it must never
+ * reach a renderer — see {@link ContinuationResolver}.
+ */
+const CONTINUATION = "continuation";
+
+/**
+ * Resumes continuation pauses the moment they arrive, rendering nothing.
+ *
+ * A run too large for one HTTP response pauses part-way and waits to be
+ * resumed, using the same interrupt machinery as a human approval. Nobody has
+ * to answer this one, so answering it here is what turns a hard limit into a
+ * seam the user never sees: the turn keeps its id, its cards stay active, and
+ * the work continues in the next response.
+ *
+ * Each id is resolved once. CopilotKit re-renders while the resume is in
+ * flight, and resolving twice would reply to an interrupt that is no longer
+ * open.
+ */
+function ContinuationResolver({
+  ids,
+  resolve,
+}: {
+  ids: string[];
+  resolve: (payload: unknown, id: string) => void;
+}): null {
+  const resolved = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    for (const id of ids) {
+      if (resolved.current.has(id)) continue;
+      resolved.current.add(id);
+      resolve({ status: "continue" }, id);
+    }
+  });
+  return null;
+}
+
 /** Props for {@link KabooInterruptHandler}. */
 export interface KabooInterruptHandlerProps {
   /** Restrict handling to a single CopilotKit agent (optional). */
@@ -74,8 +112,17 @@ export function KabooInterruptHandler({
   useInterrupt({
     ...(agentId ? { agentId } : {}),
     render: ({ interrupts, resolve, cancel }) => {
-      const active: ActiveInterrupt[] = (interrupts ?? [])
+      const open = interrupts ?? [];
+      const continuations = open
+        .filter((intr) => {
+          const meta = intr?.metadata as { type?: string } | undefined;
+          return meta?.type === CONTINUATION || intr?.reason === CONTINUATION;
+        })
+        .map((intr) => intr.id);
+
+      const active: ActiveInterrupt[] = open
         .map((intr): ActiveInterrupt | null => {
+          if (continuations.includes(intr.id)) return null;
           const reason = (intr?.metadata ?? intr?.reason) as
             | InterruptReason
             | undefined;
@@ -90,12 +137,17 @@ export function KabooInterruptHandler({
         })
         .filter((x): x is ActiveInterrupt => x !== null);
 
+      const resumer = continuations.length > 0 && (
+        <ContinuationResolver ids={continuations} resolve={resolve} />
+      );
+
       if (active.length === 0) {
-        return <></>;
+        return <>{resumer}</>;
       }
 
       return (
         <>
+          {resumer}
           {bridge && <InterruptBridgePublisher interrupts={active} />}
           {active.map((a) => (
             <ChatInterruptSlot

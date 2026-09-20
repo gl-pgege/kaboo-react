@@ -53,6 +53,14 @@ function approvalInterrupt(id: string, toolCallId?: string) {
   };
 }
 
+function continuationInterrupt(id: string) {
+  return {
+    id,
+    reason: "continuation",
+    metadata: { type: "continuation", message: "Continuing in a new response" },
+  };
+}
+
 function BridgeProbe() {
   const { active } = useInterruptBridge();
   return <div data-testid="bridge-count">{active.length}</div>;
@@ -121,6 +129,60 @@ describe("KabooInterruptHandler", () => {
     };
     render(<Harness groups={groups} args={args} />);
     expect(screen.queryByText("Approve")).toBeNull();
+  });
+
+  it("resumes a continuation at once, without prompting anyone", () => {
+    const resolve = vi.fn();
+    const args: RenderArgs = {
+      interrupts: [continuationInterrupt("c1")],
+      resolve,
+      cancel: vi.fn(),
+    };
+    render(<Harness args={args} />);
+
+    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
+    expect(screen.queryByText("Approve")).toBeNull();
+    expect(screen.getByTestId("bridge-count").textContent).toBe("0");
+  });
+
+  it("resumes a continuation once, however often it re-renders", () => {
+    const resolve = vi.fn();
+    const args: RenderArgs = {
+      interrupts: [continuationInterrupt("c1")],
+      resolve,
+      cancel: vi.fn(),
+    };
+    const { rerender } = render(<Harness args={args} />);
+    rerender(<Harness args={args} />);
+    rerender(<Harness args={args} />);
+
+    expect(resolve).toHaveBeenCalledTimes(1);
+  });
+
+  it("still prompts for a real gate opened alongside a continuation", () => {
+    const resolve = vi.fn();
+    const args: RenderArgs = {
+      interrupts: [continuationInterrupt("c1"), approvalInterrupt("i1")],
+      resolve,
+      cancel: vi.fn(),
+    };
+    render(<Harness args={args} />);
+
+    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
+    expect(screen.getAllByText("Approve")).toHaveLength(1);
+    expect(screen.getByTestId("bridge-count").textContent).toBe("1");
+  });
+
+  it("recognises a continuation by its top-level reason too", () => {
+    const resolve = vi.fn();
+    const args: RenderArgs = {
+      interrupts: [{ id: "c1", reason: "continuation" }],
+      resolve,
+      cancel: vi.fn(),
+    };
+    render(<Harness args={args} />);
+
+    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
   });
 
   it("publishes to the bridge only when enabled", () => {
