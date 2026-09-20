@@ -6,7 +6,7 @@
 
 > **applyActivityPatch**(`state`, `patch`): [`ActivityState`](../interfaces/ActivityState.md)
 
-Defined in: src/utils/activityPatch.ts:14
+Defined in: [src/utils/activityPatch.ts:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/activityPatch.ts#L14)
 
 Apply an `ACTIVITY_DELTA` JSON Patch to the activity tree.
 

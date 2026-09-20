@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0]
+
+kaboo-workflows re-sent the whole activity tree on every change, which put long
+runs into AgentCore's 100 MiB response cap — the socket closes with no terminal
+event and a healthy tool is reported as failed. The producer now sends the tree
+once per response and patches it; this release is the other half.
+
+This version reads both the old and new shapes, so it can be deployed before the
+producer. The reverse does not hold.
+
+### Added
+
+- **`ACTIVITY_DELTA` support.** `KabooActivityProvider` applies the JSON Patches
+  that follow each response's opening snapshot, using the same `fast-json-patch`
+  as `@ag-ui/client` so both agree on semantics. This is the package's first
+  runtime dependency. A patch that cannot be applied leaves the tree as it was
+  and warns; the run's closing snapshot settles it.
+- **`resolveTimelineTool`** and **`timelineToolUseId`** resolve a timeline entry
+  to its `ToolCall` from either shape.
+- **`applyActivityPatch`** for hosts that maintain their own activity state.
+
+### Changed
+
+- **Breaking: `Timeline` requires a `tools` prop.** Timeline tool entries now
+  carry `toolUseId` rather than the call itself, so the group's `tools` are
+  needed to resolve them. `AgentCard` and `DrillDetailView` pass it for you;
+  only direct `Timeline` users are affected.
+- **Deprecated: `StreamGroup.tokens`.** It duplicated the timeline's text, was
+  read by nothing here, and is no longer sent. Now optional on the type, so code
+  that mentions it still compiles. Read `timeline` text entries instead.
+
 ## [0.8.0]
 
 ### Added

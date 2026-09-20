@@ -6,7 +6,7 @@
 
 > **timelineToolUseId**(`entry`): `string` \| `undefined`
 
-Defined in: src/utils/timeline.ts:11
+Defined in: [src/utils/timeline.ts:11](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/timeline.ts#L11)
 
 The tool-call id of a timeline tool entry, from either shape it may arrive in.
 
