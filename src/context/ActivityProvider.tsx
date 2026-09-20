@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, type ReactNode, type ReactElement }
 import { useAgent } from "@copilotkit/react-core/v2";
 import type { ActivityState, MessageMeta, StreamGroup } from "../types";
 import { MessageMetaContext, MESSAGE_META_EVENT } from "./MessageMeta";
+import { applyActivityPatch } from "../utils/activityPatch";
 
 const EMPTY: ActivityState = { groups: {} };
 
@@ -103,6 +104,11 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
     const { unsubscribe } = agent.subscribe({
       onActivitySnapshotEvent: ({ event }) => {
         setState(event.content as unknown as ActivityState);
+      },
+      // Each response opens with a snapshot and then patches it, so the tree is
+      // sent once rather than re-sent on every change.
+      onActivityDeltaEvent: ({ event }) => {
+        setState((prev) => applyActivityPatch(prev, (event as { patch?: unknown }).patch));
       },
       onRunStartedEvent: ({ event }) => {
         currentRunId = (event as { runId?: string }).runId;

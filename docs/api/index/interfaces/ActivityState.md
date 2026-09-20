@@ -4,7 +4,7 @@
 
 # Interface: ActivityState
 
-Defined in: [src/types.ts:231](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L231)
+Defined in: [src/types.ts:248](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L248)
 
 The full activity snapshot for a conversation: every [StreamGroup](StreamGroup.md)
 keyed by group id. This is what [useActivity](../functions/useActivity.md) exposes.
@@ -15,7 +15,7 @@ keyed by group id. This is what [useActivity](../functions/useActivity.md) expos
 
 > **groups**: `Record`\<`string`, [`StreamGroup`](StreamGroup.md)\>
 
-Defined in: [src/types.ts:233](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L233)
+Defined in: [src/types.ts:250](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L250)
 
 All activity groups for the current thread, keyed by group id.
 
@@ -25,7 +25,7 @@ All activity groups for the current thread, keyed by group id.
 
 > `optional` **traceByRun?**: `Record`\<`string`, `string`\>
 
-Defined in: [src/types.ts:245](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L245)
+Defined in: [src/types.ts:262](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L262)
 
 Per-run OpenTelemetry trace id (the run's root trace), keyed by AG-UI
 `runId`. Present only when the workflow service runs with telemetry
@@ -37,7 +37,7 @@ enabled. Use it to attach run-level feedback scores to the exact trace.
 
 > `optional` **usageByRun?**: `Record`\<`string`, [`TokenUsage`](TokenUsage.md)\>
 
-Defined in: [src/types.ts:239](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L239)
+Defined in: [src/types.ts:256](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L256)
 
 Per-run token usage rollup, keyed by AG-UI `runId`. Accumulated
 independently of groups so run totals include every agent completion —

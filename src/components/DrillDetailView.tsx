@@ -130,6 +130,7 @@ export function DrillDetailView() {
           <div className="kaboo-drill-timeline">
             <Timeline
               timeline={timeline}
+              tools={group.tools}
               active={group.status === "active"}
               variant="drill"
               renderToolCard={renderToolCard}

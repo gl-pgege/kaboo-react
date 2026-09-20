@@ -1,4 +1,5 @@
 import type { StreamGroup, TimelineEntry } from "../types";
+import { timelineToolUseId } from "./timeline";
 
 /** A `[groupId, group]` pair, as returned by the group-hierarchy helpers. */
 export type GroupEntry = [string, StreamGroup];
@@ -25,7 +26,7 @@ export function partitionChildrenByToolCall(
   timeline: TimelineEntry[],
 ): { byToolCall: Map<string, GroupEntry>; leftover: GroupEntry[] } {
   const toolUseIds = new Set(
-    timeline.filter((e) => e.type === "tool").map((e) => e.tool.toolUseId),
+    timeline.map(timelineToolUseId).filter((id): id is string => id != null),
   );
   const byToolCall = new Map<string, GroupEntry>();
   const leftover: GroupEntry[] = [];

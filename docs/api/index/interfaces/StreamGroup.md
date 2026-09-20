@@ -4,7 +4,7 @@
 
 # Interface: StreamGroup
 
-Defined in: [src/types.ts:152](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L152)
+Defined in: [src/types.ts:163](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L163)
 
 One node of kaboo's hierarchical activity tree: a single agent run and its
 streamed text, tool calls, timeline, structured output, and (optional)
@@ -17,7 +17,7 @@ drill-down hierarchy.
 
 > **agentName**: `string`
 
-Defined in: [src/types.ts:156](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L156)
+Defined in: [src/types.ts:167](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L167)
 
 The agent's machine name (used to correlate inline cards).
 
@@ -27,7 +27,7 @@ The agent's machine name (used to correlate inline cards).
 
 > `optional` **inlineChatOwner?**: `boolean`
 
-Defined in: [src/types.ts:195](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L195)
+Defined in: [src/types.ts:206](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L206)
 
 True for a plain-agent entry group: its text and tool calls are already
 rendered inline in the chat by the host (CopilotKit), so this group exists
@@ -40,7 +40,7 @@ and must never be drawn as its own card.
 
 > `optional` **interrupt?**: [`InterruptData`](InterruptData.md)
 
-Defined in: [src/types.ts:210](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L210)
+Defined in: [src/types.ts:227](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L227)
 
 The open interrupt for this group, when it is paused for input.
 
@@ -50,7 +50,7 @@ The open interrupt for this group, when it is paused for input.
 
 > `optional` **isChatReply?**: `boolean`
 
-Defined in: [src/types.ts:188](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L188)
+Defined in: [src/types.ts:199](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L199)
 
 True when this agent's streamed text IS the chat reply (the swarm/graph
 `chat_output`, or a delegate manager). Inline cards suppress only this
@@ -62,7 +62,7 @@ group's text so the answer isn't duplicated between the card and the bubble.
 
 > `optional` **outputSchemaName?**: `string`
 
-Defined in: [src/types.ts:214](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L214)
+Defined in: [src/types.ts:231](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L231)
 
 Name of the schema for [StreamGroup.structuredOutput](#structuredoutput), selecting a renderer.
 
@@ -72,7 +72,7 @@ Name of the schema for [StreamGroup.structuredOutput](#structuredoutput), select
 
 > **parentGroup**: `string` \| `null`
 
-Defined in: [src/types.ts:158](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L158)
+Defined in: [src/types.ts:169](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L169)
 
 Parent group id, or `null` for a top-level group.
 
@@ -82,7 +82,7 @@ Parent group id, or `null` for a top-level group.
 
 > `optional` **runId?**: `string` \| `null`
 
-Defined in: [src/types.ts:170](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L170)
+Defined in: [src/types.ts:181](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L181)
 
 The AG-UI `runId` of the turn that produced this group. `null`/absent for
 older streams. Note: an interrupt/resume changes the `runId` mid-turn, so
@@ -94,7 +94,7 @@ prefer [StreamGroup.turnId](#turnid) for turn scoping.
 
 > **status**: `"error"` \| `"active"` \| `"completed"` \| `"interrupted"` \| `"stopped"`
 
-Defined in: [src/types.ts:202](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L202)
+Defined in: [src/types.ts:213](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L213)
 
 Lifecycle state of the group's run. `"stopped"` is client-derived: when a
 run ends (`RUN_FINISHED`/`RUN_ERROR`) with the group still `"active"`, the
@@ -107,7 +107,7 @@ an abort — workflows themselves never emit it.
 
 > `optional` **structuredOutput?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [src/types.ts:212](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L212)
+Defined in: [src/types.ts:229](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L229)
 
 Structured (schema-shaped) output emitted by the agent, if any.
 
@@ -117,7 +117,7 @@ Structured (schema-shaped) output emitted by the agent, if any.
 
 > `optional` **task?**: `string` \| `null`
 
-Defined in: [src/types.ts:182](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L182)
+Defined in: [src/types.ts:193](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L193)
 
 The task this agent was handed (its latest human/handoff message), shown at
 the top of the card so you can see what each agent was asked to do.
@@ -128,7 +128,7 @@ the top of the card so you can see what each agent was asked to do.
 
 > **timeline**: [`TimelineEntry`](../type-aliases/TimelineEntry.md)[]
 
-Defined in: [src/types.ts:208](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L208)
+Defined in: [src/types.ts:225](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L225)
 
 Interleaved text/tool entries in chronological order.
 
@@ -138,19 +138,25 @@ Interleaved text/tool entries in chronological order.
 
 > **title**: `string`
 
-Defined in: [src/types.ts:154](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L154)
+Defined in: [src/types.ts:165](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L165)
 
 Display title for the group's card.
 
 ***
 
-### tokens
+### ~~tokens?~~
 
-> **tokens**: `string`
+> `optional` **tokens?**: `string`
 
-Defined in: [src/types.ts:206](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L206)
+Defined in: [src/types.ts:223](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L223)
 
-Accumulated streamed text tokens for this group.
+Accumulated streamed text for this group.
+
+#### Deprecated
+
+No longer emitted. It duplicated [StreamGroup.timeline](#timeline),
+which is the rendered copy, and cost its full length in every snapshot and
+every delta. Read the timeline's text entries instead.
 
 ***
 
@@ -158,7 +164,7 @@ Accumulated streamed text tokens for this group.
 
 > `optional` **toolCallId?**: `string` \| `null`
 
-Defined in: [src/types.ts:164](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L164)
+Defined in: [src/types.ts:175](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L175)
 
 The delegating tool-call id (AG-UI `toolCallId`) that spawned this group.
 Stable key for correlating an inline chat card with its activity group.
@@ -170,7 +176,7 @@ Stable key for correlating an inline chat card with its activity group.
 
 > **tools**: [`ToolCall`](ToolCall.md)[]
 
-Defined in: [src/types.ts:204](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L204)
+Defined in: [src/types.ts:215](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L215)
 
 Every tool call made in this group, in call order.
 
@@ -180,7 +186,7 @@ Every tool call made in this group, in call order.
 
 > `optional` **traceId?**: `string` \| `null`
 
-Defined in: [src/types.ts:224](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L224)
+Defined in: [src/types.ts:241](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L241)
 
 OpenTelemetry trace id (32-char hex) of the agent invocation that produced
 this group, when the workflow service runs with telemetry enabled. The
@@ -194,7 +200,7 @@ stream predates it.
 
 > `optional` **turnId?**: `string` \| `null`
 
-Defined in: [src/types.ts:177](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L177)
+Defined in: [src/types.ts:188](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L188)
 
 The logical turn that produced this group — stable across an
 interrupt/resume (server-stamped). All groups of one user turn share it, so
@@ -207,6 +213,6 @@ on `runId`. `null`/absent for older streams.
 
 > `optional` **usage?**: [`TokenUsage`](TokenUsage.md)
 
-Defined in: [src/types.ts:216](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L216)
+Defined in: [src/types.ts:233](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L233)
 
 Accumulated LLM token usage for this agent, once it has completed at least once.

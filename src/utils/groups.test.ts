@@ -145,10 +145,7 @@ describe("chatRootGroups", () => {
 });
 
 describe("partitionChildrenByToolCall", () => {
-  const toolEntry = (toolUseId: string): TimelineEntry => ({
-    type: "tool",
-    tool: { toolUseId, toolName: "field_researcher" } as ToolCall,
-  });
+  const toolEntry = (toolUseId: string): TimelineEntry => ({ type: "tool", toolUseId });
 
   it("anchors a delegated child to its delegating tool call, keyed by tool-use id", () => {
     const childEntries: GroupEntry[] = [
@@ -173,6 +170,19 @@ describe("partitionChildrenByToolCall", () => {
 
     expect(byToolCall.size).toBe(0);
     expect(leftover.map(([id]) => id)).toEqual(["team.planner", "team.writer"]);
+  });
+
+  it("anchors against a tool embedded in the entry, as older snapshots carry it", () => {
+    const childEntries: GroupEntry[] = [
+      ["coord.team.researcher", group({ toolCallId: "tc-1" })],
+    ];
+    const timeline: TimelineEntry[] = [
+      { type: "tool", tool: { toolUseId: "tc-1", toolName: "field_researcher" } as ToolCall },
+    ];
+
+    const { byToolCall } = partitionChildrenByToolCall(childEntries, timeline);
+
+    expect(byToolCall.get("tc-1")?.[0]).toBe("coord.team.researcher");
   });
 });
 

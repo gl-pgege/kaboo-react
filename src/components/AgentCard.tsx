@@ -194,7 +194,7 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
 
           {timeline.length > 0 && (
             <div className="kaboo-agent-card-timeline">
-              <Timeline timeline={timeline} active={!isSettled} variant="card" renderToolCard={renderToolCard} />
+              <Timeline timeline={timeline} tools={group.tools} active={!isSettled} variant="card" renderToolCard={renderToolCard} />
             </div>
           )}
 

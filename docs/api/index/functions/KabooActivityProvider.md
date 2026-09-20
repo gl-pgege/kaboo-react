@@ -6,7 +6,7 @@
 
 > **KabooActivityProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/ActivityProvider.tsx:82](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L82)
+Defined in: [src/context/ActivityProvider.tsx:83](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L83)
 
 Reads kaboo's hierarchical activity from the AG-UI run stream. The backend
 emits it as `ACTIVITY_SNAPSHOT` events interleaved on `/invocations`, so we

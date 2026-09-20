@@ -10,6 +10,13 @@ import { InterruptRenderersProvider } from "../context/InterruptRenderers";
 import { ToolRenderersProvider } from "../context/ToolRenderers";
 import type { InterruptRendererProps } from "../types";
 
+/**
+ * Timeline entries as the producer emits them: a reference per tool, with the
+ * call itself living once in the group's `tools`.
+ */
+const refs = (...tools: ToolCall[]): TimelineEntry[] =>
+  tools.map((t) => ({ type: "tool", toolUseId: t.toolUseId }));
+
 describe("Timeline ask_user rendering", () => {
   it("renders a nested ask_user as a durable Q&A summary (question + answer)", () => {
     const askTool: ToolCall = {
@@ -24,9 +31,7 @@ describe("Timeline ask_user rendering", () => {
       },
       toolResult: JSON.stringify({ "Which segment?": "GPUs", "Which aspects?": ["Pricing", "Risks"] }),
     };
-    const timeline: TimelineEntry[] = [{ type: "tool", tool: askTool }];
-
-    render(<Timeline timeline={timeline} active={false} />);
+    render(<Timeline timeline={refs(askTool)} tools={[askTool]} active={false} />);
 
     expect(screen.getByText("Which segment?")).toBeInTheDocument();
     expect(screen.getByText("GPUs")).toBeInTheDocument();
@@ -42,7 +47,7 @@ describe("Timeline ask_user rendering", () => {
       toolInput: { questions: [{ question: "Which segment?", type: "radio", options: ["GPUs"] }] },
     };
     const { container } = render(
-      <Timeline timeline={[{ type: "tool", tool: askTool }]} active={true} />,
+      <Timeline timeline={refs(askTool)} tools={[askTool]} active={true} />,
     );
 
     expect(screen.queryByText("Which segment?")).toBeNull();
@@ -75,7 +80,7 @@ describe("Timeline ask_user rendering", () => {
             },
           ]}
         />
-        <Timeline timeline={[{ type: "tool", tool: askTool }]} active={true} />
+        <Timeline timeline={refs(askTool)} tools={[askTool]} active={true} />
       </InterruptBridgeProvider>,
     );
 
@@ -105,7 +110,7 @@ describe("Timeline ask_user rendering", () => {
             },
           ]}
         />
-        <Timeline timeline={[{ type: "tool", tool: askTool }]} active={true} />
+        <Timeline timeline={refs(askTool)} tools={[askTool]} active={true} />
       </InterruptBridgeProvider>,
     );
 
@@ -121,7 +126,7 @@ describe("Timeline ask_user rendering", () => {
       status: "success",
       toolResult: "results",
     };
-    render(<Timeline timeline={[{ type: "tool", tool }]} active={false} />);
+    render(<Timeline timeline={refs(tool)} tools={[tool]} active={false} />);
 
     expect(screen.getByText(/Searching the web|research_search_web/)).toBeInTheDocument();
   });
@@ -134,7 +139,7 @@ describe("Timeline ask_user rendering", () => {
       toolInput: { question: "Which segment?", input_type: "radio", options: ["GPUs"] },
       toolResult: "The user declined to answer.",
     };
-    render(<Timeline timeline={[{ type: "tool", tool: askTool }]} active={false} />);
+    render(<Timeline timeline={refs(askTool)} tools={[askTool]} active={false} />);
 
     expect(screen.getByText("Which segment?")).toBeInTheDocument();
     expect(screen.getByText("Declined by user")).toBeInTheDocument();
@@ -188,10 +193,8 @@ describe("Timeline parallel approval rendering", () => {
           ]}
         />
         <Timeline
-          timeline={[
-            { type: "tool", tool: searchTool },
-            { type: "tool", tool: priceTool },
-          ]}
+          timeline={refs(searchTool, priceTool)}
+          tools={[searchTool, priceTool]}
           active={true}
         />
       </InterruptBridgeProvider>,
@@ -248,7 +251,7 @@ describe("Timeline custom interrupt renderer", () => {
               },
             ]}
           />
-          <Timeline timeline={[{ type: "tool", tool }]} active={true} />
+          <Timeline timeline={refs(tool)} tools={[tool]} active={true} />
         </InterruptRenderersProvider>
       </InterruptBridgeProvider>,
     );
@@ -276,7 +279,7 @@ describe("Timeline per-tool-name renderers (toolRenderers)", () => {
     );
     const { container } = render(
       <ToolRenderersProvider renderers={{ create_work_item: Card }}>
-        <Timeline timeline={[{ type: "tool", tool }]} active={false} />
+        <Timeline timeline={refs(tool)} tools={[tool]} active={false} />
       </ToolRenderersProvider>,
     );
 
@@ -287,7 +290,7 @@ describe("Timeline per-tool-name renderers (toolRenderers)", () => {
   it("falls back to the built-in row for unregistered tools", () => {
     render(
       <ToolRenderersProvider renderers={{ other_tool: () => <div /> }}>
-        <Timeline timeline={[{ type: "tool", tool }]} active={false} />
+        <Timeline timeline={refs(tool)} tools={[tool]} active={false} />
       </ToolRenderersProvider>,
     );
 
@@ -314,7 +317,7 @@ describe("Timeline per-tool-name renderers (toolRenderers)", () => {
               },
             ]}
           />
-          <Timeline timeline={[{ type: "tool", tool }]} active={true} />
+          <Timeline timeline={refs(tool)} tools={[tool]} active={true} />
         </ToolRenderersProvider>
       </InterruptBridgeProvider>,
     );
@@ -333,10 +336,65 @@ describe("Timeline cancelled tool rendering", () => {
       status: "success",
       toolResult: "User rejected this action.",
     };
-    const { container } = render(<Timeline timeline={[{ type: "tool", tool }]} active={false} />);
+    const { container } = render(
+      <Timeline timeline={refs(tool)} tools={[tool]} active={false} />,
+    );
 
     expect(screen.getByText("cancelled")).toBeInTheDocument();
     expect(screen.queryByText("done")).toBeNull();
     expect(container.querySelector(".kaboo-tool-dot-cancelled")).not.toBeNull();
+  });
+});
+
+describe("Timeline tool entry shapes", () => {
+  const tool: ToolCall = {
+    toolUseId: "t9",
+    toolName: "research_search_web",
+    toolLabel: "Searching the web",
+    status: "done",
+    toolResult: "ok",
+  };
+
+  it("resolves a reference entry against the group's tools", () => {
+    render(
+      <Timeline timeline={[{ type: "tool", toolUseId: "t9" }]} tools={[tool]} active={false} />,
+    );
+
+    expect(screen.getByText(/Searching the web/)).toBeInTheDocument();
+  });
+
+  it("still renders a tool embedded in the entry", () => {
+    // Snapshots written before the reference form inlined the call, and threads
+    // persisted then still replay.
+    render(<Timeline timeline={[{ type: "tool", tool }]} tools={[]} active={false} />);
+
+    expect(screen.getByText(/Searching the web/)).toBeInTheDocument();
+  });
+
+  it("renders nothing for a reference with no matching tool", () => {
+    const { container } = render(
+      <Timeline timeline={[{ type: "tool", toolUseId: "missing" }]} tools={[tool]} active={false} />,
+    );
+
+    expect(container.querySelector(".kaboo-tool-row")).toBeNull();
+    expect(screen.queryByText(/Searching the web/)).toBeNull();
+  });
+
+  it("keeps text and tool entries in their original order", () => {
+    const { container } = render(
+      <Timeline
+        timeline={[
+          { type: "text", text: "before" },
+          { type: "tool", toolUseId: "t9" },
+          { type: "text", text: "after" },
+        ]}
+        tools={[tool]}
+        active={false}
+      />,
+    );
+
+    const text = container.textContent ?? "";
+    expect(text.indexOf("before")).toBeLessThan(text.indexOf("Searching the web"));
+    expect(text.indexOf("Searching the web")).toBeLessThan(text.indexOf("after"));
   });
 });

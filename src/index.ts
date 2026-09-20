@@ -77,6 +77,8 @@ export type {
 } from "./references/types";
 export { topLevelGroups, directChildren } from "./utils/groups";
 export type { GroupEntry } from "./utils/groups";
+export { resolveTimelineTool, timelineToolUseId } from "./utils/timeline";
+export { applyActivityPatch } from "./utils/activityPatch";
 
 export { ActivityPanel } from "./components/ActivityPanel";
 export { AgentCard } from "./components/AgentCard";

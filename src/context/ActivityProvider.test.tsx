@@ -6,6 +6,7 @@ import type { ActivityState, StreamGroup } from "../types";
 const { fakeAgent } = vi.hoisted(() => {
   type Sub = {
     onActivitySnapshotEvent?: (p: { event: { content: unknown } }) => void;
+    onActivityDeltaEvent?: (p: { event: { patch: unknown } }) => void;
     onCustomEvent?: (p: { event: { name: string; value: unknown } }) => void;
     onRunStartedEvent?: (p: { event: { runId?: string } }) => void;
     onTextMessageStartEvent?: (p: { event: { messageId?: string; timestamp?: number } }) => void;
@@ -29,6 +30,9 @@ const { fakeAgent } = vi.hoisted(() => {
       },
       emit(content: unknown) {
         for (const s of [...subscribers]) s.onActivitySnapshotEvent?.({ event: { content } });
+      },
+      emitDelta(patch: unknown) {
+        for (const s of [...subscribers]) s.onActivityDeltaEvent?.({ event: { patch } });
       },
       emitCustom(name: string, value: unknown) {
         for (const s of [...subscribers]) s.onCustomEvent?.({ event: { name, value } });
@@ -66,7 +70,6 @@ function group(agentName: string, overrides: Partial<StreamGroup> = {}): StreamG
     parentGroup: null,
     status: "active",
     tools: [],
-    tokens: "",
     timeline: [],
     ...overrides,
   };
@@ -111,6 +114,85 @@ describe("KabooActivityProvider — agent activity snapshots", () => {
     });
 
     expect(screen.getByTestId("keys").textContent).toBe("g2");
+  });
+
+  it("patches the tree from an activity delta", () => {
+    render(
+      <KabooActivityProvider>
+        <Probe />
+      </KabooActivityProvider>,
+    );
+
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("researcher") } });
+    });
+    act(() => {
+      fakeAgent.emitDelta([{ op: "add", path: "/groups/g2", value: group("analyst") }]);
+    });
+
+    expect(screen.getByTestId("keys").textContent).toBe("g1,g2");
+  });
+
+  it("applies a patch to a nested value without disturbing the rest", () => {
+    function TextProbe() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      const entry = groups.g1?.timeline?.[0];
+      return <div data-testid="text">{entry && "text" in entry ? entry.text : ""}</div>;
+    }
+    render(
+      <KabooActivityProvider>
+        <TextProbe />
+      </KabooActivityProvider>,
+    );
+
+    act(() => {
+      fakeAgent.emit({
+        groups: { g1: group("researcher", { timeline: [{ type: "text", text: "one" }] }) },
+      });
+    });
+    act(() => {
+      fakeAgent.emitDelta([{ op: "replace", path: "/groups/g1/timeline/0/text", value: "one two" }]);
+    });
+
+    expect(screen.getByTestId("text").textContent).toBe("one two");
+  });
+
+  it("keeps the last good tree when a patch cannot be applied", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <KabooActivityProvider>
+        <Probe />
+      </KabooActivityProvider>,
+    );
+
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("researcher") } });
+    });
+    act(() => {
+      // Patching into a group that does not exist.
+      fakeAgent.emitDelta([{ op: "replace", path: "/groups/nope/status", value: "error" }]);
+    });
+
+    expect(screen.getByTestId("keys").textContent).toBe("g1");
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it("ignores an empty patch", () => {
+    render(
+      <KabooActivityProvider>
+        <Probe />
+      </KabooActivityProvider>,
+    );
+
+    act(() => {
+      fakeAgent.emit({ groups: { g1: group("researcher") } });
+    });
+    act(() => {
+      fakeAgent.emitDelta([]);
+    });
+
+    expect(screen.getByTestId("keys").textContent).toBe("g1");
   });
 
   it("unsubscribes from the agent on unmount", () => {

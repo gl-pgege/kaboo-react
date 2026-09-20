@@ -8,6 +8,7 @@ import { useInterruptRenderer } from "../context/InterruptRenderers";
 import { useToolRenderer } from "../context/ToolRenderers";
 import { normalizeQuestions, parseAnswers, type AskUserParams } from "../formatters/askUser";
 import { isCancelledResult } from "../formatters/output";
+import { resolveTimelineTool } from "../utils/timeline";
 
 /**
  * Renders an `ask_user` tool call in one place at its chronological tool
@@ -84,6 +85,12 @@ function ToolTimelineRow({ tool }: { tool: ToolCall }) {
 export interface TimelineProps {
   /** The interleaved text/tool entries to render, in order. */
   timeline: TimelineEntry[];
+  /**
+   * The owning group's tool calls. Timeline tool entries reference these by
+   * `toolUseId` rather than embedding them, so they are needed to render a
+   * tool row.
+   */
+  tools: ToolCall[];
   /** When true, a blinking cursor is shown after the last text segment. */
   active: boolean;
   /** Visual variant selecting the text container class. */
@@ -101,7 +108,13 @@ export interface TimelineProps {
  * Chronological render of interleaved text segments and tool calls. Shared by
  * {@link AgentCard} and {@link DrillDetailView} so the two stay in sync.
  */
-export function Timeline({ timeline, active, variant = "card", renderToolCard }: TimelineProps) {
+export function Timeline({
+  timeline,
+  tools,
+  active,
+  variant = "card",
+  renderToolCard,
+}: TimelineProps) {
   const textClass =
     variant === "drill" ? "kaboo-drill-tokens-content" : "kaboo-agent-card-tokens";
 
@@ -109,13 +122,15 @@ export function Timeline({ timeline, active, variant = "card", renderToolCard }:
     <>
       {timeline.map((entry, i) => {
         if (entry.type === "tool") {
-          const key = entry.tool.toolUseId || i;
-          const card = renderToolCard?.(entry.tool.toolUseId);
+          const tool = resolveTimelineTool(entry, tools);
+          if (!tool) return null;
+          const key = tool.toolUseId || i;
+          const card = renderToolCard?.(tool.toolUseId);
           if (card) return <Fragment key={key}>{card}</Fragment>;
-          if (entry.tool.toolName === "ask_user") {
-            return <AskUserTimelineRow key={key} tool={entry.tool} />;
+          if (tool.toolName === "ask_user") {
+            return <AskUserTimelineRow key={key} tool={tool} />;
           }
-          return <ToolTimelineRow key={key} tool={entry.tool} />;
+          return <ToolTimelineRow key={key} tool={tool} />;
         }
         const isLast = i === timeline.length - 1;
         return (

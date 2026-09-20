@@ -4,7 +4,7 @@
 
 # Interface: TimelineProps
 
-Defined in: [src/components/Timeline.tsx:84](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L84)
+Defined in: [src/components/Timeline.tsx:85](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L85)
 
 Props for [Timeline](../functions/Timeline.md).
 
@@ -14,7 +14,7 @@ Props for [Timeline](../functions/Timeline.md).
 
 > **active**: `boolean`
 
-Defined in: [src/components/Timeline.tsx:88](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L88)
+Defined in: [src/components/Timeline.tsx:95](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L95)
 
 When true, a blinking cursor is shown after the last text segment.
 
@@ -24,7 +24,7 @@ When true, a blinking cursor is shown after the last text segment.
 
 > `optional` **renderToolCard?**: (`toolUseId`) => `ReactNode`
 
-Defined in: [src/components/Timeline.tsx:97](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L97)
+Defined in: [src/components/Timeline.tsx:104](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L104)
 
 Optional hook to render a delegating tool call as its spawned sub-agent
 card, interleaved at its chronological position. Returns the card node for a
@@ -47,9 +47,21 @@ a delegated agent's work in order relative to the parent's surrounding text.
 
 > **timeline**: [`TimelineEntry`](../type-aliases/TimelineEntry.md)[]
 
-Defined in: [src/components/Timeline.tsx:86](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L86)
+Defined in: [src/components/Timeline.tsx:87](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L87)
 
 The interleaved text/tool entries to render, in order.
+
+***
+
+### tools
+
+> **tools**: [`ToolCall`](ToolCall.md)[]
+
+Defined in: [src/components/Timeline.tsx:93](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L93)
+
+The owning group's tool calls. Timeline tool entries reference these by
+`toolUseId` rather than embedding them, so they are needed to render a
+tool row.
 
 ***
 
@@ -57,6 +69,6 @@ The interleaved text/tool entries to render, in order.
 
 > `optional` **variant?**: `"card"` \| `"drill"`
 
-Defined in: [src/components/Timeline.tsx:90](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L90)
+Defined in: [src/components/Timeline.tsx:97](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L97)
 
 Visual variant selecting the text container class.
