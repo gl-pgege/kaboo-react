@@ -6,7 +6,7 @@
 
 > `const` **KabooMessageView**: (`__namedParameters`) => `Element` & `object`
 
-Defined in: [src/integrations/KabooMessageView.tsx:168](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L168)
+Defined in: [src/integrations/KabooMessageView.tsx:208](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L208)
 
 Drop-in replacement for `CopilotChat`'s `messageView` that renders swarm/graph
 member cards **live, inside the chat, from the moment the first agent starts**
@@ -26,10 +26,16 @@ soon as the run's assistant message mounts, that run becomes "covered" and its
 cards render inside the message instead — so there's a seamless hand-off with
 no duplication.
 
+Reasoning messages with no text (thinking the model only signed or
+encrypted) are dropped, and adjacent ones are merged into one, so a turn
+shows one thought block per stretch of thinking instead of a row of empty
+"Thought for a few seconds" headers.
+
 App-supplied [KabooSlots](../../index/interfaces/KabooSlots.md) (from `KabooProvider` or the `slots` prop)
 plug in here: `runStartIndicator` replaces the bare cursor shown between
-send and the first activity, and `turnFooter` / message footers render via
-[KabooAssistantMessage](../functions/KabooAssistantMessage.md) / [KabooUserMessage](../functions/KabooUserMessage.md).
+send and the current turn's first activity group, and `turnFooter` /
+message footers render via [KabooAssistantMessage](../functions/KabooAssistantMessage.md) /
+[KabooUserMessage](../functions/KabooUserMessage.md).
 
 Wire it via the `messageView` slot of `CopilotChat`:
 

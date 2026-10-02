@@ -4,7 +4,7 @@
 
 # Interface: KabooMessageViewProps
 
-Defined in: [src/integrations/KabooMessageView.tsx:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L19)
+Defined in: [src/integrations/KabooMessageView.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L20)
 
 Props for [KabooMessageView](../variables/KabooMessageView.md): CopilotKit's message-view props plus per-view slot overrides.
 
@@ -3607,7 +3607,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2806
 
 > `optional` **slots?**: [`KabooSlots`](../../index/interfaces/KabooSlots.md)
 
-Defined in: [src/integrations/KabooMessageView.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L24)
+Defined in: [src/integrations/KabooMessageView.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L25)
 
 Per-view [KabooSlots](../../index/interfaces/KabooSlots.md) overrides. Merged over the slots provided on
 `KabooProvider`; individual keys win over the provider's.

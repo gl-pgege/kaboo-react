@@ -6,7 +6,7 @@
 
 > **KabooSlotsProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/KabooSlots.tsx:66](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L66)
+Defined in: [src/context/KabooSlots.tsx:70](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L70)
 
 Provide [KabooSlots](../interfaces/KabooSlots.md) to the chat surfaces below.
 

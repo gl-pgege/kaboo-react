@@ -53,9 +53,13 @@ export interface KabooSlots {
   /** Rendered under each assistant message (e.g. a timestamp row). */
   assistantMessageFooter?: (message: SlotMessage) => ReactNode;
   /**
-   * Rendered while a run is in flight but no activity has streamed yet (the
-   * gap right after send where the UI otherwise looks idle). Defaults to
-   * CopilotKit's streaming cursor.
+   * Rendered while a run is in flight until the current turn's first activity
+   * group appears (a swarm/graph member or a delegated agent, active or
+   * finished), covering the gap right after send where the UI otherwise looks
+   * idle. Groups from earlier turns don't count. The current turn is the one
+   * the latest user message started, read from its `kaboo.message_meta`
+   * event; without that event the indicator hides while any group is active.
+   * Defaults to CopilotKit's streaming cursor.
    */
   runStartIndicator?: ComponentType;
 }

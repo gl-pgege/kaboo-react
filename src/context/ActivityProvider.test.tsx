@@ -344,6 +344,32 @@ describe("KabooActivityProvider — message metadata from the event stream", () 
     expect(screen.getByTestId("runs").textContent).toBe("a1=run-1,a2=run-1,a3=run-2");
   });
 
+  it("attributes a user message to the run its kaboo.message_meta arrived in", () => {
+    function UserRunProbe() {
+      const meta = useMessageMeta();
+      return (
+        <div data-testid="user-runs">
+          {Object.entries(meta)
+            .map(([id, m]) => `${id}=${m.runId ?? "-"}:${m.createdAt ?? "-"}`)
+            .sort()
+            .join(",")}
+        </div>
+      );
+    }
+    render(
+      <KabooActivityProvider>
+        <UserRunProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitRunStarted("run-1");
+      fakeAgent.emitCustom(MESSAGE_META_EVENT, { messageId: "u1", role: "user", createdAt: 1000 });
+      fakeAgent.emitRunStarted("run-2");
+      fakeAgent.emitCustom(MESSAGE_META_EVENT, { messageId: "u2", role: "user", createdAt: 2000 });
+    });
+    expect(screen.getByTestId("user-runs").textContent).toBe("u1=run-1:1000,u2=run-2:2000");
+  });
+
   it("records no runId before any run has started", () => {
     function RunProbe() {
       const meta = useMessageMeta();

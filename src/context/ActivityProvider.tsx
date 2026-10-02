@@ -123,6 +123,7 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
           | undefined;
         const messageId = value?.messageId;
         if (!messageId) return;
+        recordRunId(messageId);
         setMessageMeta((prev) => ({
           ...prev,
           [messageId]: {

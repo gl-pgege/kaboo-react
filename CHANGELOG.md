@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1]
+
+### Fixed
+
+- **No more empty "Thought for a few seconds" rows.** Models that sign their
+  thinking without sending its text produce reasoning messages with no
+  content, and CopilotKit drew a collapsed header for every one of them.
+  `KabooMessageView` now drops reasoning messages with no text (an encrypted
+  value alone does not count) and merges adjacent ones into a single block
+  that keeps the first message's id.
+- **The run-start indicator clears once the turn shows activity.** It stayed
+  up for the whole run whenever the work happened in delegated agents, so
+  "Working on it..." sat beside a live agent card. It now hides as soon as the
+  current turn has an activity group, delegated agents included, and groups
+  from earlier turns do not count. The current turn is the one the latest
+  user message started, so it survives an interrupt resume or a continuation.
+  A plain agent's own entry group is never drawn as a card and does not count
+  either. On streams without `kaboo.message_meta` (no kaboo-runtime) the
+  indicator hides while any group is active.
+
+### Changed
+
+- **`MessageMeta.runId` is set for user messages too**, from the run their
+  `kaboo.message_meta` event arrived in. `KabooMessageView` reads it to find
+  the current turn.
+
 ## [0.9.0]
 
 kaboo-workflows re-sent the whole activity tree on every change, which put long

@@ -277,11 +277,12 @@ export interface MessageMeta {
    */
   references?: unknown[];
   /**
-   * The AG-UI run that produced this message, derived from the event stream
-   * itself (the enclosing `RUN_STARTED` at the message's start event). Unlike
-   * CopilotKit's session-only message-to-run registry, this survives thread
-   * replay, where replayed messages would otherwise all be attributed to the
-   * synthetic connect run.
+   * The AG-UI run that produced this message, or for a user message the run
+   * that accepted it, derived from the event stream itself (the enclosing
+   * `RUN_STARTED` at the message's start event or its `kaboo.message_meta`
+   * event). Unlike CopilotKit's session-only message-to-run registry, this
+   * survives thread replay, where replayed messages would otherwise all be
+   * attributed to the synthetic connect run.
    */
   runId?: string;
 }

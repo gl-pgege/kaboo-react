@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   CopilotChatMessageView,
   CopilotChatAssistantMessage,
@@ -24,6 +25,26 @@ export interface KabooMessageViewProps extends CopilotChatMessageViewProps {
   slots?: KabooSlots;
 }
 
+type ChatMessage = NonNullable<CopilotChatMessageViewProps["messages"]>[number];
+
+function collapseReasoning(messages: ChatMessage[]): ChatMessage[] {
+  const out: ChatMessage[] = [];
+  for (const m of messages) {
+    if (m.role !== "reasoning") {
+      out.push(m);
+      continue;
+    }
+    if (!m.content?.trim()) continue;
+    const prev = out[out.length - 1];
+    if (prev?.role === "reasoning") {
+      out[out.length - 1] = { ...prev, content: `${prev.content}\n\n${m.content}` };
+    } else {
+      out.push(m);
+    }
+  }
+  return out;
+}
+
 function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageViewProps) {
   const { groups } = useActivity();
   const { copilotkit } = useCopilotKit();
@@ -33,10 +54,15 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
   const slots = { ...contextSlots, ...slotOverrides };
   const agentId = config?.agentId;
   const threadId = config?.threadId;
+  const visibleMessages = useMemo(
+    () => collapseReasoning(props.messages ?? []),
+    [props.messages],
+  );
 
   return (
     <CopilotChatMessageView
       {...props}
+      messages={visibleMessages}
       assistantMessage={
         KabooAssistantMessage as unknown as typeof CopilotChatAssistantMessage
       }
@@ -106,7 +132,15 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
           const key = groupTurnKey(g);
           return !key || !boundTurns.has(key);
         });
-        const showStartIndicator = isRunning && pending.length === 0;
+
+        const lastUser = list.filter((m) => m?.role === "user").pop();
+        const currentRunId = lastUser?.id ? messageMeta[lastUser.id]?.runId : undefined;
+        const currentTurn = currentRunId ? runToTurn.get(currentRunId) ?? currentRunId : undefined;
+        const visibleGroups = Object.values(groups).filter((g) => !g.inlineChatOwner);
+        const runStarted = currentTurn
+          ? visibleGroups.some((g) => groupTurnKey(g) === currentTurn)
+          : visibleGroups.some((g) => g.status === "active");
+        const showStartIndicator = isRunning && !runStarted;
         const StartIndicator = slots.runStartIndicator;
 
         return (
@@ -148,10 +182,16 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
  * cards render inside the message instead — so there's a seamless hand-off with
  * no duplication.
  *
+ * Reasoning messages with no text (thinking the model only signed or
+ * encrypted) are dropped, and adjacent ones are merged into one, so a turn
+ * shows one thought block per stretch of thinking instead of a row of empty
+ * "Thought for a few seconds" headers.
+ *
  * App-supplied {@link KabooSlots} (from `KabooProvider` or the `slots` prop)
  * plug in here: `runStartIndicator` replaces the bare cursor shown between
- * send and the first activity, and `turnFooter` / message footers render via
- * {@link KabooAssistantMessage} / {@link KabooUserMessage}.
+ * send and the current turn's first activity group, and `turnFooter` /
+ * message footers render via {@link KabooAssistantMessage} /
+ * {@link KabooUserMessage}.
  *
  * Wire it via the `messageView` slot of `CopilotChat`:
  *
