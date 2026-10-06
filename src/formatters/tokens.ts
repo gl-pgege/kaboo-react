@@ -38,22 +38,33 @@ export function formatCost(cost: number): string {
 }
 
 /**
- * Returns the cached share of input tokens as a whole percentage
- * (`0`–`100`), or `null` when the usage carries no cache accounting or no
- * input tokens.
+ * Returns the share of the prompt read from the provider's cache as a whole
+ * percentage (`0`–`100`), or `null` when the usage carries no cache reads.
+ *
+ * Bedrock and Anthropic count uncached input, cache reads and cache writes
+ * separately, so the prompt is the sum of the three.
  *
  * @example
  * ```ts
  * import { cachedShare } from "@pgege/kaboo-react";
  *
- * cachedShare({ inputTokens: 100, outputTokens: 0, totalTokens: 100, cacheReadInputTokens: 92 }); // 92
+ * cachedShare({ inputTokens: 100, cacheReadInputTokens: 300, cacheWriteInputTokens: 100 }); // 60
  * ```
  */
 export function cachedShare(usage: {
   inputTokens: number;
   cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
 }): number | null {
   const cached = usage.cacheReadInputTokens;
-  if (!cached || !usage.inputTokens) return null;
-  return Math.round((cached / usage.inputTokens) * 100);
+  if (!cached) return null;
+  return Math.round((cached / promptTokens(usage)) * 100);
+}
+
+export function promptTokens(usage: {
+  inputTokens: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+}): number {
+  return usage.inputTokens + (usage.cacheReadInputTokens ?? 0) + (usage.cacheWriteInputTokens ?? 0);
 }

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2]
+
+### Fixed
+
+- **The cached share no longer passes 100%.** `cachedShare`, and the "% cached"
+  in agent cards and the drill view, divided cache reads by `inputTokens`. But
+  Bedrock and Anthropic count uncached input, cache reads and cache writes
+  separately, so a run that read most of its prompt from the cache showed 166%,
+  and every share was overstated. It is now cache reads over the sum of the
+  three, and `TokenUsage` says that `inputTokens` leaves cache tokens out.
+- **"in" counts the whole prompt.** Agent cards and the drill view showed only
+  the uncached input beside the cached share; they now show the sum it is a
+  share of.
+
 ## [0.9.1]
 
 ### Fixed

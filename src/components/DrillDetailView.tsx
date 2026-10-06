@@ -13,7 +13,7 @@ import {
 } from "../utils/groups";
 import { AgentCard } from "./AgentCard";
 import { Timeline } from "./Timeline";
-import { cachedShare, formatCost, formatTokenCount } from "../formatters/tokens";
+import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 
 /**
  * Renders one unanchored interrupt through the renderer registered for its
@@ -105,7 +105,7 @@ export function DrillDetailView() {
         {group?.usage && group.usage.totalTokens > 0 && (
           <div className="kaboo-drill-usage">
             <span className="kaboo-drill-usage-item">
-              <strong>{formatTokenCount(group.usage.inputTokens)}</strong> in
+              <strong>{formatTokenCount(promptTokens(group.usage))}</strong> in
             </span>
             <span className="kaboo-drill-usage-item">
               <strong>{formatTokenCount(group.usage.outputTokens)}</strong> out

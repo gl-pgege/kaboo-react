@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import type { StreamGroup, TokenUsage } from "../types";
 import { isControlOnlyStatus, normalizeResult } from "../formatters/output";
-import { cachedShare, formatCost, formatTokenCount } from "../formatters/tokens";
+import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 import { MarkdownContent } from "./MarkdownContent";
 import { Timeline } from "./Timeline";
 import { useDrill } from "../hooks/useDrill";
@@ -33,7 +33,7 @@ export interface AgentCardProps {
 
 function tokenChipTitle(usage: TokenUsage): string {
   const parts = [
-    `${usage.inputTokens.toLocaleString()} in / ${usage.outputTokens.toLocaleString()} out tokens`,
+    `${promptTokens(usage).toLocaleString()} in / ${usage.outputTokens.toLocaleString()} out tokens`,
   ];
   const cached = cachedShare(usage);
   if (cached != null) parts.push(`${cached}% cached`);

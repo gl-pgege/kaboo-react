@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cachedShare, formatCost, formatTokenCount } from "./tokens";
+import { cachedShare, formatCost, formatTokenCount, promptTokens } from "./tokens";
 
 describe("formatTokenCount", () => {
   it("keeps counts under 1000 as-is", () => {
@@ -40,15 +40,34 @@ describe("formatCost", () => {
 });
 
 describe("cachedShare", () => {
-  it("returns the rounded percentage of cached input tokens", () => {
+  it("returns the share of the whole prompt read from the cache", () => {
+    expect(
+      cachedShare({
+        inputTokens: 332_236,
+        cacheReadInputTokens: 660_933,
+        cacheWriteInputTokens: 50_841,
+      }),
+    ).toBe(63);
     expect(
       cachedShare({ inputTokens: 168_107, cacheReadInputTokens: 111_817 }),
-    ).toBe(67);
+    ).toBe(40);
   });
 
-  it("returns null without cache accounting or input tokens", () => {
+  it("is 100 when the whole prompt came from the cache", () => {
+    expect(cachedShare({ inputTokens: 0, cacheReadInputTokens: 5 })).toBe(100);
+  });
+
+  it("counts the whole prompt as input", () => {
+    expect(
+      promptTokens({ inputTokens: 100, cacheReadInputTokens: 300, cacheWriteInputTokens: 100 }),
+    ).toBe(500);
+    expect(promptTokens({ inputTokens: 100 })).toBe(100);
+  });
+
+  it("returns null without cache reads", () => {
     expect(cachedShare({ inputTokens: 100 })).toBeNull();
-    expect(cachedShare({ inputTokens: 100, cacheReadInputTokens: 0 })).toBeNull();
-    expect(cachedShare({ inputTokens: 0, cacheReadInputTokens: 5 })).toBeNull();
+    expect(
+      cachedShare({ inputTokens: 100, cacheReadInputTokens: 0, cacheWriteInputTokens: 50 }),
+    ).toBeNull();
   });
 });

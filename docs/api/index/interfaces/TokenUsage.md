@@ -20,8 +20,8 @@ repeat completions (interrupt resumes, delegate re-entry).
 Defined in: [src/types.ts:146](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L146)
 
 Input tokens served from the provider's prompt cache (billed at a steep
-discount). Subset of [TokenUsage.inputTokens](#inputtokens). Absent on streams
-from services that predate cache accounting.
+discount), counted apart from [TokenUsage.inputTokens](#inputtokens). Absent on
+streams from services that predate cache accounting.
 
 ***
 
@@ -53,7 +53,7 @@ cost reporting.
 
 Defined in: [src/types.ts:136](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L136)
 
-Prompt/input tokens consumed.
+Prompt/input tokens consumed, not counting cache reads or writes.
 
 ***
 

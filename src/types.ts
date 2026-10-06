@@ -132,7 +132,7 @@ export interface InterruptRendererProps {
  * repeat completions (interrupt resumes, delegate re-entry).
  */
 export interface TokenUsage {
-  /** Prompt/input tokens consumed. */
+  /** Prompt/input tokens consumed, not counting cache reads or writes. */
   inputTokens: number;
   /** Completion/output tokens produced. */
   outputTokens: number;
@@ -140,8 +140,8 @@ export interface TokenUsage {
   totalTokens: number;
   /**
    * Input tokens served from the provider's prompt cache (billed at a steep
-   * discount). Subset of {@link TokenUsage.inputTokens}. Absent on streams
-   * from services that predate cache accounting.
+   * discount), counted apart from {@link TokenUsage.inputTokens}. Absent on
+   * streams from services that predate cache accounting.
    */
   cacheReadInputTokens?: number;
   /** Input tokens written to the provider's prompt cache. Absent on older streams. */
