@@ -13,11 +13,11 @@ endpoint to wire up.
 ## Install
 
 ```bash
-yarn add kaboo-react
+yarn add @pgege/kaboo-react
 # or
-npm install kaboo-react
+npm install @pgege/kaboo-react
 # or
-pnpm add kaboo-react
+pnpm add @pgege/kaboo-react
 ```
 
 Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
@@ -25,7 +25,7 @@ Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
 Import the stylesheet once, near your app root:
 
 ```ts
-import "kaboo-react/styles.css";
+import "@pgege/kaboo-react/styles.css";
 ```
 
 ## Quick start

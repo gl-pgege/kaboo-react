@@ -29,7 +29,7 @@ yarn examples:typecheck    # type-check examples/ against built types
     CopilotKit. **Put any CopilotKit-dependent code here, never in the main
     barrel.**
 - **Stylesheet.** `src/styles.css` is copied to `dist/styles.css` by tsup and
-  exported as `kaboo-react/styles.css`. Theming is via CSS variables only
+  exported as `@pgege/kaboo-react/styles.css`. Theming is via CSS variables only
   (`--background`/`--foreground`/`--card`/`--muted`/`--border` + `--kaboo-*`
   overrides). Do not add a CSS-in-JS dependency.
 - **Peer deps.** `react`, `react-dom`, `@copilotkit/react-core`. Do not add

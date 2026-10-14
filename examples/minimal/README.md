@@ -12,7 +12,7 @@ drill-down. This is the same pattern documented in the
 - Rendering live, hierarchical agent activity **inside the chat** via
   `KabooMessageView`.
 - Breadcrumb + detail drill-down with `GlassTabs` and `DrillDetailView`.
-- Importing the stylesheet with `import "kaboo-react/styles.css"`.
+- Importing the stylesheet with `import "@pgege/kaboo-react/styles.css"`.
 
 ## Prerequisites
 
