@@ -9,6 +9,20 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.10.1
+
+**Who:** anyone on CopilotKit 1.71.2 or later.
+
+The peer range now stops where this release is tested:
+
+```diff
+- "@copilotkit/react-core": ">=1.62.0"
++ "@copilotkit/react-core": ">=1.62.0 <1.71.2"
+```
+
+CopilotKit 1.71.2 and later bring in AG-UI 1.0 pieces, which the next minor
+release supports. Until then, stay on CopilotKit 1.71.1 or earlier.
+
 ## 0.10
 
 ### The built-in question card replaces custom clarification panels

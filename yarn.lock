@@ -941,7 +941,7 @@ __metadata:
     typescript: "npm:^5.8.3"
     vitest: "npm:^2"
   peerDependencies:
-    "@copilotkit/react-core": ">=1.62.0"
+    "@copilotkit/react-core": ">=1.62.0 <1.71.2"
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
   languageName: unknown
