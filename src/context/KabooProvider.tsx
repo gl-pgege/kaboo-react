@@ -10,6 +10,7 @@ import { KabooInlineCards } from "../integrations/KabooInlineCards";
 import { ReferencesProvider } from "../references/ReferencesProvider";
 import type { ReferenceProvider } from "../references/types";
 import { KabooSlotsProvider, type KabooSlots } from "./KabooSlots";
+import type { ApprovalScope } from "../types";
 
 /** Props for {@link KabooProvider}. */
 export interface KabooProviderProps {
@@ -21,8 +22,17 @@ export interface KabooProviderProps {
   threadId?: string;
   /** Renderers for structured agent outputs, keyed by output schema name. */
   structuredRenderers?: StructuredRenderers;
-  /** Per-interrupt-type renderer overrides for the built-in HITL handler. */
+  /**
+   * Renderer overrides for the built-in HITL handler, keyed by request kind:
+   * `approval`, `form`, or an app's own kind such as `files`.
+   */
   interruptRenderers?: KabooInterruptHandlerProps["renderers"];
+  /**
+   * The approval options the app allows. A request offers only the scopes
+   * both the agent and the app allow; `once` is always offered. Defaults to
+   * all three (`once`, `thread`, `always`).
+   */
+  approvalScopes?: ApprovalScope[];
   /**
    * Per-tool-name renderer overrides applied inside every {@link Timeline}
    * surface (agent cards, drill views). Keyed by exact tool name; a match
@@ -81,6 +91,7 @@ export function KabooProvider({
   threadId,
   structuredRenderers,
   interruptRenderers,
+  approvalScopes,
   toolRenderers,
   disableInterruptHandler = false,
   disableInlineCards = false,
@@ -100,7 +111,7 @@ export function KabooProvider({
       <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
         <DrillProvider>
           <InterruptBridgeProvider>
-            <InterruptRenderersProvider renderers={interruptRenderers}>
+            <InterruptRenderersProvider renderers={interruptRenderers} approvalScopes={approvalScopes}>
               <ToolRenderersProvider renderers={toolRenderers}>
                 <ReferencesProvider providers={references} syncObjectStateTo={agent}>
                   <KabooSlotsProvider value={slots ?? {}}>

@@ -2,6 +2,7 @@ export type {
   ToolCall, TimelineEntry, StreamGroup, ActivityState, DrillState,
   FormQuestion, ApprovalReason, FormReason, InterruptReason,
   InterruptData, InterruptRendererProps, MessageMeta, TokenUsage,
+  ApprovalScope, ApprovalSubject, ApprovalDecision, CustomRequestReason,
 } from "./types";
 
 export { KabooActivityProvider, StructuredRenderersContext } from "./context/ActivityProvider";
@@ -23,6 +24,7 @@ export type { ActiveInterrupt } from "./context/InterruptBridge";
 export {
   InterruptRenderersProvider,
   useInterruptRenderer,
+  useApprovalScopes,
 } from "./context/InterruptRenderers";
 export type { InterruptRenderers } from "./context/InterruptRenderers";
 export {
@@ -89,9 +91,14 @@ export { GlassTabs } from "./components/GlassTabs";
 export { DrillDetailView } from "./components/DrillDetailView";
 export { MarkdownContent } from "./components/MarkdownContent";
 export { InterruptRenderer } from "./components/InterruptRenderer";
+export { ApprovalActions, useApprovalDecision } from "./components/ApprovalActions";
+export type { ApprovalDecisionControls } from "./components/ApprovalActions";
+export { PermissionList } from "./components/PermissionList";
+export type { PermissionListProps, RememberedPermission } from "./components/PermissionList";
 export { Timeline } from "./components/Timeline";
 export type { TimelineProps } from "./components/Timeline";
 
+export { buildAnswerPayload, toFormQuestion } from "./formatters/askUser";
 export { formatToolInput } from "./formatters/input";
 export { formatToolResult, normalizeResult } from "./formatters/output";
 export { cachedShare, formatCost, formatTokenCount } from "./formatters/tokens";

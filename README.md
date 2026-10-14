@@ -152,6 +152,7 @@ references reach each agent.
 - [Human-in-the-loop](./docs/hitl.md)
 - [Activity panel & drill-down](./docs/activity-panel.md)
 - [The `@pgege/kaboo-react/copilotkit` subpath](./docs/copilotkit-subpath.md)
+- [Upgrading](./docs/upgrading.md)
 
 ## API reference
 

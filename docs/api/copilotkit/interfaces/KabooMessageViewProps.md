@@ -68,7 +68,7 @@ Indicates whether assistive technologies will present all, or only parts of, the
 
 ### aria-autocomplete?
 
-> `optional` **aria-autocomplete?**: `"none"` \| `"inline"` \| `"list"` \| `"both"`
+> `optional` **aria-autocomplete?**: `"none"` \| `"list"` \| `"inline"` \| `"both"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2498
 
@@ -242,7 +242,7 @@ aria-owns.
 
 ### aria-current?
 
-> `optional` **aria-current?**: `boolean` \| `"step"` \| `"date"` \| `"time"` \| `"true"` \| `"false"` \| `"page"` \| `"location"`
+> `optional` **aria-current?**: `boolean` \| `"step"` \| `"true"` \| `"false"` \| `"date"` \| `"time"` \| `"page"` \| `"location"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2542
 
@@ -413,7 +413,7 @@ in ARIA 1.1
 
 ### aria-haspopup?
 
-> `optional` **aria-haspopup?**: `boolean` \| `"true"` \| `"false"` \| `"dialog"` \| `"menu"` \| `"grid"` \| `"listbox"` \| `"tree"`
+> `optional` **aria-haspopup?**: `boolean` \| `"true"` \| `"false"` \| `"dialog"` \| `"grid"` \| `"listbox"` \| `"menu"` \| `"tree"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2586
 
@@ -843,7 +843,7 @@ aria-posinset.
 
 ### aria-sort?
 
-> `optional` **aria-sort?**: `"none"` \| `"other"` \| `"ascending"` \| `"descending"`
+> `optional` **aria-sort?**: `"none"` \| `"ascending"` \| `"descending"` \| `"other"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2698
 

@@ -30,7 +30,7 @@ gates re-keyed onto one delegating call), so each resolves independently.
 
 Defined in: [src/context/InterruptBridge.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L29)
 
-Cancel/reject this gate, resuming the run without a positive answer.
+Skip this request, resuming the run without an answer or an approval.
 
 #### Returns
 
@@ -60,11 +60,11 @@ Resume the run with the user's answer/approval payload.
 
 ### reason
 
-> **reason**: [`InterruptReason`](../type-aliases/InterruptReason.md)
+> **reason**: [`CustomRequestReason`](CustomRequestReason.md) \| [`InterruptReason`](../type-aliases/InterruptReason.md)
 
 Defined in: [src/context/InterruptBridge.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L25)
 
-Why the run paused, and what input it needs.
+Why the run paused, and what input it needs: a built-in kind or an app's own.
 
 ***
 

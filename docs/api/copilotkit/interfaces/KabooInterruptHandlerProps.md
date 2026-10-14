@@ -4,7 +4,7 @@
 
 # Interface: KabooInterruptHandlerProps
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:82](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L82)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:142](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L142)
 
 Props for [KabooInterruptHandler](../functions/KabooInterruptHandler.md).
 
@@ -14,7 +14,7 @@ Props for [KabooInterruptHandler](../functions/KabooInterruptHandler.md).
 
 > `optional` **agentId?**: `string`
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:84](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L84)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:144](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L144)
 
 Restrict handling to a single CopilotKit agent (optional).
 
@@ -24,7 +24,7 @@ Restrict handling to a single CopilotKit agent (optional).
 
 > `optional` **bridge?**: `boolean`
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:94](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L94)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:152](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L152)
 
 Also publish the active interrupts to the InterruptBridge so each renders
 inside the drill-down detail view (not just the chat). Defaults to `true`;
@@ -34,8 +34,8 @@ requires an `InterruptBridgeProvider` (included in `KabooProvider`).
 
 ### renderers?
 
-> `optional` **renderers?**: `Partial`\<`Record`\<`"approval"` \| `"form"`, `ComponentType`\<[`InterruptRendererProps`](../../index/interfaces/InterruptRendererProps.md)\>\>\>
+> `optional` **renderers?**: [`InterruptRenderers`](../../index/type-aliases/InterruptRenderers.md)
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:86](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L86)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:146](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L146)
 
-Per-interrupt-type renderer overrides.
+Renderer overrides keyed by request kind (`approval`, `form`, or an app's own).

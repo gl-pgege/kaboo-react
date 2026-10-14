@@ -1,14 +1,22 @@
 import { useEffect, useRef, type ReactElement } from "react";
-import { useInterrupt } from "@copilotkit/react-core/v2";
+import { useCopilotKit, useInterrupt } from "@copilotkit/react-core/v2";
 import {
   InterruptBridgePublisher,
+  useInterruptBridge,
   type ActiveInterrupt,
 } from "../context/InterruptBridge";
-import { useInterruptRenderer } from "../context/InterruptRenderers";
+import type { InterruptRenderers } from "../context/InterruptRenderers";
+import { InterruptPrompt } from "../components/InterruptPrompt";
 import { useActivity } from "../hooks/useActivity";
 import { pendingToolAnchorExists } from "../utils/groups";
 import { KabooAskUser } from "./KabooAskUser";
-import type { InterruptReason, InterruptRendererProps } from "../types";
+import type {
+  ApprovalDecision,
+  ApprovalReason,
+  CustomRequestReason,
+  InterruptReason,
+  InterruptRendererProps,
+} from "../types";
 
 /**
  * Chat-level fallback slot for one interrupt. Renders the prompt UI unless the
@@ -19,24 +27,54 @@ import type { InterruptReason, InterruptRendererProps } from "../types";
  */
 function ChatInterruptSlot({
   interrupt,
-  Renderer: RendererOverride,
+  Renderer,
 }: {
   interrupt: ActiveInterrupt;
-  Renderer?: React.ComponentType<InterruptRendererProps>;
+  Renderer?: React.ComponentType<InterruptRendererProps<any>>;
 }): ReactElement | null {
   const { groups } = useActivity();
-  const ContextRenderer = useInterruptRenderer(interrupt.reason.type);
-  const Renderer = RendererOverride ?? ContextRenderer;
   if (pendingToolAnchorExists(groups, interrupt.toolCallId)) {
     return null;
   }
+  return <InterruptPrompt interrupt={interrupt} Renderer={Renderer} />;
+}
+
+function isExpired(reason: ApprovalReason): boolean {
+  const deadline = reason.expiresAt ? Date.parse(reason.expiresAt) : NaN;
+  return Number.isFinite(deadline) && deadline <= Date.now();
+}
+
+/**
+ * "Approve all" / "Deny all" for two or more approvals waiting at once. Expired
+ * requests are dismissed rather than approved. Reads what was already answered
+ * from the bridge, since CopilotKit keeps the rendered interrupt element until
+ * the set of open interrupts changes.
+ */
+function ApprovalBatchBar({ approvals }: { approvals: ActiveInterrupt[] }): ReactElement | null {
+  const { answered } = useInterruptBridge();
+  const waiting = approvals.filter((a) => !answered.has(a.id));
+  if (waiting.length < 2) return null;
+  const approveAll = () => {
+    for (const a of waiting) {
+      if (isExpired(a.reason as ApprovalReason)) a.onCancel();
+      else a.onResolve({ status: "approved", scope: "once" } satisfies ApprovalDecision);
+    }
+  };
+  const denyAll = () => {
+    for (const a of waiting) a.onResolve({ status: "cancelled" } satisfies ApprovalDecision);
+  };
   return (
-    <Renderer
-      reason={interrupt.reason}
-      toolCallId={interrupt.toolCallId}
-      onResolve={interrupt.onResolve}
-      onCancel={interrupt.onCancel}
-    />
+    <div className="kaboo-approval-batch" role="group" aria-label="Waiting approvals">
+      <span className="kaboo-approval-batch-count">{waiting.length} approvals waiting</span>
+      <div className="kaboo-interrupt-actions">
+        <button className="kaboo-interrupt-btn kaboo-interrupt-btn-approve" onClick={approveAll}>
+          Approve all
+        </button>
+        <button className="kaboo-interrupt-btn kaboo-interrupt-btn-reject" onClick={denyAll}>
+          Deny all
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -78,14 +116,34 @@ function ContinuationResolver({
   return null;
 }
 
+/**
+ * Sending a message while a question or approval waits skips it: the person
+ * moved on. The AG-UI client refuses to start a run until every open request
+ * is answered, so the stale requests are dropped from the agent just before
+ * the run starts; the run then carries the new message as a fresh turn, and
+ * the agent closes what it was waiting on as skipped.
+ */
+function useSkipOnSend(agentId: string | undefined): void {
+  const { copilotkit } = useCopilotKit();
+  useEffect(() => {
+    const subscription = copilotkit.subscribe({
+      onAgentRunStarted: ({ agent }) => {
+        if (agentId && agent.agentId !== agentId) return;
+        if (!agent.pendingInterrupts || agent.pendingInterrupts.length === 0) return;
+        if (agent.messages[agent.messages.length - 1]?.role !== "user") return;
+        agent.pendingInterrupts = [];
+      },
+    });
+    return () => subscription.unsubscribe();
+  }, [copilotkit, agentId]);
+}
+
 /** Props for {@link KabooInterruptHandler}. */
 export interface KabooInterruptHandlerProps {
   /** Restrict handling to a single CopilotKit agent (optional). */
   agentId?: string;
-  /** Per-interrupt-type renderer overrides. */
-  renderers?: Partial<
-    Record<InterruptReason["type"], React.ComponentType<InterruptRendererProps>>
-  >;
+  /** Renderer overrides keyed by request kind (`approval`, `form`, or an app's own). */
+  renderers?: InterruptRenderers;
   /**
    * Also publish the active interrupts to the InterruptBridge so each renders
    * inside the drill-down detail view (not just the chat). Defaults to `true`;
@@ -103,12 +161,36 @@ export interface KabooInterruptHandlerProps {
  * `resolve()`, which would only ever answer the first) is what keeps N parallel
  * gates from wedging. Prompts anchored to an on-screen tool render inline at that
  * tool's position; the rest fall back to the chat slot.
+ *
+ * Two or more approvals waiting at once get "Approve all" and "Deny all". A
+ * message sent while anything waits skips it, so the chat is never stuck.
+ *
+ * @example
+ * ```tsx
+ * import { CopilotKit } from "@copilotkit/react-core/v2";
+ * import { InterruptBridgeProvider } from "@pgege/kaboo-react";
+ * import { KabooInterruptHandler } from "@pgege/kaboo-react/copilotkit";
+ *
+ * function Hitl({ children }: { children: React.ReactNode }) {
+ *   return (
+ *     <CopilotKit runtimeUrl="/api/copilotkit" agent="assistant">
+ *       <InterruptBridgeProvider>
+ *         <KabooInterruptHandler agentId="assistant" />
+ *         {children}
+ *       </InterruptBridgeProvider>
+ *     </CopilotKit>
+ *   );
+ * }
+ * ```
  */
 export function KabooInterruptHandler({
   agentId,
   renderers,
   bridge = true,
 }: KabooInterruptHandlerProps): ReactElement | null {
+  const { markAnswered } = useInterruptBridge();
+  useSkipOnSend(agentId);
+
   useInterrupt({
     ...(agentId ? { agentId } : {}),
     render: ({ interrupts, resolve, cancel }) => {
@@ -125,14 +207,21 @@ export function KabooInterruptHandler({
           if (continuations.includes(intr.id)) return null;
           const reason = (intr?.metadata ?? intr?.reason) as
             | InterruptReason
+            | CustomRequestReason
             | undefined;
           if (!reason || !reason.type) return null;
           return {
             id: intr.id,
             reason,
             toolCallId: (intr as { toolCallId?: string }).toolCallId,
-            onResolve: (payload: unknown) => resolve(payload, intr.id),
-            onCancel: () => cancel(intr.id),
+            onResolve: (payload: unknown) => {
+              markAnswered(intr.id);
+              resolve(payload, intr.id);
+            },
+            onCancel: () => {
+              markAnswered(intr.id);
+              cancel(intr.id);
+            },
           };
         })
         .filter((x): x is ActiveInterrupt => x !== null);
@@ -145,16 +234,15 @@ export function KabooInterruptHandler({
         return <>{resumer}</>;
       }
 
+      const approvals = active.filter((a) => a.reason.type === "approval");
+
       return (
         <>
           {resumer}
           {bridge && <InterruptBridgePublisher interrupts={active} />}
+          {approvals.length > 1 && <ApprovalBatchBar approvals={approvals} />}
           {active.map((a) => (
-            <ChatInterruptSlot
-              key={a.id}
-              interrupt={a}
-              Renderer={renderers?.[a.reason.type]}
-            />
+            <ChatInterruptSlot key={a.id} interrupt={a} Renderer={renderers?.[a.reason.type]} />
           ))}
         </>
       );

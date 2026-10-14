@@ -20,7 +20,7 @@ export function AskUserSummary({
 }: {
   questions: FormQuestion[];
   answers: Record<string, unknown>;
-  /** Render as a declined prompt: no answers were given (the user dismissed it). */
+  /** Render as a skipped prompt: no answers were given (the person skipped it or moved on). */
   declined?: boolean;
 }): ReactElement {
   return (
@@ -34,7 +34,7 @@ export function AskUserSummary({
             <div
               className={`kaboo-askuser-answer ${hasAnswer ? "" : declined ? "kaboo-askuser-answer-declined" : "kaboo-askuser-answer-empty"}`}
             >
-              {hasAnswer ? formatAnswer(answer) : declined ? "Declined by user" : "No answer"}
+              {hasAnswer ? formatAnswer(answer) : declined ? "Skipped" : "No answer"}
             </div>
           </div>
         );

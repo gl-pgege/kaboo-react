@@ -2,7 +2,7 @@ import { useDefaultRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { ToolRow } from "../components/ToolRow";
 import { useInterruptFor } from "../context/InterruptBridge";
-import { useInterruptRenderer } from "../context/InterruptRenderers";
+import { InterruptPrompt } from "../components/InterruptPrompt";
 import { isControlOnlyStatus } from "../formatters/output";
 import type { StreamGroup, ToolCall } from "../types";
 
@@ -41,16 +41,8 @@ function isDelegateSpawn(
  */
 function InlineToolGate({ toolCallId }: { toolCallId: string }) {
   const interrupt = useInterruptFor(toolCallId);
-  const Renderer = useInterruptRenderer(interrupt?.reason.type ?? "approval");
   if (!interrupt) return null;
-  return (
-    <Renderer
-      reason={interrupt.reason}
-      toolCallId={interrupt.toolCallId}
-      onResolve={interrupt.onResolve}
-      onCancel={interrupt.onCancel}
-    />
-  );
+  return <InterruptPrompt interrupt={interrupt} />;
 }
 
 /**

@@ -5,13 +5,13 @@ import {
   useInterruptBridge,
   type ActiveInterrupt,
 } from "../context/InterruptBridge";
-import { useInterruptRenderer } from "../context/InterruptRenderers";
 import {
   directChildren,
   partitionChildrenByToolCall,
   pendingToolAnchorExists,
 } from "../utils/groups";
 import { AgentCard } from "./AgentCard";
+import { InterruptPrompt } from "./InterruptPrompt";
 import { Timeline } from "./Timeline";
 import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 
@@ -21,15 +21,7 @@ import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../form
  * surface ({@link ChatInterruptSlot}) and the anchored timeline rows.
  */
 function DrillInterruptSlot({ interrupt }: { interrupt: ActiveInterrupt }) {
-  const Renderer = useInterruptRenderer(interrupt.reason.type);
-  return (
-    <Renderer
-      reason={interrupt.reason}
-      toolCallId={interrupt.toolCallId}
-      onResolve={interrupt.onResolve}
-      onCancel={interrupt.onCancel}
-    />
-  );
+  return <InterruptPrompt interrupt={interrupt} />;
 }
 
 /**

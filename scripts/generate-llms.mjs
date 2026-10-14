@@ -36,6 +36,7 @@ const NAV = [
   { title: "Activity panel", path: "docs/activity-panel.md", url: `${PAGES}activity-panel/` },
   { title: "CopilotKit subpath", path: "docs/copilotkit-subpath.md", url: `${PAGES}copilotkit-subpath/` },
   { title: "Troubleshooting", path: "docs/troubleshooting.md", url: `${PAGES}troubleshooting/` },
+  { title: "Upgrading", path: "docs/upgrading.md", url: `${PAGES}upgrading/` },
   { title: "API inventory", path: "docs/api-inventory.md", url: `${PAGES}api-inventory/` },
 ];
 

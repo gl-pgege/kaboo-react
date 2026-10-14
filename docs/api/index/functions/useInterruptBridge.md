@@ -6,11 +6,12 @@
 
 > **useInterruptBridge**(): `object`
 
-Defined in: [src/context/InterruptBridge.tsx:92](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L92)
+Defined in: [src/context/InterruptBridge.tsx:111](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L111)
 
-Reads the InterruptBridge: the list of open interrupts plus `publish`. Most
-consumers want [useInterruptFor](useInterruptFor.md) instead; use this to inspect or drive
-the whole set.
+Reads the InterruptBridge: the list of open interrupts plus `publish`, and
+which of them were already answered. Most consumers want
+[useInterruptFor](useInterruptFor.md) instead; use this to inspect or drive the whole set —
+for example a "waiting for you" badge counting open questions and approvals.
 
 ## Returns
 
@@ -19,6 +20,28 @@ the whole set.
 > **active**: [`ActiveInterrupt`](../interfaces/ActiveInterrupt.md)[]
 
 Every open interrupt from the current run, in emission order.
+
+### answered
+
+> **answered**: `ReadonlySet`\<`string`\>
+
+Ids of open interrupts already answered while the run waits on the rest.
+
+### markAnswered
+
+> **markAnswered**: (`id`) => `void`
+
+Record that an open interrupt was answered.
+
+#### Parameters
+
+##### id
+
+`string`
+
+#### Returns
+
+`void`
 
 ### publish
 
@@ -41,8 +64,9 @@ Replace the set of interrupts published to the bridge.
 ```tsx
 import { useInterruptBridge } from "@pgege/kaboo-react";
 
-function OpenGateCount() {
-  const { active } = useInterruptBridge();
-  return <span>{active.length} open</span>;
+function WaitingBadge() {
+  const { active, answered } = useInterruptBridge();
+  const waiting = active.filter((i) => !answered.has(i.id)).length;
+  return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
 }
 ```

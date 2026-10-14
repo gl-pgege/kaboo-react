@@ -46,3 +46,45 @@ Because components read `--background` / `--foreground` / `--card` etc., dark mo
 works by toggling those tokens the same way you do for the rest of your app (for
 example, a `.dark` class on `<html>` that redefines the variables). No
 kaboo-specific dark-mode configuration is required.
+
+## Questions and approvals
+
+The question card, the approval card, the batch bar and the permission list use
+the same tokens (`--kaboo-card`, `--kaboo-border`, `--kaboo-muted`,
+`--kaboo-success`, `--kaboo-success-bg`, `--kaboo-accent`, `--kaboo-warning`)
+and a stable set of class names, so you restyle them instead of rebuilding them.
+These names are part of the public surface and change only with an entry in the
+upgrade guide.
+
+| Element | Class |
+|---|---|
+| Any request card | `kaboo-interrupt` (with `kaboo-interrupt-approval`, `kaboo-interrupt-form` or `kaboo-interrupt-custom`) |
+| Card heading | `kaboo-interrupt-header`, `kaboo-interrupt-message` |
+| Buttons | `kaboo-interrupt-btn`, plus `-approve`, `-reject`, `-next`, `-back`, `-skip` |
+| Question text, steps | `kaboo-interrupt-question`, `kaboo-interrupt-progress` |
+| Options | `kaboo-interrupt-choices`, `kaboo-interrupt-option`, `kaboo-interrupt-option-selected` |
+| The Other row | `kaboo-interrupt-option-other`, `kaboo-interrupt-other-input` |
+| What a wider approval covers ("Applies to …"), input | `kaboo-approval-covers`, `kaboo-interrupt-details`, `kaboo-interrupt-pre` |
+| Approval buttons | `kaboo-approval-actions`, `kaboo-approval-scope` (`-thread`, `-always`), `kaboo-approval-dismiss` |
+| Deny with a reason | `kaboo-approval-deny`, `kaboo-approval-reason` |
+| Deadline | `kaboo-approval-expiry`, `kaboo-approval-expired` |
+| Approve all / Deny all | `kaboo-approval-batch`, `kaboo-approval-batch-count` |
+| Answered | `kaboo-interrupt-responded` |
+| Remembered permissions | `kaboo-permissions`, `kaboo-permission`, `kaboo-permission-label`, `kaboo-permission-scope`, `kaboo-permission-revoke` |
+
+For example, pill-shaped options and a brand-coloured selection:
+
+```css
+.kaboo-interrupt-option {
+  border-radius: 999px;
+}
+.kaboo-interrupt-option-selected,
+.kaboo-interrupt-btn-approve {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+```
+
+Replace a card entirely with `interruptRenderers` only when its structure must
+change — see [Human-in-the-loop](hitl.md#custom-renderers).

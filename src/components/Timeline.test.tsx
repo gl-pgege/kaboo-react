@@ -131,7 +131,7 @@ describe("Timeline ask_user rendering", () => {
     expect(screen.getByText(/Searching the web|research_search_web/)).toBeInTheDocument();
   });
 
-  it("renders a declined ask_user in order as a 'Declined by user' Q&A", () => {
+  it("renders a skipped ask_user in order as a 'Skipped' Q&A", () => {
     const askTool: ToolCall = {
       toolUseId: "a5",
       toolName: "ask_user",
@@ -142,7 +142,7 @@ describe("Timeline ask_user rendering", () => {
     render(<Timeline timeline={refs(askTool)} tools={[askTool]} active={false} />);
 
     expect(screen.getByText("Which segment?")).toBeInTheDocument();
-    expect(screen.getByText("Declined by user")).toBeInTheDocument();
+    expect(screen.getByText("Skipped")).toBeInTheDocument();
   });
 });
 

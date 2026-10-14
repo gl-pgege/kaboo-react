@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import type { InterruptReason } from "../types";
+import type { CustomRequestReason, InterruptReason } from "../types";
 
 /**
  * An open interrupt published onto the InterruptBridge so an owning agent card
@@ -21,11 +21,11 @@ export interface ActiveInterrupt {
    * gates re-keyed onto one delegating call), so each resolves independently.
    */
   id: string;
-  /** Why the run paused, and what input it needs. */
-  reason: InterruptReason;
+  /** Why the run paused, and what input it needs: a built-in kind or an app's own. */
+  reason: InterruptReason | CustomRequestReason;
   /** Resume the run with the user's answer/approval payload. */
   onResolve: (payload: unknown) => void;
-  /** Cancel/reject this gate, resuming the run without a positive answer. */
+  /** Skip this request, resuming the run without an answer or an approval. */
   onCancel: () => void;
   /**
    * The originating tool-call id, when the interrupt was raised by a tool (e.g.
@@ -40,11 +40,18 @@ interface InterruptBridgeValue {
   /** Every open interrupt from the current run, in emission order. */
   active: ActiveInterrupt[];
   publish: (interrupts: ActiveInterrupt[]) => void;
+  /** Ids of open interrupts already answered while the run waits on the rest. */
+  answered: ReadonlySet<string>;
+  markAnswered: (id: string) => void;
 }
+
+const NONE: ReadonlySet<string> = new Set();
 
 const InterruptBridgeContext = createContext<InterruptBridgeValue>({
   active: [],
   publish: () => {},
+  answered: NONE,
+  markAnswered: () => {},
 });
 
 /**
@@ -63,29 +70,41 @@ const InterruptBridgeContext = createContext<InterruptBridgeValue>({
  */
 export function InterruptBridgeProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState<ActiveInterrupt[]>([]);
+  const [answered, setAnswered] = useState<ReadonlySet<string>>(NONE);
   const publish = useCallback((interrupts: ActiveInterrupt[]) => {
     setActive(interrupts);
+    setAnswered((prev) => {
+      if (prev.size === 0) return prev;
+      const open = new Set(interrupts.map((i) => i.id));
+      const kept = [...prev].filter((id) => open.has(id));
+      return kept.length === prev.size ? prev : new Set(kept);
+    });
+  }, []);
+  const markAnswered = useCallback((id: string) => {
+    setAnswered((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   }, []);
 
   return (
-    <InterruptBridgeContext.Provider value={{ active, publish }}>
+    <InterruptBridgeContext.Provider value={{ active, publish, answered, markAnswered }}>
       {children}
     </InterruptBridgeContext.Provider>
   );
 }
 
 /**
- * Reads the InterruptBridge: the list of open interrupts plus `publish`. Most
- * consumers want {@link useInterruptFor} instead; use this to inspect or drive
- * the whole set.
+ * Reads the InterruptBridge: the list of open interrupts plus `publish`, and
+ * which of them were already answered. Most consumers want
+ * {@link useInterruptFor} instead; use this to inspect or drive the whole set —
+ * for example a "waiting for you" badge counting open questions and approvals.
  *
  * @example
  * ```tsx
  * import { useInterruptBridge } from "@pgege/kaboo-react";
  *
- * function OpenGateCount() {
- *   const { active } = useInterruptBridge();
- *   return <span>{active.length} open</span>;
+ * function WaitingBadge() {
+ *   const { active, answered } = useInterruptBridge();
+ *   const waiting = active.filter((i) => !answered.has(i.id)).length;
+ *   return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
  * }
  * ```
  */
@@ -94,6 +113,10 @@ export function useInterruptBridge(): {
   active: ActiveInterrupt[];
   /** Replace the set of interrupts published to the bridge. */
   publish: (interrupts: ActiveInterrupt[]) => void;
+  /** Ids of open interrupts already answered while the run waits on the rest. */
+  answered: ReadonlySet<string>;
+  /** Record that an open interrupt was answered. */
+  markAnswered: (id: string) => void;
 } {
   return useContext(InterruptBridgeContext);
 }
@@ -102,6 +125,16 @@ export function useInterruptBridge(): {
  * The first open interrupt anchored to a given tool-call id, or `undefined`.
  * Lets a tool row claim and render its own gate inline while N concurrent gates
  * are open, each anchored to a distinct tool call.
+ *
+ * @example
+ * ```tsx
+ * import { useInterruptFor } from "@pgege/kaboo-react";
+ *
+ * function GateBadge({ toolCallId }: { toolCallId: string }) {
+ *   const interrupt = useInterruptFor(toolCallId);
+ *   return interrupt ? <span>Waiting for you</span> : null;
+ * }
+ * ```
  */
 export function useInterruptFor(
   toolCallId: string | undefined,
@@ -117,6 +150,15 @@ export function useInterruptFor(
  * CopilotKit surfaces every open interrupt at once, so this takes the full list
  * and keeps the latest resolve/cancel callbacks in a ref — their per-render
  * identity churn must not re-publish (only the interrupt set should).
+ *
+ * @example
+ * ```tsx
+ * import { InterruptBridgePublisher, type ActiveInterrupt } from "@pgege/kaboo-react";
+ *
+ * function Publish({ interrupts }: { interrupts: ActiveInterrupt[] }) {
+ *   return <InterruptBridgePublisher interrupts={interrupts} />;
+ * }
+ * ```
  */
 export function InterruptBridgePublisher({
   interrupts,

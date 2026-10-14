@@ -6,7 +6,7 @@
 
 > **DrillDetailView**(): `Element`
 
-Defined in: [src/components/DrillDetailView.tsx:55](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/DrillDetailView.tsx#L55)
+Defined in: [src/components/DrillDetailView.tsx:47](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/DrillDetailView.tsx#L47)
 
 Detail pane for the currently drilled-in group: its task, full timeline
 (with delegated sub-agents interleaved at their tool-call position), any

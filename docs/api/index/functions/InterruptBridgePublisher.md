@@ -6,7 +6,7 @@
 
 > **InterruptBridgePublisher**(`__namedParameters`): `null`
 
-Defined in: [src/context/InterruptBridge.tsx:121](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L121)
+Defined in: [src/context/InterruptBridge.tsx:163](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L163)
 
 Publishes the current set of open interrupts to the bridge so each owning
 agent card can render its prompt inline at the matching tool-call position.
@@ -25,3 +25,13 @@ identity churn must not re-publish (only the interrupt set should).
 ## Returns
 
 `null`
+
+## Example
+
+```tsx
+import { InterruptBridgePublisher, type ActiveInterrupt } from "@pgege/kaboo-react";
+
+function Publish({ interrupts }: { interrupts: ActiveInterrupt[] }) {
+  return <InterruptBridgePublisher interrupts={interrupts} />;
+}
+```

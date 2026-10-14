@@ -4,20 +4,31 @@
 
 # Interface: FormQuestion
 
-Defined in: [src/types.ts:54](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L54)
+Defined in: [src/types.ts:55](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L55)
 
-A single question in a human-in-the-loop form interrupt. `type` selects the
-input control; `options` supplies the choices for `radio`/`checkbox`.
+A single multiple-choice question in a human-in-the-loop form interrupt. The
+person picks one option (or several when `multiple`), and can always choose
+Other to answer in their own words — the card adds that choice.
 
 ## Properties
 
-### options?
+### multiple?
 
-> `optional` **options?**: `string`[]
+> `optional` **multiple?**: `boolean`
 
-Defined in: [src/types.ts:60](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L60)
+Defined in: [src/types.ts:61](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L61)
 
-Selectable choices for `radio`/`checkbox` questions.
+Whether the person may choose several options.
+
+***
+
+### options
+
+> **options**: `string`[]
+
+Defined in: [src/types.ts:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L59)
+
+The choices, two or more.
 
 ***
 
@@ -25,16 +36,21 @@ Selectable choices for `radio`/`checkbox` questions.
 
 > **question**: `string`
 
-Defined in: [src/types.ts:56](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L56)
+Defined in: [src/types.ts:57](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L57)
 
 The prompt text shown to the user.
 
 ***
 
-### type
+### ~~type?~~
 
-> **type**: `"text"` \| `"radio"` \| `"checkbox"`
+> `optional` **type?**: `"text"` \| `"radio"` \| `"checkbox"`
 
-Defined in: [src/types.ts:58](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L58)
+Defined in: [src/types.ts:68](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L68)
 
-Which input control to render for this question.
+Control type sent by kaboo-workflows before 0.27 (`checkbox` meant
+multi-select). Read only when `multiple` is absent.
+
+#### Deprecated
+
+Use `multiple`.

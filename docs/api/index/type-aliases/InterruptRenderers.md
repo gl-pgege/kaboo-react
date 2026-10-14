@@ -4,8 +4,9 @@
 
 # Type Alias: InterruptRenderers
 
-> **InterruptRenderers** = `Partial`\<`Record`\<[`InterruptReason`](InterruptReason.md)\[`"type"`\], `ComponentType`\<[`InterruptRendererProps`](../interfaces/InterruptRendererProps.md)\>\>\>
+> **InterruptRenderers** = `Record`\<`string`, `ComponentType`\<[`InterruptRendererProps`](../interfaces/InterruptRendererProps.md)\<`any`\>\> \| `undefined`\>
 
-Defined in: [src/context/InterruptRenderers.tsx:6](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptRenderers.tsx#L6)
+Defined in: [src/context/InterruptRenderers.tsx:9](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptRenderers.tsx#L9)
 
-Per-interrupt-type renderer overrides, keyed by `reason.type`.
+Interrupt renderer overrides, keyed by the request's `reason.type`: the
+built-in `approval` and `form`, or an app's own kind such as `files`.

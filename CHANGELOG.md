@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0]
+
+See [Upgrading](docs/upgrading.md#010) for the code before and after.
+
+### Added
+
+- **A built-in multiple-choice question card:** the agent's options, single or
+  multi-select, an Other row with a text field on every question, Submit and
+  Skip, styled with the theme tokens.
+- **A richer approval card:** Approve, "Allow for this chat" and "Always allow"
+  when the agent offers them (narrowed for the whole app by `approvalScopes`
+  on `KabooProvider`), with "Applies to …" naming what they cover; Deny with an
+  optional reason; Approve all and Deny all with two or more approvals waiting;
+  a deadline countdown and Dismiss once it has passed. Tool-requested approvals
+  render on the same card.
+- **`ApprovalActions` and `useApprovalDecision`** keep custom approval cards
+  standard; `PermissionList` renders remembered permissions with Revoke.
+- **Custom request kinds:** `interruptRenderers` is keyed by any request kind,
+  with a fallback card showing the message and Skip.
+
+### Changed
+
+- **Breaking: no free-text box on the question card.** Other replaces it; an
+  older agent's question without options is answered through Other alone.
+- **Breaking: Deny replaces Reject** and is sent through
+  `onResolve({ status: "cancelled", reason })`; `onCancel()` now means skip.
+  Approve sends a scope: `{ status: "approved", scope: "once" }`.
+- **Breaking: custom request kinds replace `kaboo_kind`.**
+- **Sending a message skips what is waiting** instead of being refused by the
+  AG-UI client and lost.
+- **Wording:** a skipped question reads "Skipped" (was "Declined by user").
+
 ## [0.9.2]
 
 ### Fixed

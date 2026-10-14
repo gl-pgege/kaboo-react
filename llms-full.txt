@@ -154,6 +154,7 @@ references reach each agent.
 - [Human-in-the-loop](./docs/hitl.md)
 - [Activity panel & drill-down](./docs/activity-panel.md)
 - [The `@pgege/kaboo-react/copilotkit` subpath](./docs/copilotkit-subpath.md)
+- [Upgrading](./docs/upgrading.md)
 
 ## API reference
 
@@ -521,6 +522,48 @@ Because components read `--background` / `--foreground` / `--card` etc., dark mo
 works by toggling those tokens the same way you do for the rest of your app (for
 example, a `.dark` class on `<html>` that redefines the variables). No
 kaboo-specific dark-mode configuration is required.
+
+## Questions and approvals
+
+The question card, the approval card, the batch bar and the permission list use
+the same tokens (`--kaboo-card`, `--kaboo-border`, `--kaboo-muted`,
+`--kaboo-success`, `--kaboo-success-bg`, `--kaboo-accent`, `--kaboo-warning`)
+and a stable set of class names, so you restyle them instead of rebuilding them.
+These names are part of the public surface and change only with an entry in the
+upgrade guide.
+
+| Element | Class |
+|---|---|
+| Any request card | `kaboo-interrupt` (with `kaboo-interrupt-approval`, `kaboo-interrupt-form` or `kaboo-interrupt-custom`) |
+| Card heading | `kaboo-interrupt-header`, `kaboo-interrupt-message` |
+| Buttons | `kaboo-interrupt-btn`, plus `-approve`, `-reject`, `-next`, `-back`, `-skip` |
+| Question text, steps | `kaboo-interrupt-question`, `kaboo-interrupt-progress` |
+| Options | `kaboo-interrupt-choices`, `kaboo-interrupt-option`, `kaboo-interrupt-option-selected` |
+| The Other row | `kaboo-interrupt-option-other`, `kaboo-interrupt-other-input` |
+| What a wider approval covers ("Applies to …"), input | `kaboo-approval-covers`, `kaboo-interrupt-details`, `kaboo-interrupt-pre` |
+| Approval buttons | `kaboo-approval-actions`, `kaboo-approval-scope` (`-thread`, `-always`), `kaboo-approval-dismiss` |
+| Deny with a reason | `kaboo-approval-deny`, `kaboo-approval-reason` |
+| Deadline | `kaboo-approval-expiry`, `kaboo-approval-expired` |
+| Approve all / Deny all | `kaboo-approval-batch`, `kaboo-approval-batch-count` |
+| Answered | `kaboo-interrupt-responded` |
+| Remembered permissions | `kaboo-permissions`, `kaboo-permission`, `kaboo-permission-label`, `kaboo-permission-scope`, `kaboo-permission-revoke` |
+
+For example, pill-shaped options and a brand-coloured selection:
+
+```css
+.kaboo-interrupt-option {
+  border-radius: 999px;
+}
+.kaboo-interrupt-option-selected,
+.kaboo-interrupt-btn-approve {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+```
+
+Replace a card entirely with `interruptRenderers` only when its structure must
+change — see [Human-in-the-loop](hitl.md#custom-renderers).
 
 ---
 
@@ -955,29 +998,76 @@ a resolver tool, so both stacks agree without translation.
 
 # Human-in-the-loop
 
-When a run pauses for human input, kaboo-react surfaces the prompt in the UI and
-resumes the run once the user answers. This works for a single gate and for many
-gates open at once.
+When a run pauses for the person, kaboo-react shows the request in the chat and
+resumes the run with the answer. There are two built-in kinds of request, on the
+same mechanism: a **question** the agent asks with `ask_user`, and a tool call
+waiting for **approval**. Apps add their own kinds (a file picker, a data
+source picker) with their own renderers.
 
-## Interrupt model
+A request waits with no time limit. The pause lives in the stored conversation,
+so the person can close the tab, come back days later on another device, and
+answer; if they send a message instead, the request is skipped.
 
-An interrupt's `reason` is one of two shapes (`InterruptReason`):
+## Questions
 
-- **`ApprovalReason`** — approve or reject a gated tool call (`type: "approval"`).
-- **`FormReason`** — answer one or more questions (`type: "form"`).
+Questions are multiple choice, like Cursor's:
 
-Each open interrupt has a unique `id` and is resolved independently.
+- Each question offers the agent's options, single or multi-select.
+- Every question has an **Other** row with its own text field, so the person
+  can always answer in their own words.
+- **Submit** sends the answers once every question has one; **Skip** answers
+  nothing. Several questions step through with Next and Back.
 
-## The built-in handler
+The answer is a `{question: answer}` map — a string, a list for multi-select,
+the person's own words for Other — and the answered Q&A stays in the
+transcript.
 
-`KabooProvider` mounts `KabooInterruptHandler` for you. CopilotKit can surface
-**several** open interrupts at once (e.g. two gated tools called in parallel); the
-handler renders one card per interrupt and resolves each by its own `id`, so N
-parallel gates never wedge.
+## Approvals
+
+The approval card shows what the agent wants to run (with its input under "View
+input") and the options the request offers:
+
+- **Approve** runs the call once.
+- **Allow for this chat** and **Always allow** appear when the agent offers
+  them — which it does only when the host remembers decisions (kaboo-runtime
+  with a grant store), or when a tool that enforces its own approvals offers
+  them. Above the buttons, "Applies to …" names what they cover (the request's
+  `subject.label`, such as "catalog changes in Summit Outfitters"). Either
+  also approves the other waiting requests with the same subject.
+- **Deny** asks for an optional reason the agent will read.
+- With a deadline, the card shows how long it stays answerable; once it has
+  passed, only **Dismiss** remains.
+
+With two or more approvals waiting, **Approve all** and **Deny all** appear.
+
+A tool that enforces its own approvals (kaboo-workflows'
+`interrupt.tool_approvals`) raises the same approval request, so the same card
+renders it. Its `reason.request` is the tool's own request ID; the card sends
+the same answers, and the host forwards the decision to the tool's service.
+
+## What each answer sends
+
+| The person… | `onResolve` / `onCancel` | The agent |
+|---|---|---|
+| approves | `onResolve({ status: "approved", scope })` | runs the call |
+| denies | `onResolve({ status: "cancelled", reason? })` | cancels it and reads the reason |
+| answers questions | `onResolve({ "<question>": answer })` | reads the answers |
+| skips or dismisses | `onCancel()` | cancels it as skipped |
+
+A denial is sent as `cancelled` so an agent that predates denial reasons can
+never mistake it for an approval.
+
+## Moving on
+
+If the person sends a message while a question or approval waits, what was
+waiting is skipped and the agent answers the message. You do not need to block
+the composer: the AG-UI client refuses to start a run while requests are open,
+so the built-in handler drops the stale requests just before the new message's
+run starts, and the agent closes them as skipped.
 
 ## Inline vs chat-slot placement
 
-- If an interrupt is anchored to a tool call that is still visible on screen, the
+- If a request is anchored to a tool call that is still visible on screen, the
   prompt renders **inline at that tool's position**, in chronological order.
 - Otherwise it renders in a fallback slot in the chat.
 
@@ -986,35 +1076,76 @@ right place" rather than floating on top of the turn.
 
 ## The InterruptBridge
 
-The bridge lets an owning agent card (and the drill-down view) render a prompt
-inline. Use `useInterruptFor(toolCallId)` to find the open interrupt anchored to a
-specific tool call:
+The bridge holds the open requests, and which of them were already answered, so
+any surface can render or count them. `useInterruptFor(toolCallId)` finds the
+request anchored to a tool call; `useInterruptBridge()` gives the whole set, for
+example for a "waiting for you" badge:
 
 ```tsx
-import { useInterruptFor } from "@pgege/kaboo-react";
+import { useInterruptBridge } from "@pgege/kaboo-react";
 
-function GateBadge({ toolCallId }: { toolCallId: string }) {
-  const interrupt = useInterruptFor(toolCallId);
-  return <span>{interrupt ? "Awaiting input" : "OK"}</span>;
+export function WaitingBadge() {
+  const { active, answered } = useInterruptBridge();
+  const waiting = active.filter((i) => !answered.has(i.id)).length;
+  return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
 }
 ```
 
 `InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
 pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.
 
-## Custom renderers
+## Choosing the approval options
 
-Override the default approval/form UI per interrupt type via `interruptRenderers`.
-A renderer receives `InterruptRendererProps` (the `reason` plus
-`onResolve`/`onCancel`):
+`approvalScopes` on `KabooProvider` narrows what the approval card offers for
+the whole app. A request offers only the scopes both the agent and the app
+allow; Approve (`once`) is always offered.
 
 ```tsx
-import { KabooProvider, InterruptRenderer } from "@pgege/kaboo-react";
-import type { InterruptRendererProps } from "@pgege/kaboo-react";
+import { KabooProvider } from "@pgege/kaboo-react";
 
-function MyApproval(props: InterruptRendererProps) {
-  // Wrap or fully replace the default UI.
-  return <InterruptRenderer {...props} />;
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      approvalScopes={["once", "thread"]}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+## Styling
+
+The built-in cards read the theme tokens and use a stable set of class names, so
+most apps restyle them rather than replace them — see
+[Theming](theming.md#questions-and-approvals).
+
+## Custom renderers
+
+`interruptRenderers` replaces the UI for a request kind: the built-in `approval`
+and `form`, or an app's own kind. A renderer receives `InterruptRendererProps`
+(the `reason` plus `onResolve`/`onCancel`), typed with the reason it handles.
+
+### A custom approval card that keeps the standard options
+
+Render your own summary and reuse `ApprovalActions` (or `useApprovalDecision`
+for your own buttons), so the scopes, deny reason, deadline and batch behaviour
+stay standard:
+
+```tsx
+import { ApprovalActions, KabooProvider } from "@pgege/kaboo-react";
+import type { ApprovalReason, InterruptRendererProps } from "@pgege/kaboo-react";
+
+function ChangeCard(props: InterruptRendererProps<ApprovalReason>) {
+  return (
+    <div className="kaboo-interrupt">
+      <p>{props.reason.subject?.label ?? props.reason.tool_name}</p>
+      <ApprovalActions {...props} />
+    </div>
+  );
 }
 
 export function App({ agent, threadId }: { agent: string; threadId: string }) {
@@ -1023,11 +1154,109 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
       runtimeUrl="/api/copilotkit"
       agent={agent}
       threadId={threadId}
-      interruptRenderers={{ approval: MyApproval }}
+      interruptRenderers={{ approval: ChangeCard }}
     >
       <div />
     </KabooProvider>
   );
+}
+```
+
+### A custom question card
+
+Read questions with `toFormQuestion` (it also reads the shape older agents send)
+and answer with `buildAnswerPayload`, so the agent and the answered Q&A card
+receive the same answer as from the built-in card:
+
+```tsx
+import { useState } from "react";
+import { buildAnswerPayload, toFormQuestion } from "@pgege/kaboo-react";
+import type { FormReason, InterruptRendererProps } from "@pgege/kaboo-react";
+
+export function ChipQuestions({ reason, onResolve, onCancel }: InterruptRendererProps<FormReason>) {
+  const questions = reason.questions.map(toFormQuestion);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  return (
+    <div>
+      {questions.map((q, idx) => (
+        <fieldset key={q.question}>
+          <legend>{q.question}</legend>
+          {q.options.map((option) => (
+            <button key={option} onClick={() => setAnswers({ ...answers, [idx]: option })}>
+              {option}
+            </button>
+          ))}
+        </fieldset>
+      ))}
+      <button onClick={() => onResolve(buildAnswerPayload(questions, answers))}>Send</button>
+      <button onClick={onCancel}>Skip</button>
+    </div>
+  );
+}
+```
+
+### An app's own request kind
+
+A tool that needs something other than an answer — a file, a data source —
+raises its own kind (`type: "files"`), and the app registers a renderer for it.
+Its fields arrive on `reason`. A kind with no registered renderer gets a minimal
+card with its `message` and Skip, so the chat never stalls.
+
+```tsx
+import { KabooProvider } from "@pgege/kaboo-react";
+import type { InterruptRendererProps } from "@pgege/kaboo-react";
+
+interface FilesRequest {
+  type: string;
+  message?: string;
+  accept?: string[];
+}
+
+function FilesPicker({ reason, onResolve, onCancel }: InterruptRendererProps<FilesRequest>) {
+  return (
+    <div>
+      <p>{reason.message}</p>
+      <input
+        type="file"
+        accept={reason.accept?.join(",")}
+        onChange={(e) => onResolve({ files: [...(e.target.files ?? [])].map((f) => f.name) })}
+      />
+      <button onClick={onCancel}>Skip</button>
+    </div>
+  );
+}
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      interruptRenderers={{ files: FilesPicker }}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+## Remembered permissions
+
+When the person chooses "Always allow", the host remembers it (kaboo-runtime's
+`runner.listGrants` / `revokeGrant`). `PermissionList` renders the list with a
+Revoke button each; your app loads and revokes through its own API:
+
+```tsx
+import { PermissionList, type RememberedPermission } from "@pgege/kaboo-react";
+
+export function AssistantPermissions({
+  grants,
+  revoke,
+}: {
+  grants: RememberedPermission[];
+  revoke: (id: string) => void;
+}) {
+  return <PermissionList grants={grants} onRevoke={revoke} />;
 }
 ```
 
@@ -1252,6 +1481,166 @@ why it's separate from the root entry.
 
 ---
 
+# docs/upgrading.md
+
+# Upgrading
+
+What changes between releases that you might have to act on, with the code
+before and after. If none of a release's items apply to you, upgrading is a
+version bump.
+
+The kaboo libraries can be upgraded in any order: this release reads what older
+agents send, and nothing it sends can be mistaken for an approval by an older
+agent. Features that span the stack light up once every piece is upgraded — see
+[Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
+
+## 0.10
+
+### The built-in question card replaces custom clarification panels
+
+**Who:** apps that register their own `form` renderer to get a Cursor-style
+question card — kaboo and kaboo-bmo route `ask_user` to a `ClarificationPanel`.
+
+The built-in card is now that card: the agent's options, single or
+multi-select, an **Other** row with a text field on every question, Submit and
+Skip. Delete the custom panel and style the built-in one with the theme tokens
+and class names ([Theming](theming.md#questions-and-approvals)).
+
+```diff
+- function KabooFormInterrupt(props: InterruptRendererProps) {
+-   // ...file and datasource branches...
+-   return (
+-     <ClarificationPanel
+-       questions={toClarificationQuestions(props.reason)}
+-       onSubmit={(answers) => props.onResolve(answersToPayload(props.reason, answers))}
+-     />
+-   );
+- }
+- const interruptRenderers = { form: KabooFormInterrupt }
++ // No form renderer: the built-in question card handles ask_user.
+```
+
+There is no free-text box any more. A question from an agent before
+kaboo-workflows 0.27 with no options is answered through Other alone; one with
+`type: "checkbox"` is multi-select.
+
+### Custom request kinds replace `kaboo_kind`
+
+**Who:** apps whose tools disguise a file or data source picker as a text
+question with a discriminator (`kind`, `kaboo_kind`) and route it from a `form`
+renderer.
+
+Register a renderer per kind instead. The tool raises `type: "files"` (see the
+kaboo-workflows [upgrade guide](https://gl-pgege.github.io/kaboo-workflows/upgrading/)),
+and its fields arrive on `reason`.
+
+```diff
+- if (reason.kaboo_kind === "files") {
+-   return <FilePanel context={reason.questions[0]?.question ?? ""} onSubmit={props.onResolve} />;
+- }
++ interruptRenderers={{ files: FilesRenderer, datasources: DatasourcesRenderer }}
+```
+
+```tsx
+import { KabooProvider, type InterruptRendererProps } from "@pgege/kaboo-react";
+
+interface FilesRequest {
+  type: string;
+  message?: string;
+  accept?: string[];
+}
+
+function FilesRenderer({ reason, onResolve, onCancel }: InterruptRendererProps<FilesRequest>) {
+  return (
+    <div>
+      <p>{reason.message}</p>
+      <input
+        type="file"
+        accept={reason.accept?.join(",")}
+        onChange={(e) => onResolve({ files: [...(e.target.files ?? [])].map((f) => f.name) })}
+      />
+      <button onClick={onCancel}>Skip</button>
+    </div>
+  );
+}
+
+export function Chat({ threadId }: { threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent="kaboo"
+      threadId={threadId}
+      interruptRenderers={{ files: FilesRenderer }}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+A kind with no registered renderer gets a minimal card with its `message` and
+Skip.
+
+### The approval card offers more, and sends more
+
+**Who:** everyone using the built-in approval card, and custom approval
+renderers.
+
+- **New options:** Allow for this chat and Always allow appear when the agent
+  offers them (kaboo-workflows 0.27 with a host that remembers decisions, or a
+  tool that enforces its own approvals); `approvalScopes` on `KabooProvider`
+  narrows them for the app. "Applies to …" above them names what they cover
+  (`reason.subject.label`).
+- **Deny replaces Reject,** with an optional reason. It is sent through
+  `onResolve({ status: "cancelled", reason })`, not `onCancel()`. `onCancel()`
+  now means skip.
+- **Approve sends a scope:** `{ status: "approved", scope: "once" }`.
+- **Approve all / Deny all** appear with two or more approvals waiting.
+- **Deadlines** are read from `reason.expiresAt` (the request's metadata); an
+  expired card offers only Dismiss.
+- **Tool-requested approvals** (kaboo-workflows' `interrupt.tool_approvals`)
+  render on the same card; `reason.request` carries the tool's request ID for
+  the host, and the card needs no change.
+
+Custom approval cards keep these by rendering `ApprovalActions` or using
+`useApprovalDecision`:
+
+```diff
+  function MyApproval(props: InterruptRendererProps) {
+-   return <button onClick={() => props.onResolve({ status: "approved" })}>OK</button>;
++   return <ApprovalActions {...(props as InterruptRendererProps<ApprovalReason>)} />;
+  }
+```
+
+### Sending a message skips what is waiting
+
+**Who:** everyone; no code change.
+
+Before, a message sent while a question or approval was open was refused by the
+AG-UI client and silently lost. Now the handler drops the stale requests just
+before the run starts, and the agent closes them as skipped and answers the
+message. Remove any composer workaround that blocked sending.
+
+### Types
+
+- `FormQuestion` is `{ question, options, multiple? }`; `type` is deprecated
+  and read only when `multiple` is absent. `toFormQuestion` reads either shape.
+- `InterruptRendererProps<R>` takes the reason it handles; it defaults to the
+  built-in kinds.
+- `InterruptRenderers` (and `interruptRenderers`) is keyed by any request kind.
+- `ApprovalReason` gains `subject`, `scopes`, `expiresAt` and `request`;
+  `ApprovalDecision`, `ApprovalScope`, `ApprovalSubject` and
+  `CustomRequestReason` are new.
+- `useInterruptBridge()` adds `answered` and `markAnswered`.
+
+### Wording
+
+The answered Q&A card labels a question the person skipped "Skipped" (was
+"Declined by user"). `isCancelledResult` recognises the agent's new notes
+("Declined", "Skipped", "Expired", "The person skipped this question").
+
+---
+
 # docs/api-inventory.md
 
 # API inventory
@@ -1265,7 +1654,9 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`ActivityPanel`](api/index/functions/ActivityPanel.md)
 - [`AgentCard`](api/index/functions/AgentCard.md)
 - [`applyActivityPatch`](api/index/functions/applyActivityPatch.md)
+- [`ApprovalActions`](api/index/functions/ApprovalActions.md)
 - [`attachmentToInputContent`](api/index/functions/attachmentToInputContent.md)
+- [`buildAnswerPayload`](api/index/functions/buildAnswerPayload.md)
 - [`buildAttachmentsConfig`](api/index/functions/buildAttachmentsConfig.md)
 - [`buildUserContent`](api/index/functions/buildUserContent.md)
 - [`cachedShare`](api/index/functions/cachedShare.md)
@@ -1291,6 +1682,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`mintReferenceId`](api/index/functions/mintReferenceId.md)
 - [`normalizeResult`](api/index/functions/normalizeResult.md)
 - [`objectToStateEntry`](api/index/functions/objectToStateEntry.md)
+- [`PermissionList`](api/index/functions/PermissionList.md)
 - [`referenceMarker`](api/index/functions/referenceMarker.md)
 - [`ReferencesProvider`](api/index/functions/ReferencesProvider.md)
 - [`ReferenceStateSync`](api/index/functions/ReferenceStateSync.md)
@@ -1299,6 +1691,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`serializeReferences`](api/index/functions/serializeReferences.md)
 - [`Timeline`](api/index/functions/Timeline.md)
 - [`timelineToolUseId`](api/index/functions/timelineToolUseId.md)
+- [`toFormQuestion`](api/index/functions/toFormQuestion.md)
 - [`ToolRenderersProvider`](api/index/functions/ToolRenderersProvider.md)
 - [`ToolRow`](api/index/functions/ToolRow.md)
 - [`topLevelGroups`](api/index/functions/topLevelGroups.md)
@@ -1306,6 +1699,8 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`uploadFileToReference`](api/index/functions/uploadFileToReference.md)
 - [`uploadProvider`](api/index/functions/uploadProvider.md)
 - [`useActivity`](api/index/functions/useActivity.md)
+- [`useApprovalDecision`](api/index/functions/useApprovalDecision.md)
+- [`useApprovalScopes`](api/index/functions/useApprovalScopes.md)
 - [`useDrill`](api/index/functions/useDrill.md)
 - [`useInterruptBridge`](api/index/functions/useInterruptBridge.md)
 - [`useInterruptFor`](api/index/functions/useInterruptFor.md)
@@ -1331,7 +1726,10 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`ActiveInterrupt`](api/index/interfaces/ActiveInterrupt.md)
 - [`ActivityState`](api/index/interfaces/ActivityState.md)
 - [`AgentCardProps`](api/index/interfaces/AgentCardProps.md)
+- [`ApprovalDecisionControls`](api/index/interfaces/ApprovalDecisionControls.md)
 - [`ApprovalReason`](api/index/interfaces/ApprovalReason.md)
+- [`ApprovalSubject`](api/index/interfaces/ApprovalSubject.md)
+- [`CustomRequestReason`](api/index/interfaces/CustomRequestReason.md)
 - [`DrillState`](api/index/interfaces/DrillState.md)
 - [`FeedbackPayload`](api/index/interfaces/FeedbackPayload.md)
 - [`FormQuestion`](api/index/interfaces/FormQuestion.md)
@@ -1343,10 +1741,12 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`KabooReferenceInputProps`](api/index/interfaces/KabooReferenceInputProps.md)
 - [`KabooSlots`](api/index/interfaces/KabooSlots.md)
 - [`MessageMeta`](api/index/interfaces/MessageMeta.md)
+- [`PermissionListProps`](api/index/interfaces/PermissionListProps.md)
 - [`ReferenceItem`](api/index/interfaces/ReferenceItem.md)
 - [`ReferenceProvider`](api/index/interfaces/ReferenceProvider.md)
 - [`ReferencesContextValue`](api/index/interfaces/ReferencesContextValue.md)
 - [`ReferencesProviderProps`](api/index/interfaces/ReferencesProviderProps.md)
+- [`RememberedPermission`](api/index/interfaces/RememberedPermission.md)
 - [`SerializedObjectReference`](api/index/interfaces/SerializedObjectReference.md)
 - [`SerializedReferences`](api/index/interfaces/SerializedReferences.md)
 - [`SlotMessage`](api/index/interfaces/SlotMessage.md)
@@ -1363,6 +1763,8 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 
 ### Type aliases
 
+- [`ApprovalDecision`](api/index/type-aliases/ApprovalDecision.md)
+- [`ApprovalScope`](api/index/type-aliases/ApprovalScope.md)
 - [`FeedbackHandler`](api/index/type-aliases/FeedbackHandler.md)
 - [`GroupEntry`](api/index/type-aliases/GroupEntry.md)
 - [`InterruptReason`](api/index/type-aliases/InterruptReason.md)

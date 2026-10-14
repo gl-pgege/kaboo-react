@@ -63,17 +63,24 @@ function statusIsControl(status: unknown): boolean {
   return statusIsCancelled(status) || s === "approved" || s === "accepted";
 }
 
+const REFUSAL_NOTES = [
+  /user rejected this action/i,
+  /(user|person) declined to answer/i,
+  /person skipped this question/i,
+  /^\s*"?(Declined|Skipped|Expired)\b[:.]/,
+];
+
 /**
- * True when a tool result signals a human rejection/decline rather than real
- * output — the gated-tool reject message, the ask_user decline note, or a bare
- * HITL control payload like `{"status":"cancelled"}` (tolerating one extra layer
- * of string encoding). Used to render a "cancelled" state instead of "done".
+ * True when a tool result signals that the person did not approve or answer
+ * rather than real output — a gate's "Declined", "Skipped" or "Expired" note,
+ * the ask_user decline or skip note, or a bare HITL control payload like
+ * `{"status":"cancelled"}` (tolerating one extra layer of string encoding).
+ * Used to render a "cancelled" state instead of "done".
  */
 export function isCancelledResult(raw: unknown): boolean {
   if (raw == null) return false;
   const text = typeof raw === "string" ? raw : JSON.stringify(raw);
-  if (/user rejected this action/i.test(text)) return true;
-  if (/user declined to answer/i.test(text)) return true;
+  if (REFUSAL_NOTES.some((note) => note.test(text))) return true;
   const value = unwrapJson(text);
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return statusIsCancelled((value as Record<string, unknown>).status);
@@ -81,19 +88,21 @@ export function isCancelledResult(raw: unknown): boolean {
   return false;
 }
 
+const CONTROL_KEYS = new Set(["status", "scope", "reason", "skipped", "expired", "tool_input"]);
+
 /**
- * True when a result is ONLY a HITL control payload (a lone `status` field
- * carrying an interrupt-resolution echo like `{"status":"approved"}` or
- * `{"status":"cancelled"}`), with no real tool output. The owning agent's card
- * already shows the gated action in order, so the inline wildcard renderer and
- * the card skip this stray raw payload rather than dumping JSON.
+ * True when a result is ONLY a HITL control payload — an interrupt-resolution
+ * echo like `{"status":"approved","scope":"thread"}` or
+ * `{"status":"cancelled","reason":"…"}` — with no real tool output. The owning
+ * agent's card already shows the gated action in order, so the inline wildcard
+ * renderer and the card skip this stray raw payload rather than dumping JSON.
  */
 export function isControlOnlyStatus(raw: unknown): boolean {
   if (raw == null) return false;
   const value = unwrapJson(typeof raw === "string" ? raw : JSON.stringify(raw));
   if (value && typeof value === "object" && !Array.isArray(value)) {
     const keys = Object.keys(value as Record<string, unknown>);
-    return keys.length === 1 && keys[0] === "status" &&
+    return keys.includes("status") && keys.every((k) => CONTROL_KEYS.has(k)) &&
       statusIsControl((value as Record<string, unknown>).status);
   }
   return false;

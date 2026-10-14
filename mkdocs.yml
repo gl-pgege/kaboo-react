@@ -45,6 +45,7 @@ nav:
   - Activity panel: activity-panel.md
   - CopilotKit subpath: copilotkit-subpath.md
   - Troubleshooting: troubleshooting.md
+  - Upgrading: upgrading.md
   - API inventory: api-inventory.md
   - ...
   - Ecosystem: https://gl-pgege.github.io/kaboo-docs/

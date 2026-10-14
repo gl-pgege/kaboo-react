@@ -4,7 +4,7 @@ import { ToolRow } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
 import { AskUserSummary } from "./AskUserSummary";
 import { useInterruptFor } from "../context/InterruptBridge";
-import { useInterruptRenderer } from "../context/InterruptRenderers";
+import { InterruptPrompt } from "./InterruptPrompt";
 import { useToolRenderer } from "../context/ToolRenderers";
 import { normalizeQuestions, parseAnswers, type AskUserParams } from "../formatters/askUser";
 import { isCancelledResult } from "../formatters/output";
@@ -21,7 +21,6 @@ import { resolveTimelineTool } from "../utils/timeline";
  */
 function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
   const interrupt = useInterruptFor(tool.toolUseId);
-  const Renderer = useInterruptRenderer("form");
   const questions = normalizeQuestions(tool.toolInput as AskUserParams | undefined);
   const answers = parseAnswers(tool.toolResult);
 
@@ -31,14 +30,7 @@ function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
   }
 
   if (interrupt && interrupt.reason.type === "form") {
-    return (
-      <Renderer
-        reason={interrupt.reason}
-        toolCallId={interrupt.toolCallId}
-        onResolve={interrupt.onResolve}
-        onCancel={interrupt.onCancel}
-      />
-    );
+    return <InterruptPrompt interrupt={interrupt} />;
   }
 
   // Resolved without answers (the user dismissed the prompt): keep it visible in
@@ -53,7 +45,8 @@ function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
 /**
  * A regular tool row that also surfaces its own approval gate inline. When a
  * gated tool is awaiting approval it has an open interrupt anchored to this
- * tool-call id; the Approve/Reject prompt renders directly under the row so it
+ * tool-call id; the approval prompt (or the app's own request kind raised by
+ * the tool) renders directly under the row so it
  * sits at the request it governs. With N tools gated in parallel each row owns
  * its own card and resolves independently.
  *
@@ -64,19 +57,11 @@ function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
  */
 function ToolTimelineRow({ tool }: { tool: ToolCall }) {
   const interrupt = useInterruptFor(tool.toolUseId);
-  const Renderer = useInterruptRenderer("approval");
   const CustomTool = useToolRenderer(tool.toolName);
   return (
     <>
       {CustomTool ? <CustomTool tool={tool} /> : <ToolRow tool={tool} />}
-      {interrupt && interrupt.reason.type === "approval" && (
-        <Renderer
-          reason={interrupt.reason}
-          toolCallId={interrupt.toolCallId}
-          onResolve={interrupt.onResolve}
-          onCancel={interrupt.onCancel}
-        />
-      )}
+      {interrupt && <InterruptPrompt interrupt={interrupt} />}
     </>
   );
 }

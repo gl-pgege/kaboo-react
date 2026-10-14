@@ -1,173 +1,141 @@
 import { useState, type ReactElement } from "react";
-import type { InterruptReason, InterruptRendererProps, FormQuestion } from "../types";
+import { ApprovalActions } from "./ApprovalActions";
+import { buildAnswerPayload, toFormQuestion } from "../formatters/askUser";
+import type {
+  ApprovalReason,
+  CustomRequestReason,
+  FormQuestion,
+  FormReason,
+  InterruptReason,
+  InterruptRendererProps,
+} from "../types";
 
-function ApprovalVariant({ reason, onResolve, onCancel }: InterruptRendererProps): ReactElement {
-  const [responded, setResponded] = useState(false);
-  if (reason.type !== "approval") return <></>;
+function AlertIcon(): ReactElement {
+  return (
+    <svg width={16} height={16} viewBox="0 0 16 16" className="kaboo-interrupt-icon" aria-hidden>
+      <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8 4.5v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="8" cy="11" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
 
-  if (responded) {
-    return <div className="kaboo-interrupt-responded">Response submitted</div>;
-  }
-
+function ApprovalVariant(props: InterruptRendererProps<ApprovalReason>): ReactElement {
+  const { reason } = props;
   return (
     <div className="kaboo-interrupt kaboo-interrupt-approval">
       <div className="kaboo-interrupt-header">
-        <svg width={16} height={16} viewBox="0 0 16 16" className="kaboo-interrupt-icon">
-          <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M8 4.5v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <circle cx="8" cy="11" r="0.75" fill="currentColor" />
-        </svg>
+        <AlertIcon />
         <span className="kaboo-interrupt-message">{reason.message}</span>
       </div>
       {reason.tool_input != null && (
         <details className="kaboo-interrupt-details">
           <summary>View input</summary>
-          <pre className="kaboo-interrupt-pre">
-            {JSON.stringify(reason.tool_input, null, 2)}
-          </pre>
+          <pre className="kaboo-interrupt-pre">{JSON.stringify(reason.tool_input, null, 2)}</pre>
         </details>
       )}
-      <div className="kaboo-interrupt-actions">
-        <button
-          className="kaboo-interrupt-btn kaboo-interrupt-btn-approve"
-          onClick={() => { setResponded(true); onResolve({ status: "approved" }); }}
-        >
-          Approve
-        </button>
-        <button
-          className="kaboo-interrupt-btn kaboo-interrupt-btn-reject"
-          onClick={() => { setResponded(true); onCancel(); }}
-        >
-          Reject
-        </button>
-      </div>
+      <ApprovalActions {...props} />
     </div>
   );
 }
 
-/** Drop any option the agent labelled "Other" — the UI adds its own free-text row. */
-function withoutOther(options: string[] | undefined): string[] {
-  return (options ?? []).filter((o) => o.trim().toLowerCase() !== "other");
+type Answer = string | string[] | undefined;
+
+function hasAnswer(answer: Answer): boolean {
+  return Array.isArray(answer) ? answer.length > 0 : typeof answer === "string" && answer.trim() !== "";
 }
 
-/**
- * Build the resume payload as a `{question: answer}` map — the single answer
- * representation shared by the model (which reads it as JSON) and the durable
- * Q&A card (which parses the same tool result). Keyed by question text (not
- * index) so both consumers read it without extra correlation state.
- */
-function buildAnswerPayload(
-  questions: FormQuestion[],
-  answers: Record<string, unknown>,
-): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  questions.forEach((q, idx) => {
-    out[q.question] = answers[String(idx)] ?? "";
-  });
-  return out;
-}
-
-function RadioInput({
+function ChoiceQuestion({
   question,
+  index,
   value,
   onChange,
 }: {
   question: FormQuestion;
-  value: string;
-  onChange: (v: string) => void;
+  index: number;
+  value: Answer;
+  onChange: (value: Answer) => void;
 }): ReactElement {
-  const [otherText, setOtherText] = useState("");
-  const [isOther, setIsOther] = useState(false);
-  const options = withoutOther(question.options);
+  const multiple = Boolean(question.multiple);
+  const chosen = Array.isArray(value) ? value : typeof value === "string" && value ? [value] : [];
+  const otherText = chosen.find((v) => !question.options.includes(v)) ?? "";
+  const [otherSelected, setOtherSelected] = useState(otherText !== "");
+  const [draft, setDraft] = useState(otherText);
+  const name = `kaboo-question-${index}`;
+  const picked = chosen.filter((v) => question.options.includes(v));
 
-  return (
-    <div className="kaboo-interrupt-radio-group">
-      {options.map((opt) => (
-        <label key={opt} className={`kaboo-interrupt-option ${value === opt && !isOther ? "kaboo-interrupt-option-selected" : ""}`}>
-          <input
-            type="radio"
-            name={question.question}
-            checked={value === opt && !isOther}
-            onChange={() => { setIsOther(false); onChange(opt); }}
-            className="kaboo-interrupt-radio"
-          />
-          <span>{opt}</span>
-        </label>
-      ))}
-      <div className={`kaboo-interrupt-option kaboo-interrupt-option-other ${isOther ? "kaboo-interrupt-option-selected" : ""}`}>
-        <input
-          type="radio"
-          name={question.question}
-          checked={isOther}
-          onChange={() => { setIsOther(true); onChange(otherText); }}
-          className="kaboo-interrupt-radio"
-        />
-        <input
-          type="text"
-          className="kaboo-interrupt-text-input kaboo-interrupt-other-input"
-          placeholder="Other (type your own answer)…"
-          value={otherText}
-          onChange={(e) => { setOtherText(e.target.value); setIsOther(true); onChange(e.target.value); }}
-          onFocus={() => { setIsOther(true); onChange(otherText); }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function CheckboxInput({
-  question,
-  value,
-  onChange,
-}: {
-  question: FormQuestion;
-  value: string[];
-  onChange: (v: string[]) => void;
-}): ReactElement {
-  const [otherText, setOtherText] = useState("");
-  const options = withoutOther(question.options);
-
-  const toggle = (opt: string) => {
-    const next = value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt];
-    onChange(next);
+  const commit = (options: string[], other: boolean, text: string) => {
+    const all = other && text.trim() ? [...options, text.trim()] : options;
+    onChange(multiple ? all : all[0]);
   };
 
-  const otherSelected = otherText !== "" && value.includes(otherText);
+  const toggle = (option: string) => {
+    if (!multiple) {
+      setOtherSelected(false);
+      commit([option], false, draft);
+      return;
+    }
+    const next = picked.includes(option) ? picked.filter((o) => o !== option) : [...picked, option];
+    commit(next, otherSelected, draft);
+  };
+
+  const chooseOther = () => {
+    const next = multiple ? !otherSelected : true;
+    setOtherSelected(next);
+    commit(multiple ? picked : [], next, draft);
+  };
 
   return (
-    <div className="kaboo-interrupt-checkbox-group">
-      {options.map((opt) => (
-        <label key={opt} className={`kaboo-interrupt-option ${value.includes(opt) ? "kaboo-interrupt-option-selected" : ""}`}>
-          <input
-            type="checkbox"
-            checked={value.includes(opt)}
-            onChange={() => toggle(opt)}
-            className="kaboo-interrupt-checkbox"
-          />
-          <span>{opt}</span>
-        </label>
-      ))}
-      <div className={`kaboo-interrupt-option kaboo-interrupt-option-other ${otherSelected ? "kaboo-interrupt-option-selected" : ""}`}>
+    <div
+      className={`kaboo-interrupt-choices ${multiple ? "kaboo-interrupt-checkbox-group" : "kaboo-interrupt-radio-group"}`}
+      role={multiple ? "group" : "radiogroup"}
+      aria-label={question.question}
+    >
+      {question.options.map((option) => {
+        const selected = picked.includes(option) && !(multiple ? false : otherSelected);
+        return (
+          <label
+            key={option}
+            className={`kaboo-interrupt-option ${selected ? "kaboo-interrupt-option-selected" : ""}`}
+          >
+            <input
+              type={multiple ? "checkbox" : "radio"}
+              name={name}
+              checked={selected}
+              onChange={() => toggle(option)}
+              className={multiple ? "kaboo-interrupt-checkbox" : "kaboo-interrupt-radio"}
+            />
+            <span>{option}</span>
+          </label>
+        );
+      })}
+      <div
+        className={`kaboo-interrupt-option kaboo-interrupt-option-other ${otherSelected ? "kaboo-interrupt-option-selected" : ""}`}
+      >
         <input
-          type="checkbox"
+          type={multiple ? "checkbox" : "radio"}
+          name={name}
           checked={otherSelected}
-          onChange={() => {
-            if (otherSelected) onChange(value.filter((v) => v !== otherText));
-            else if (otherText) onChange([...value, otherText]);
-          }}
-          className="kaboo-interrupt-checkbox"
+          onChange={chooseOther}
+          aria-label="Other"
+          className={multiple ? "kaboo-interrupt-checkbox" : "kaboo-interrupt-radio"}
         />
         <input
           type="text"
           className="kaboo-interrupt-text-input kaboo-interrupt-other-input"
           placeholder="Other (type your own answer)…"
-          value={otherText}
+          aria-label={`Other answer to: ${question.question}`}
+          value={draft}
+          onFocus={() => {
+            if (!otherSelected) {
+              setOtherSelected(true);
+              commit(multiple ? picked : [], true, draft);
+            }
+          }}
           onChange={(e) => {
-            const prev = otherText;
-            const nextText = e.target.value;
-            setOtherText(nextText);
-            const filtered = value.filter((v) => v !== prev);
-            onChange(nextText ? [...filtered, nextText] : filtered);
+            setDraft(e.target.value);
+            setOtherSelected(true);
+            commit(multiple ? picked : [], true, e.target.value);
           }}
         />
       </div>
@@ -175,71 +143,21 @@ function CheckboxInput({
   );
 }
 
-function TextInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}): ReactElement {
-  return (
-    <textarea
-      className="kaboo-interrupt-textarea"
-      placeholder="Type your answer..."
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      rows={3}
-      autoFocus
-    />
-  );
-}
-
-function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): ReactElement {
-  const questions = reason.type === "form" ? reason.questions : [];
-  const isSingle = questions.length === 1;
+function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps<FormReason>): ReactElement {
+  const questions = (reason.questions ?? []).map(toFormQuestion);
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, unknown>>({});
+  const [answers, setAnswers] = useState<Record<number, Answer>>({});
   const [responded, setResponded] = useState(false);
 
   if (responded) {
     return <div className="kaboo-interrupt-responded">Response submitted</div>;
   }
-
-  const setAnswer = (idx: number, val: unknown) => {
-    setAnswers((prev) => ({ ...prev, [String(idx)]: val }));
-  };
-
   const current = questions[step];
   if (!current) return <></>;
 
-  const renderQuestion = (q: FormQuestion, idx: number) => {
-    if (q.type === "radio") {
-      return (
-        <RadioInput
-          question={q}
-          value={(answers[String(idx)] as string) ?? ""}
-          onChange={(v) => setAnswer(idx, v)}
-        />
-      );
-    }
-    if (q.type === "checkbox") {
-      return (
-        <CheckboxInput
-          question={q}
-          value={(answers[String(idx)] as string[]) ?? []}
-          onChange={(v) => setAnswer(idx, v)}
-        />
-      );
-    }
-    return (
-      <TextInput
-        value={(answers[String(idx)] as string) ?? ""}
-        onChange={(v) => setAnswer(idx, v)}
-      />
-    );
-  };
-
+  const isSingle = questions.length === 1;
   const isLast = step === questions.length - 1;
+  const answered = hasAnswer(answers[step]);
 
   return (
     <div className="kaboo-interrupt kaboo-interrupt-form">
@@ -248,22 +166,24 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
           {step + 1} of {questions.length}
         </div>
       )}
-      <div className="kaboo-interrupt-question">
-        {current.question}
-      </div>
-      {renderQuestion(current, step)}
+      <div className="kaboo-interrupt-question">{current.question}</div>
+      <ChoiceQuestion
+        key={step}
+        question={current}
+        index={step}
+        value={answers[step]}
+        onChange={(value) => setAnswers((prev) => ({ ...prev, [step]: value }))}
+      />
       <div className="kaboo-interrupt-actions">
         {!isSingle && step > 0 && (
-          <button
-            className="kaboo-interrupt-btn kaboo-interrupt-btn-back"
-            onClick={() => setStep(step - 1)}
-          >
+          <button className="kaboo-interrupt-btn kaboo-interrupt-btn-back" onClick={() => setStep(step - 1)}>
             Back
           </button>
         )}
         {isLast ? (
           <button
             className="kaboo-interrupt-btn kaboo-interrupt-btn-approve"
+            disabled={!questions.every((_, idx) => hasAnswer(answers[idx]))}
             onClick={() => {
               setResponded(true);
               onResolve(buildAnswerPayload(questions, answers));
@@ -274,16 +194,48 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
         ) : (
           <button
             className="kaboo-interrupt-btn kaboo-interrupt-btn-next"
+            disabled={!answered}
             onClick={() => setStep(step + 1)}
           >
             Next
           </button>
         )}
         <button
-          className="kaboo-interrupt-btn kaboo-interrupt-btn-reject"
-          onClick={() => { setResponded(true); onCancel(); }}
+          className="kaboo-interrupt-btn kaboo-interrupt-btn-reject kaboo-interrupt-btn-skip"
+          onClick={() => {
+            setResponded(true);
+            onCancel();
+          }}
         >
-          Cancel
+          Skip
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CustomVariant({ reason, onCancel }: InterruptRendererProps<CustomRequestReason>): ReactElement {
+  const [responded, setResponded] = useState(false);
+  if (responded) {
+    return <div className="kaboo-interrupt-responded">Response submitted</div>;
+  }
+  return (
+    <div className="kaboo-interrupt kaboo-interrupt-custom">
+      <div className="kaboo-interrupt-header">
+        <AlertIcon />
+        <span className="kaboo-interrupt-message">
+          {typeof reason.message === "string" && reason.message ? reason.message : "The assistant needs your input."}
+        </span>
+      </div>
+      <div className="kaboo-interrupt-actions">
+        <button
+          className="kaboo-interrupt-btn kaboo-interrupt-btn-reject kaboo-interrupt-btn-skip"
+          onClick={() => {
+            setResponded(true);
+            onCancel();
+          }}
+        >
+          Skip
         </button>
       </div>
     </div>
@@ -291,11 +243,14 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
 }
 
 /**
- * Default human-in-the-loop interrupt UI. Renders an Approve/Reject panel for an
- * {@link ApprovalReason} and a (optionally multi-step) form with radio/checkbox/
- * text inputs for a {@link FormReason}, calling `onResolve`/`onCancel` with the
- * answer payload. Override per type via `interruptRenderers` on
- * {@link KabooProvider}.
+ * Default human-in-the-loop interrupt UI: the approval card (Approve, Allow
+ * for this chat, Always allow, Deny with a reason — see
+ * {@link ApprovalActions}), the multiple-choice question card (single or
+ * multi-select, Other on every question, Submit and Skip, stepping through
+ * several questions), and a minimal card with Skip for an app's own request
+ * kind that has no registered renderer. Override per kind via
+ * `interruptRenderers` on {@link KabooProvider}; style it with the documented
+ * `kaboo-interrupt-*` and `kaboo-approval-*` classes.
  *
  * @example
  * ```tsx
@@ -303,9 +258,8 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
  * import type { InterruptReason } from "@pgege/kaboo-react";
  *
  * const reason: InterruptReason = {
- *   type: "approval",
- *   message: "Run this query?",
- *   tool_name: "run_sql",
+ *   type: "form",
+ *   questions: [{ question: "Which market?", options: ["AI", "Cloud"] }],
  * };
  *
  * function Example() {
@@ -319,9 +273,15 @@ function FormVariant({ reason, onResolve, onCancel }: InterruptRendererProps): R
  * }
  * ```
  */
-export function InterruptRenderer(props: InterruptRendererProps): ReactElement {
-  if (props.reason.type === "approval") {
-    return <ApprovalVariant {...props} />;
+export function InterruptRenderer(
+  props: InterruptRendererProps<InterruptReason | CustomRequestReason>,
+): ReactElement {
+  const { reason } = props;
+  if (reason.type === "approval") {
+    return <ApprovalVariant {...(props as InterruptRendererProps<ApprovalReason>)} />;
   }
-  return <FormVariant {...props} />;
+  if (reason.type === "form") {
+    return <FormVariant {...(props as InterruptRendererProps<FormReason>)} />;
+  }
+  return <CustomVariant {...(props as InterruptRendererProps<CustomRequestReason>)} />;
 }

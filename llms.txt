@@ -17,6 +17,7 @@ kaboo-react renders a live, hierarchical view of agent activity — sub-agent ca
 - [Activity panel](https://gl-pgege.github.io/kaboo-react/activity-panel/)
 - [CopilotKit subpath](https://gl-pgege.github.io/kaboo-react/copilotkit-subpath/)
 - [Troubleshooting](https://gl-pgege.github.io/kaboo-react/troubleshooting/)
+- [Upgrading](https://gl-pgege.github.io/kaboo-react/upgrading/)
 - [API inventory](https://gl-pgege.github.io/kaboo-react/api-inventory/)
 
 ## API

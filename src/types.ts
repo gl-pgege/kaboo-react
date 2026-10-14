@@ -48,16 +48,38 @@ export type TimelineEntry =
     };
 
 /**
- * A single question in a human-in-the-loop form interrupt. `type` selects the
- * input control; `options` supplies the choices for `radio`/`checkbox`.
+ * A single multiple-choice question in a human-in-the-loop form interrupt. The
+ * person picks one option (or several when `multiple`), and can always choose
+ * Other to answer in their own words — the card adds that choice.
  */
 export interface FormQuestion {
   /** The prompt text shown to the user. */
   question: string;
-  /** Which input control to render for this question. */
-  type: "radio" | "checkbox" | "text";
-  /** Selectable choices for `radio`/`checkbox` questions. */
-  options?: string[];
+  /** The choices, two or more. */
+  options: string[];
+  /** Whether the person may choose several options. */
+  multiple?: boolean;
+  /**
+   * Control type sent by kaboo-workflows before 0.27 (`checkbox` meant
+   * multi-select). Read only when `multiple` is absent.
+   *
+   * @deprecated Use `multiple`.
+   */
+  type?: "radio" | "checkbox" | "text";
+}
+
+/**
+ * How far an approval reaches: this call (`once`), this conversation
+ * (`thread`, "Allow for this chat"), or from now on (`always`).
+ */
+export type ApprovalScope = "once" | "thread" | "always";
+
+/** What a remembered decision covers, as the agent described it. */
+export interface ApprovalSubject {
+  /** Stable key the agent matches calls against (by default the tool name). */
+  key: string;
+  /** Human label for the subject. */
+  label: string;
 }
 
 /**
@@ -73,6 +95,53 @@ export interface ApprovalReason {
   tool_name: string;
   /** The proposed tool input, shown for review. */
   tool_input?: unknown;
+  /** What "Allow for this chat" or "Always allow" would cover. */
+  subject?: ApprovalSubject;
+  /** The scopes the person may choose; absent means `once` only. */
+  scopes?: ApprovalScope[];
+  /** ISO-8601 deadline; after it the request can only be dismissed. */
+  expiresAt?: string;
+  /**
+   * The tool's own request id, when the tool asked for this approval itself.
+   * The host forwards the decision to that tool's service; a card needn't use it.
+   */
+  request?: string;
+}
+
+/**
+ * The answer an approval card sends back. An approval runs the call (with an
+ * optional edit and how far it reaches); a denial is sent as `cancelled`, so an
+ * agent that predates denial reasons can never mistake it for approval.
+ */
+export type ApprovalDecision =
+  | {
+      /** Run the call. */
+      status: "approved";
+      /** How far the approval reaches; `once` when absent. */
+      scope?: ApprovalScope;
+      /** The person's edit of the call's input. */
+      tool_input?: unknown;
+    }
+  | {
+      /** Do not run the call. */
+      status: "cancelled";
+      /** The person's reason, handed to the agent. */
+      reason?: string;
+    };
+
+/**
+ * An app's own request kind (`files`, `datasources`, …), raised by the app's
+ * tool and rendered by the renderer the app registers for its `type` in
+ * `interruptRenderers`. Kinds without a renderer get a minimal card with the
+ * message and Skip.
+ */
+export interface CustomRequestReason {
+  /** The kind, matched against `interruptRenderers`. */
+  type: string;
+  /** What the request is for, shown by the fallback card. */
+  message?: string;
+  /** The app's own fields. */
+  [field: string]: unknown;
 }
 
 /**
@@ -102,20 +171,26 @@ export interface InterruptData {
   /** The interrupt's name (typically the originating tool name). */
   name: string;
   /** Why the run paused, and what input it needs. */
-  reason: InterruptReason;
+  reason: InterruptReason | CustomRequestReason;
 }
 
 /**
  * Props for a custom interrupt renderer supplied via `interruptRenderers`.
  * Receives the reason plus resolve/cancel callbacks so a bespoke UI can drive
- * the gate.
+ * the gate. A renderer for an app's own request kind types its reason with the
+ * parameter, e.g. `InterruptRendererProps<FilesRequest>`.
  */
-export interface InterruptRendererProps {
+export interface InterruptRendererProps<
+  R extends {
+    /** The request kind. */
+    type: string;
+  } = InterruptReason,
+> {
   /** Why the run paused, and what input it needs. */
-  reason: InterruptReason;
+  reason: R;
   /** Resume the run with the user's answer/approval payload. */
   onResolve: (payload: unknown) => void;
-  /** Cancel/reject the gate, resuming the run without a positive answer. */
+  /** Skip the request: the run resumes without an answer or an approval. */
   onCancel: () => void;
   /**
    * The interrupt's originating tool-call id, when available. Used to correlate

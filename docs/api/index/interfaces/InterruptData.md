@@ -4,7 +4,7 @@
 
 # Interface: InterruptData
 
-Defined in: [src/types.ts:99](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L99)
+Defined in: [src/types.ts:168](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L168)
 
 A single open interrupt from the AG-UI run, as delivered by CopilotKit.
 Multiple can be open at once (e.g. parallel gates); each is resolved by `id`.
@@ -15,7 +15,7 @@ Multiple can be open at once (e.g. parallel gates); each is resolved by `id`.
 
 > **id**: `string`
 
-Defined in: [src/types.ts:101](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L101)
+Defined in: [src/types.ts:170](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L170)
 
 Unique interrupt id, used to resolve this gate independently.
 
@@ -25,7 +25,7 @@ Unique interrupt id, used to resolve this gate independently.
 
 > **name**: `string`
 
-Defined in: [src/types.ts:103](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L103)
+Defined in: [src/types.ts:172](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L172)
 
 The interrupt's name (typically the originating tool name).
 
@@ -33,8 +33,8 @@ The interrupt's name (typically the originating tool name).
 
 ### reason
 
-> **reason**: [`InterruptReason`](../type-aliases/InterruptReason.md)
+> **reason**: [`CustomRequestReason`](CustomRequestReason.md) \| [`InterruptReason`](../type-aliases/InterruptReason.md)
 
-Defined in: [src/types.ts:105](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L105)
+Defined in: [src/types.ts:174](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L174)
 
 Why the run paused, and what input it needs.

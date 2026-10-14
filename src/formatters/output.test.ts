@@ -51,8 +51,21 @@ describe("isCancelledResult", () => {
     expect(isCancelledResult('"{\\"status\\":\\"rejected\\"}"')).toBe(true);
   });
 
+  it.each([
+    "Declined: use the final title",
+    "Declined.",
+    "Skipped: the person moved on without approving this, so it did not run.",
+    "Skipped: the person sent a message instead of answering.",
+    "Expired: the approval request was not answered in time, so this did not run.",
+    "The person skipped this question.",
+    "The person declined to answer.",
+  ])("detects the gate and question note %j", (note) => {
+    expect(isCancelledResult(note)).toBe(true);
+  });
+
   it("is false for real output and empty input", () => {
     expect(isCancelledResult("Here are the search results")).toBe(false);
+    expect(isCancelledResult("Declined orders: 3")).toBe(false);
     expect(isCancelledResult('{"status":"ok","rows":[]}')).toBe(false);
     expect(isCancelledResult(undefined)).toBe(false);
   });
@@ -64,6 +77,12 @@ describe("isControlOnlyStatus", () => {
     expect(isControlOnlyStatus('{"status":"declined"}')).toBe(true);
     expect(isControlOnlyStatus('{"status":"approved"}')).toBe(true);
     expect(isControlOnlyStatus('{"status":"accepted"}')).toBe(true);
+  });
+
+  it("is true for an answer echo carrying a scope, a reason or an edit", () => {
+    expect(isControlOnlyStatus('{"status":"approved","scope":"thread"}')).toBe(true);
+    expect(isControlOnlyStatus('{"status":"cancelled","reason":"wrong title"}')).toBe(true);
+    expect(isControlOnlyStatus('{"status":"approved","tool_input":{"title":"Q3"}}')).toBe(true);
   });
 
   it("is false when other fields accompany the status", () => {

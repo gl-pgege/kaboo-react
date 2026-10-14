@@ -6,7 +6,7 @@
 
 > **KabooInterruptHandler**(`__namedParameters`): `ReactElement`\<`unknown`, `string` \| `JSXElementConstructor`\<`any`\>\> \| `null`
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:107](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L107)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:186](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L186)
 
 Ready-made human-in-the-loop interrupt handler. CopilotKit surfaces every open
 interrupt of a run at once (e.g. two gated tools called in parallel); we render
@@ -17,6 +17,9 @@ interrupt has been answered — so resolving with `intr.id` (never the bare
 gates from wedging. Prompts anchored to an on-screen tool render inline at that
 tool's position; the rest fall back to the chat slot.
 
+Two or more approvals waiting at once get "Approve all" and "Deny all". A
+message sent while anything waits skips it, so the chat is never stuck.
+
 ## Parameters
 
 ### \_\_namedParameters
@@ -26,3 +29,22 @@ tool's position; the rest fall back to the chat slot.
 ## Returns
 
 `ReactElement`\<`unknown`, `string` \| `JSXElementConstructor`\<`any`\>\> \| `null`
+
+## Example
+
+```tsx
+import { CopilotKit } from "@copilotkit/react-core/v2";
+import { InterruptBridgeProvider } from "@pgege/kaboo-react";
+import { KabooInterruptHandler } from "@pgege/kaboo-react/copilotkit";
+
+function Hitl({ children }: { children: React.ReactNode }) {
+  return (
+    <CopilotKit runtimeUrl="/api/copilotkit" agent="assistant">
+      <InterruptBridgeProvider>
+        <KabooInterruptHandler agentId="assistant" />
+        {children}
+      </InterruptBridgeProvider>
+    </CopilotKit>
+  );
+}
+```
