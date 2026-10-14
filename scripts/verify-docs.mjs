@@ -101,7 +101,6 @@ writeFileSync(
         skipLibCheck: true,
         noEmit: true,
         types: ["react"],
-        baseUrl: ".",
         paths: {
           "@pgege/kaboo-react": ["../dist/index.d.ts"],
           "@pgege/kaboo-react/copilotkit": ["../dist/copilotkit.d.ts"],
