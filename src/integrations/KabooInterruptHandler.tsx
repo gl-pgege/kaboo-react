@@ -122,6 +122,10 @@ function ContinuationResolver({
  * is answered, so the stale requests are dropped from the agent just before
  * the run starts; the run then carries the new message as a fresh turn, and
  * the agent closes what it was waiting on as skipped.
+ *
+ * Answering them resumes the run instead. CopilotKit then adds a tool message
+ * carrying the answer for each tool call it resumes, which would show as the
+ * call's result until the agent sends the real one, so those are dropped.
  */
 function useSkipOnSend(agentId: string | undefined): void {
   const { copilotkit } = useCopilotKit();
@@ -130,8 +134,15 @@ function useSkipOnSend(agentId: string | undefined): void {
       onAgentRunStarted: ({ agent }) => {
         if (agentId && agent.agentId !== agentId) return;
         if (!agent.pendingInterrupts || agent.pendingInterrupts.length === 0) return;
-        if (agent.messages[agent.messages.length - 1]?.role !== "user") return;
-        agent.pendingInterrupts = [];
+        if (agent.messages[agent.messages.length - 1]?.role === "user") {
+          agent.pendingInterrupts = [];
+          return;
+        }
+        const resumed = new Set(
+          agent.pendingInterrupts.filter((i) => i.reason === "tool_call" && i.toolCallId).map((i) => i.toolCallId),
+        );
+        const messages = agent.messages.filter((m) => !(m.role === "tool" && resumed.has(m.toolCallId)));
+        if (messages.length !== agent.messages.length) agent.setMessages(messages);
       },
     });
     return () => subscription.unsubscribe();

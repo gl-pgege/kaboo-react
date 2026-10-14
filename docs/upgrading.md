@@ -9,6 +9,20 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.11
+
+**Who:** everyone. 0.11 runs on CopilotKit 1.78 or later, the AG-UI 1.0
+generation.
+
+```diff
+- "@copilotkit/react-core": ">=1.62.0 <1.71.2"
++ "@copilotkit/react-core": ">=1.78.0 <2"
+```
+
+Upgrade `@copilotkit/react-core` with it, and the server's CopilotKit packages
+with kaboo-runtime 0.7. The components and hooks are unchanged. On CopilotKit
+1.62 to 1.71.1, stay on kaboo-react 0.10.
+
 ## 0.10.1
 
 **Who:** anyone on CopilotKit 1.71.2 or later.

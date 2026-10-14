@@ -35,7 +35,7 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 yarn add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.62).
+Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.78).
 
 Import the stylesheet once, near your app root:
 
@@ -170,7 +170,8 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 ## Compatibility & versioning
 
 - **React** 18 and 19 (`react` / `react-dom` >= 18 as peer deps).
-- **CopilotKit** `@copilotkit/react-core` >= 1.62 (peer dep).
+- **CopilotKit** `@copilotkit/react-core` >= 1.78 (peer dep), the AG-UI 1.0
+  generation; kaboo-react 0.10 covers CopilotKit 1.62 to 1.71.1.
 - Follows [semantic versioning](https://semver.org). See
   [CHANGELOG.md](./CHANGELOG.md).
 

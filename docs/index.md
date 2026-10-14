@@ -20,7 +20,7 @@ npm install kaboo-react
 pnpm add kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
+Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
 
 Import the stylesheet once, near your app root:
 

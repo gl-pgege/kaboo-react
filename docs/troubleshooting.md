@@ -28,7 +28,7 @@ Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
 
 ## Peer / version errors
 
-kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.62**)
+kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)
 as peers. Install/upgrade them if you see missing-module or hook-mismatch
 errors:
 
@@ -36,8 +36,9 @@ errors:
 yarn add react react-dom @copilotkit/react-core
 ```
 
-A CopilotKit version below 1.62 can cause `KabooProvider` / `CopilotChat`
-mismatches — align to a supported version.
+A CopilotKit version below 1.78 can cause `KabooProvider` / `CopilotChat`
+mismatches — align to a supported version, or stay on kaboo-react 0.10 for
+CopilotKit 1.62 to 1.71.1.
 
 ## `KabooMessageView` import fails
 

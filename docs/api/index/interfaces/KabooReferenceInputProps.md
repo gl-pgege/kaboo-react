@@ -45,7 +45,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2793
 
 > `optional` **addMenuButton?**: `SlotValue`\<`FC`\<`ButtonHTMLAttributes`\<`HTMLButtonElement`\> & `object`\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:652
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:693
 
 #### Inherited from
 
@@ -934,7 +934,7 @@ Defines the human readable text alternative of aria-valuenow for a range widget.
 
 > `optional` **audioRecorder?**: `SlotValue`\<`ForwardRefExoticComponent`\<`HTMLAttributes`\<`HTMLDivElement`\> & `RefAttributes`\<`AudioRecorderRef`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:653
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:694
 
 #### Inherited from
 
@@ -970,7 +970,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2833
 
 > `optional` **autoFocus?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:659
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:700
 
 #### Inherited from
 
@@ -994,7 +994,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2834
 
 > `optional` **bottomAnchored?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:686
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:727
 
 Set to `true` when the input sits at the bottom of its container as a
 flex-last-child (visible position is driven by layout, not CSS
@@ -1017,7 +1017,7 @@ welcome screen, where the banner offset would push the input off-center.
 
 > `optional` **cancelTranscribeButton?**: `SlotValue`\<`FC`\<`ButtonHTMLAttributes`\<`HTMLButtonElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:650
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:691
 
 #### Inherited from
 
@@ -1029,7 +1029,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:
 
 > `optional` **children?**: (`props`) => `ReactNode`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:693
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:734
 
 #### Parameters
 
@@ -1075,7 +1075,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2835
 
 > `optional` **containerRef?**: `Ref`\<`HTMLDivElement`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:672
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:713
 
 #### Inherited from
 
@@ -1187,7 +1187,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2799
 
 > `optional` **disclaimer?**: `SlotValue`\<`FC`\<`HTMLAttributes`\<`HTMLDivElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:654
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:695
 
 #### Inherited from
 
@@ -1239,7 +1239,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2868
 
 > `optional` **finishTranscribeButton?**: `SlotValue`\<`FC`\<`ButtonHTMLAttributes`\<`HTMLButtonElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:651
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:692
 
 #### Inherited from
 
@@ -1339,7 +1339,7 @@ Specify that a standard HTML element should behave like a defined custom built-i
 
 > `optional` **isRunning?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:662
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:703
 
 #### Inherited from
 
@@ -1411,7 +1411,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2838
 
 > `optional` **keyboardHeight?**: `number`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:671
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:712
 
 #### Inherited from
 
@@ -1435,7 +1435,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2804
 
 > `optional` **mode?**: `CopilotChatInputMode`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:657
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:698
 
 #### Inherited from
 
@@ -1483,7 +1483,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2328
 
 > `optional` **onAddFile?**: () => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:667
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:708
 
 #### Returns
 
@@ -1655,7 +1655,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2294
 
 > `optional` **onCancelTranscribe?**: () => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:664
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:705
 
 #### Returns
 
@@ -1719,7 +1719,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2332
 
 > `optional` **onChange?**: (`value`) => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:669
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:710
 
 #### Parameters
 
@@ -2257,7 +2257,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2314
 
 > `optional` **onFinishTranscribe?**: () => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:665
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:706
 
 #### Returns
 
@@ -2273,7 +2273,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:
 
 > `optional` **onFinishTranscribeWithAudio?**: (`audioBlob`) => `Promise`\<`void`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:666
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:707
 
 #### Parameters
 
@@ -3215,7 +3215,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2362
 
 > `optional` **onStartTranscribe?**: () => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:663
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:704
 
 #### Returns
 
@@ -3231,7 +3231,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:
 
 > `optional` **onStop?**: () => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:661
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:702
 
 #### Returns
 
@@ -3271,7 +3271,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2306
 
 > `optional` **onSubmitMessage?**: (`value`) => `void`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:660
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:701
 
 #### Parameters
 
@@ -3669,7 +3669,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2847
 
 > `optional` **positioning?**: `"static"` \| `"absolute"`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:670
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:711
 
 #### Inherited from
 
@@ -3789,7 +3789,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2842
 
 > `optional` **sendButton?**: `SlotValue`\<`FC`\<`ButtonHTMLAttributes`\<`HTMLButtonElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:648
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:689
 
 #### Inherited from
 
@@ -3801,7 +3801,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:
 
 > `optional` **showDisclaimer?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:673
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:714
 
 #### Inherited from
 
@@ -3837,7 +3837,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2807
 
 > `optional` **startTranscribeButton?**: `SlotValue`\<`FC`\<`ButtonHTMLAttributes`\<`HTMLButtonElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:649
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:690
 
 #### Inherited from
 
@@ -3897,7 +3897,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2809
 
 > `optional` **textArea?**: `SlotValue`\<`ForwardRefExoticComponent`\<`TextAreaProps` & `RefAttributes`\<`HTMLTextAreaElement`\>\>\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:647
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:688
 
 #### Inherited from
 
@@ -3921,7 +3921,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2810
 
 > `optional` **toolsMenu?**: (`ToolsMenuItem` \| `"-"`)[]
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:658
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:699
 
 #### Inherited from
 
@@ -3979,7 +3979,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2843
 
 > `optional` **value?**: `string`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:668
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:709
 
 #### Inherited from
 

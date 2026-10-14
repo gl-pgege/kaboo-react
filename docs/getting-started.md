@@ -2,7 +2,7 @@
 
 !!! note "Compatibility"
     kaboo-react needs **React 18+**, **Node.js 18+**, and
-    **`@copilotkit/react-core` >= 1.62** as peers.
+    **`@copilotkit/react-core` >= 1.78** as peers.
 
 This guide wires kaboo-react into a CopilotKit app from scratch.
 

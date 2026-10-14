@@ -37,7 +37,7 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 yarn add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.62).
+Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.78).
 
 Import the stylesheet once, near your app root:
 
@@ -172,7 +172,8 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 ## Compatibility & versioning
 
 - **React** 18 and 19 (`react` / `react-dom` >= 18 as peer deps).
-- **CopilotKit** `@copilotkit/react-core` >= 1.62 (peer dep).
+- **CopilotKit** `@copilotkit/react-core` >= 1.78 (peer dep), the AG-UI 1.0
+  generation; kaboo-react 0.10 covers CopilotKit 1.62 to 1.71.1.
 - Follows [semantic versioning](https://semver.org). See
   [CHANGELOG.md](./CHANGELOG.md).
 
@@ -221,7 +222,7 @@ npm install kaboo-react
 pnpm add kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.62).
+Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
 
 Import the stylesheet once, near your app root:
 
@@ -277,7 +278,7 @@ the whole picture.
 
 !!! note "Compatibility"
     kaboo-react needs **React 18+**, **Node.js 18+**, and
-    **`@copilotkit/react-core` >= 1.62** as peers.
+    **`@copilotkit/react-core` >= 1.78** as peers.
 
 This guide wires kaboo-react into a CopilotKit app from scratch.
 
@@ -1457,7 +1458,7 @@ Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
 
 ## Peer / version errors
 
-kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.62**)
+kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)
 as peers. Install/upgrade them if you see missing-module or hook-mismatch
 errors:
 
@@ -1465,8 +1466,9 @@ errors:
 yarn add react react-dom @copilotkit/react-core
 ```
 
-A CopilotKit version below 1.62 can cause `KabooProvider` / `CopilotChat`
-mismatches — align to a supported version.
+A CopilotKit version below 1.78 can cause `KabooProvider` / `CopilotChat`
+mismatches — align to a supported version, or stay on kaboo-react 0.10 for
+CopilotKit 1.62 to 1.71.1.
 
 ## `KabooMessageView` import fails
 
@@ -1493,6 +1495,20 @@ The kaboo libraries can be upgraded in any order: this release reads what older
 agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
+
+## 0.11
+
+**Who:** everyone. 0.11 runs on CopilotKit 1.78 or later, the AG-UI 1.0
+generation.
+
+```diff
+- "@copilotkit/react-core": ">=1.62.0 <1.71.2"
++ "@copilotkit/react-core": ">=1.78.0 <2"
+```
+
+Upgrade `@copilotkit/react-core` with it, and the server's CopilotKit packages
+with kaboo-runtime 0.7. The components and hooks are unchanged. On CopilotKit
+1.62 to 1.71.1, stay on kaboo-react 0.10.
 
 ## 0.10.1
 

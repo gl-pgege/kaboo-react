@@ -919,7 +919,7 @@ Defines the human readable text alternative of aria-valuenow for a range widget.
 
 > `optional` **assistantMessage?**: `SlotValue`\<*typeof* `CopilotChatAssistantMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1098
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1211
 
 #### Inherited from
 
@@ -979,7 +979,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2834
 
 > `optional` **children?**: (`props`) => `ReactElement`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1107
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1246
 
 #### Parameters
 
@@ -999,7 +999,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:
 
 ###### messages
 
-(\{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"developer"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"system"`; \} \| \{ `content?`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"assistant"`; `toolCalls?`: `object`[]; \} \| \{ `content`: `string` \| (\{ `text`: `string`; `type`: `"text"`; \} \| \{ `metadata?`: `unknown`; `source`: ... \| ...; `type`: `"image"`; \} \| \{ `metadata?`: `unknown`; `source`: ... \| ...; `type`: `"audio"`; \} \| \{ `metadata?`: `unknown`; `source`: ... \| ...; `type`: `"video"`; \} \| \{ `metadata?`: `unknown`; `source`: ... \| ...; `type`: `"document"`; \} \| \{ `data?`: ... \| ...; `filename?`: ... \| ...; `id?`: ... \| ...; `mimeType`: `string`; `type`: `"binary"`; `url?`: ... \| ...; \})[]; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"user"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `error?`: `string`; `id`: `string`; `role`: `"tool"`; `toolCallId`: `string`; \} \| \{ `activityType`: `string`; `content`: `Record`\<`string`, `any`\>; `id`: `string`; `role`: `"activity"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `role`: `"reasoning"`; \})[]
+`Message`[]
 
 #### Returns
 
@@ -1075,7 +1075,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2798
 
 > `optional` **cursor?**: `SlotValue`\<(`__namedParameters`) => `Element`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1101
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1214
 
 #### Inherited from
 
@@ -1187,6 +1187,39 @@ Defined in: node\_modules/@types/react/index.d.ts:2868
 
 ***
 
+### groupMessages?
+
+> `optional` **groupMessages?**: (`messages`) => `MessageRow`[]
+
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1244
+
+Splits the message list into rows. Return `messageRow(message)` for a
+message that renders on its own, and `messageGroup({ key, messages,
+wrapper })` for messages that render together inside `wrapper` — a
+collapsible block of tool calls, say. Receives the list after
+`transformMessages`. Each row is one virtualized row.
+
+Return each message in at most one row. Tool-call cards still find
+their results in the full list.
+
+Memoized on its input and this function — pass a stable function.
+
+#### Parameters
+
+##### messages
+
+`Message`[]
+
+#### Returns
+
+`MessageRow`[]
+
+#### Inherited from
+
+`CopilotChatMessageViewProps.groupMessages`
+
+***
+
 ### hidden?
 
 > `optional` **hidden?**: `boolean`
@@ -1261,7 +1294,7 @@ Hints at the type of data that might be entered by the user while editing the el
 
 > `optional` **intelligenceIndicator?**: `SlotValue`\<(`__namedParameters`) => `ReactElement`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1102
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1215
 
 #### Inherited from
 
@@ -1291,7 +1324,7 @@ Specify that a standard HTML element should behave like a defined custom built-i
 
 > `optional` **isRunning?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1104
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1217
 
 #### Inherited from
 
@@ -1373,9 +1406,9 @@ Defined in: node\_modules/@types/react/index.d.ts:2804
 
 ### messages?
 
-> `optional` **messages?**: (\{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"developer"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"system"`; \} \| \{ `content?`: `string`; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"assistant"`; `toolCalls?`: `object`[]; \} \| \{ `content`: `string` \| (\{ `text`: `string`; `type`: `"text"`; \} \| \{ `metadata?`: `unknown`; `source`: \{ `mimeType`: `string`; `type`: `"data"`; `value`: `string`; \} \| \{ `mimeType?`: ... \| ...; `type`: `"url"`; `value`: `string`; \}; `type`: `"image"`; \} \| \{ `metadata?`: `unknown`; `source`: \{ `mimeType`: `string`; `type`: `"data"`; `value`: `string`; \} \| \{ `mimeType?`: ... \| ...; `type`: `"url"`; `value`: `string`; \}; `type`: `"audio"`; \} \| \{ `metadata?`: `unknown`; `source`: \{ `mimeType`: `string`; `type`: `"data"`; `value`: `string`; \} \| \{ `mimeType?`: ... \| ...; `type`: `"url"`; `value`: `string`; \}; `type`: `"video"`; \} \| \{ `metadata?`: `unknown`; `source`: \{ `mimeType`: `string`; `type`: `"data"`; `value`: `string`; \} \| \{ `mimeType?`: ... \| ...; `type`: `"url"`; `value`: `string`; \}; `type`: `"document"`; \} \| \{ `data?`: `string`; `filename?`: `string`; `id?`: `string`; `mimeType`: `string`; `type`: `"binary"`; `url?`: `string`; \})[]; `encryptedValue?`: `string`; `id`: `string`; `name?`: `string`; `role`: `"user"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `error?`: `string`; `id`: `string`; `role`: `"tool"`; `toolCallId`: `string`; \} \| \{ `activityType`: `string`; `content`: `Record`\<`string`, `any`\>; `id`: `string`; `role`: `"activity"`; \} \| \{ `content`: `string`; `encryptedValue?`: `string`; `id`: `string`; `role`: `"reasoning"`; \})[]
+> `optional` **messages?**: `Message`[]
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1105
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1218
 
 #### Inherited from
 
@@ -3511,7 +3544,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2814
 
 > `optional` **reasoningMessage?**: `SlotValue`\<*typeof* `CopilotChatReasoningMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1100
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1213
 
 #### Inherited from
 
@@ -3686,6 +3719,39 @@ Defined in: node\_modules/@types/react/index.d.ts:2810
 
 ***
 
+### transformMessages?
+
+> `optional` **transformMessages?**: (`messages`) => `Message`[]
+
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1231
+
+Reshapes the message list before it renders: drop, replace or reorder
+messages with the whole list in view. Receives the list after duplicate
+ids are merged. Row keys, virtualization and rendering all work off
+the returned list, so a dropped message takes no row.
+
+Tool-call cards still look up their results in the full list, so
+hiding tool-result messages here does not strip results from them.
+
+Memoized on the input list and this function — pass a stable function
+(e.g. `useCallback`) or it reruns on every render.
+
+#### Parameters
+
+##### messages
+
+`Message`[]
+
+#### Returns
+
+`Message`[]
+
+#### Inherited from
+
+`CopilotChatMessageViewProps.transformMessages`
+
+***
+
 ### translate?
 
 > `optional` **translate?**: `"yes"` \| `"no"`
@@ -3726,7 +3792,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2843
 
 > `optional` **userMessage?**: `SlotValue`\<*typeof* `CopilotChatUserMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Bp6BD8xe.d.mts:1099
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1212
 
 #### Inherited from
 

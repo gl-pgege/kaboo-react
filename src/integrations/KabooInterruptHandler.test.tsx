@@ -321,4 +321,21 @@ describe("KabooInterruptHandler", () => {
     expect(sent.pendingInterrupts).toEqual([]);
     expect(resumed.pendingInterrupts).toEqual([{ id: "i1" }]);
   });
+
+  it("drops the tool message CopilotKit adds for an answered approval, so the call waits for its real result", () => {
+    render(<Harness args={{ interrupts: [], resolve: vi.fn(), cancel: vi.fn() }} />);
+    const setMessages = vi.fn();
+    const call = { role: "assistant", toolCalls: [{ id: "c1" }] };
+    const resumed = {
+      agentId: "a",
+      pendingInterrupts: [{ id: "i1", reason: "tool_call", toolCallId: "c1" }],
+      messages: [{ role: "user" }, call, { role: "tool", toolCallId: "c1", content: '{"status":"approved"}' }],
+      setMessages,
+    };
+
+    captured.onAgentRunStarted?.({ agent: resumed });
+
+    expect(setMessages).toHaveBeenCalledWith([{ role: "user" }, call]);
+    expect(resumed.pendingInterrupts).toHaveLength(1);
+  });
 });

@@ -6,7 +6,7 @@
 
 > **KabooInterruptHandler**(`__namedParameters`): `ReactElement`\<`unknown`, `string` \| `JSXElementConstructor`\<`any`\>\> \| `null`
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:186](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L186)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:197](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L197)
 
 Ready-made human-in-the-loop interrupt handler. CopilotKit surfaces every open
 interrupt of a run at once (e.g. two gated tools called in parallel); we render

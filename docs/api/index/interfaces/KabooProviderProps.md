@@ -44,7 +44,7 @@ Your app subtree, rendered inside all kaboo contexts.
 
 ### copilotKitProps?
 
-> `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"children"` \| `"agent"` \| `"threadId"` \| `"runtimeUrl"`\>\>
+> `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"children"` \| `"agent"` \| `"runtimeUrl"` \| `"threadId"`\>\>
 
 Defined in: [src/context/KabooProvider.tsx:58](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L58)
 

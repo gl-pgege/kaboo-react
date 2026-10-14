@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0]
+
+See [Upgrading](docs/upgrading.md#011).
+
+### Changed
+
+- **The AG-UI 1.0 generation:** `@copilotkit/react-core` 1.78 or later (peer
+  `>=1.78.0 <2`). kaboo-react 0.10 stays the release for CopilotKit 1.62 to
+  1.71.1.
+
+### Fixed
+
+- **An approved call no longer shows its approval as its result.** CopilotKit
+  adds a tool message carrying the answer when it resumes a tool-call
+  interrupt; `KabooInterruptHandler` drops it, so the call's card waits for the
+  real result.
+
 ## [0.10.1]
 
 ### Fixed
