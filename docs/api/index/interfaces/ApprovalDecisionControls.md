@@ -4,7 +4,7 @@
 
 # Interface: ApprovalDecisionControls
 
-Defined in: src/components/ApprovalActions.tsx:12
+Defined in: [src/components/ApprovalActions.tsx:12](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L12)
 
 What [useApprovalDecision](../functions/useApprovalDecision.md) offers a card.
 
@@ -14,7 +14,7 @@ What [useApprovalDecision](../functions/useApprovalDecision.md) offers a card.
 
 > **approve**: (`scope?`, `toolInput?`) => `void`
 
-Defined in: src/components/ApprovalActions.tsx:25
+Defined in: [src/components/ApprovalActions.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L25)
 
 Approve the call. `thread` or `always` also approves the other waiting
 requests the decision covers (same tool and subject).
@@ -39,7 +39,7 @@ requests the decision covers (same tool and subject).
 
 > **deny**: (`reason?`) => `void`
 
-Defined in: src/components/ApprovalActions.tsx:27
+Defined in: [src/components/ApprovalActions.tsx:27](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L27)
 
 Deny the call, with the person's optional reason for the agent.
 
@@ -59,7 +59,7 @@ Deny the call, with the person's optional reason for the agent.
 
 > **dismiss**: () => `void`
 
-Defined in: src/components/ApprovalActions.tsx:29
+Defined in: [src/components/ApprovalActions.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L29)
 
 Skip the request without answering.
 
@@ -73,7 +73,7 @@ Skip the request without answering.
 
 > **expired**: `boolean`
 
-Defined in: src/components/ApprovalActions.tsx:16
+Defined in: [src/components/ApprovalActions.tsx:16](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L16)
 
 Whether the request's deadline has passed; it can then only be dismissed.
 
@@ -83,7 +83,7 @@ Whether the request's deadline has passed; it can then only be dismissed.
 
 > **expiresInMs**: `number` \| `null`
 
-Defined in: src/components/ApprovalActions.tsx:18
+Defined in: [src/components/ApprovalActions.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L18)
 
 Milliseconds until the deadline, or `null` when the request has none.
 
@@ -93,7 +93,7 @@ Milliseconds until the deadline, or `null` when the request has none.
 
 > **responded**: `boolean`
 
-Defined in: src/components/ApprovalActions.tsx:20
+Defined in: [src/components/ApprovalActions.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L20)
 
 Whether this card already answered.
 
@@ -103,6 +103,6 @@ Whether this card already answered.
 
 > **scopes**: [`ApprovalScope`](../type-aliases/ApprovalScope.md)[]
 
-Defined in: src/components/ApprovalActions.tsx:14
+Defined in: [src/components/ApprovalActions.tsx:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L14)
 
 The scopes to offer: the agent's and the app's, `once` first.

@@ -6,7 +6,7 @@
 
 > **useApprovalDecision**(`__namedParameters`): [`ApprovalDecisionControls`](../interfaces/ApprovalDecisionControls.md)
 
-Defined in: src/components/ApprovalActions.tsx:59
+Defined in: [src/components/ApprovalActions.tsx:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L59)
 
 The standard approval decisions for a card: which scopes to offer, the
 deadline, and approve / deny / dismiss bound to the request. Use it to build

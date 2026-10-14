@@ -6,7 +6,7 @@
 
 > **PermissionList**(`__namedParameters`): `ReactElement`
 
-Defined in: src/components/PermissionList.tsx:50
+Defined in: [src/components/PermissionList.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L50)
 
 Presentational list of remembered approvals with a Revoke button each, for a
 settings page or an assistant panel. The app loads the permissions (for

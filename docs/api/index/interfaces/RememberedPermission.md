@@ -4,7 +4,7 @@
 
 # Interface: RememberedPermission
 
-Defined in: src/components/PermissionList.tsx:7
+Defined in: [src/components/PermissionList.tsx:7](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L7)
 
 A remembered approval, as a host lists it (kaboo-runtime's `ToolGrant`
 matches this shape).
@@ -15,7 +15,7 @@ matches this shape).
 
 > `optional` **createdAt?**: `number`
 
-Defined in: src/components/PermissionList.tsx:17
+Defined in: [src/components/PermissionList.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L17)
 
 When it was granted, epoch milliseconds.
 
@@ -25,7 +25,7 @@ When it was granted, epoch milliseconds.
 
 > **id**: `string`
 
-Defined in: src/components/PermissionList.tsx:9
+Defined in: [src/components/PermissionList.tsx:9](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L9)
 
 Id used to revoke it.
 
@@ -35,7 +35,7 @@ Id used to revoke it.
 
 > **label**: `string`
 
-Defined in: src/components/PermissionList.tsx:13
+Defined in: [src/components/PermissionList.tsx:13](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L13)
 
 Human label for what it covers.
 
@@ -45,7 +45,7 @@ Human label for what it covers.
 
 > **threadId**: `string` \| `null`
 
-Defined in: src/components/PermissionList.tsx:15
+Defined in: [src/components/PermissionList.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L15)
 
 The conversation it applies to, or `null` for every conversation.
 
@@ -55,6 +55,6 @@ The conversation it applies to, or `null` for every conversation.
 
 > **tool**: `string`
 
-Defined in: src/components/PermissionList.tsx:11
+Defined in: [src/components/PermissionList.tsx:11](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/PermissionList.tsx#L11)
 
 The gated tool.
