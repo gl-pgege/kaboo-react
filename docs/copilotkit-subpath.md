@@ -20,7 +20,7 @@ explicit and keeps the main barrel usable in more contexts.
 | `KabooAssistantMessage` | Cards above a settled assistant reply. | Used by `KabooMessageView` (assistant-message slot). |
 | `KabooInlineCards` | Delegate sub-agent cards at the tool-call position. | Auto-mounted by `KabooProvider`. |
 | `KabooInterruptHandler` | Human-in-the-loop handler. | Auto-mounted by `KabooProvider`. |
-| `KabooAskUser` | Answered `ask_user` prompts, inline. | Used by the interrupt handler. |
+| `KabooAskUser` | `ask_user` questions inline: the live form while waiting, then the answers. | Used by the interrupt handler. |
 | `KabooToolRender` | Wildcard tool renderer. | Used by `KabooInlineCards`. |
 
 Most apps only import **`KabooMessageView`** directly — the rest are auto-mounted

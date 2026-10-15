@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.1]
+
+### Fixed
+
+- **A plain agent's questions show in the chat.** For an agent whose tools
+  render in the chat (no agent card of its own), the chat-level slot leaves a
+  waiting `ask_user` prompt to its tool call, but `KabooAskUser` only drew a
+  question once it was answered, so nothing appeared and the person's next
+  message skipped it. The tool call now shows the live form while the question
+  waits, then the answers, and a skipped question as Skipped: the same row an
+  agent card's timeline uses.
+
 ## [0.11.0]
 
 See [Upgrading](docs/upgrading.md#011).

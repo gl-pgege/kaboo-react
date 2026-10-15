@@ -2,45 +2,11 @@ import { Fragment, type ReactNode } from "react";
 import type { TimelineEntry, ToolCall } from "../types";
 import { ToolRow } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
-import { AskUserSummary } from "./AskUserSummary";
+import { AskUserRow } from "./AskUserRow";
 import { useInterruptFor } from "../context/InterruptBridge";
 import { InterruptPrompt } from "./InterruptPrompt";
 import { useToolRenderer } from "../context/ToolRenderers";
-import { normalizeQuestions, parseAnswers, type AskUserParams } from "../formatters/askUser";
-import { isCancelledResult } from "../formatters/output";
 import { resolveTimelineTool } from "../utils/timeline";
-
-/**
- * Renders an `ask_user` tool call in one place at its chronological tool
- * position — the live interactive form while it's pending, then the durable Q&A
- * summary once answered. Both look identical at every depth (top-level card or a
- * nested drill), so the human-in-the-loop prompt never floats out of order in a
- * separate slot. The live form is claimed by matching an open interrupt's
- * `toolCallId` to this tool; if none matches (already answered, or a different
- * agent's prompt) nothing interactive is drawn here.
- */
-function AskUserTimelineRow({ tool }: { tool: ToolCall }) {
-  const interrupt = useInterruptFor(tool.toolUseId);
-  const questions = normalizeQuestions(tool.toolInput as AskUserParams | undefined);
-  const answers = parseAnswers(tool.toolResult);
-
-  if (answers) {
-    if (questions.length === 0) return null;
-    return <AskUserSummary questions={questions} answers={answers} />;
-  }
-
-  if (interrupt && interrupt.reason.type === "form") {
-    return <InterruptPrompt interrupt={interrupt} />;
-  }
-
-  // Resolved without answers (the user dismissed the prompt): keep it visible in
-  // order as a declined Q&A rather than silently dropping it.
-  if (questions.length > 0 && isCancelledResult(tool.toolResult)) {
-    return <AskUserSummary questions={questions} answers={{}} declined />;
-  }
-
-  return null;
-}
 
 /**
  * A regular tool row that also surfaces its own approval gate inline. When a
@@ -113,7 +79,7 @@ export function Timeline({
           const card = renderToolCard?.(tool.toolUseId);
           if (card) return <Fragment key={key}>{card}</Fragment>;
           if (tool.toolName === "ask_user") {
-            return <AskUserTimelineRow key={key} tool={tool} />;
+            return <AskUserRow key={key} tool={tool} />;
           }
           return <ToolTimelineRow key={key} tool={tool} />;
         }
