@@ -6,7 +6,7 @@
 
 > **KabooInlineCards**(): `Element`
 
-Defined in: [src/integrations/KabooInlineCards.tsx:34](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInlineCards.tsx#L34)
+Defined in: [src/integrations/KabooInlineCards.tsx:39](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInlineCards.tsx#L39)
 
 Renders [AgentCard](../../index/functions/AgentCard.md)s inline in the chat for **delegate** sub-agents.
 
@@ -19,6 +19,9 @@ First-class swarm/graph entries have no delegating tool call, so their member
 cards are rendered by [KabooMessageView](../variables/KabooMessageView.md) / [KabooAssistantMessage](KabooAssistantMessage.md)
 instead, anchored to the assistant turn. Groups carrying a `toolCallId` are
 excluded there, so the two paths never double-render the same group.
+
+A request a delegate waits on (an approval or a question) reaches the caller
+anchored at the delegating call, so it is drawn under that delegate's card.
 
 ## Returns
 

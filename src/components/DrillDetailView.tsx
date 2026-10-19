@@ -63,12 +63,15 @@ export function DrillDetailView() {
   const group = groups[activeDrill];
   const timeline = group?.timeline ?? [];
   // Prompts anchored to a pending tool call are rendered inline by the Timeline
-  // at that tool's position (chronological); this block only handles interrupts
-  // with no on-screen tool anchor — never a duplicate.
+  // at that tool's position (chronological); this block handles interrupts with
+  // no on-screen tool anchor, and the ones this group forwarded to its caller,
+  // which arrive anchored at its delegating call in the parent — never a duplicate.
   const unanchoredInterrupts =
     group?.status === "interrupted"
       ? activeInterrupts.filter(
-          (i) => !pendingToolAnchorExists(groups, i.toolCallId),
+          (i) =>
+            (group.toolCallId != null && i.toolCallId === group.toolCallId) ||
+            !pendingToolAnchorExists(groups, i.toolCallId),
         )
       : [];
 

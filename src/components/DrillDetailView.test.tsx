@@ -110,6 +110,25 @@ describe("DrillDetailView interrupt rendering", () => {
     expect(screen.getByTestId("custom-form")).toHaveTextContent("form");
   });
 
+  it("shows the request a drilled delegate forwarded to its caller", () => {
+    const parent = group({
+      tools: [{ toolUseId: "tc-del", toolName: "builder", toolLabel: "", toolInput: {}, status: "running" }],
+    });
+    const builder = group({ toolCallId: "tc-del", status: "interrupted" });
+    const forwarded: ActiveInterrupt = { ...formInterrupt, toolCallId: "tc-del" };
+    render(
+      harness(
+        { parent, "parent.builder": builder },
+        "parent.builder",
+        [forwarded],
+        <InterruptRenderersProvider renderers={{}}>
+          <DrillDetailView />
+        </InterruptRenderersProvider>,
+      ),
+    );
+    expect(screen.getByText("Retry?")).toBeInTheDocument();
+  });
+
   it("falls back to the built-in renderer when none is registered", () => {
     const g = group({ status: "interrupted" });
     render(

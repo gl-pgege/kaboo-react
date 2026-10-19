@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.3]
+
+### Fixed
+
+- **A question or approval a delegate waits on shows under its card.** A
+  delegate forwards what it waits on to its caller, anchored at the delegating
+  call, which the chat draws as the delegate's card rather than a tool row. With
+  kaboo-workflows 0.28.3, which tracks a coordinator's own tool calls, nothing
+  drew the request, and the run sat waiting. The delegate's card now draws it,
+  and so does the drill-in view of that delegate.
+
 ## [0.11.2]
 
 See [Upgrading](docs/upgrading.md#0112).

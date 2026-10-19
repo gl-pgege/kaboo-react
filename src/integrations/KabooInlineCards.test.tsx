@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
+import {
+  InterruptBridgeProvider,
+  InterruptBridgePublisher,
+  type ActiveInterrupt,
+} from "../context/InterruptBridge";
 import type { ActivityState, StreamGroup } from "../types";
 
 const { registered } = vi.hoisted(() => ({
@@ -92,6 +97,39 @@ describe("KabooInlineCards", () => {
 
     expect(screen.queryByTestId("agent-card")).toBeNull();
     expect(screen.getByText(/Loading research_team/)).toBeInTheDocument();
+  });
+
+  it("draws the request a delegate waits on under its card", () => {
+    const groups = {
+      parent: group("coordinator", {
+        inlineChatOwner: true,
+        tools: [{ toolUseId: "tc-1", toolName: "builder", toolLabel: "", toolInput: {}, status: "running" }],
+      }),
+      "parent.builder": group("builder", { toolCallId: "tc-1", status: "interrupted", title: "Building" }),
+    };
+    const waiting: ActiveInterrupt = {
+      id: "i1",
+      reason: { type: "form", questions: [{ question: "Keep the photo?", type: "radio", options: ["Yes", "No"] }] },
+      toolCallId: "tc-1",
+      onResolve: () => {},
+      onCancel: () => {},
+    };
+
+    render(withActivity(groups, <KabooInlineCards />));
+    const renderer = registered.find((r) => r.name === "builder")!;
+
+    render(
+      withActivity(
+        groups,
+        <InterruptBridgeProvider>
+          <InterruptBridgePublisher interrupts={[waiting]} />
+          {renderer.render({ toolCallId: "tc-1", parameters: { input: "x" }, status: "inProgress" })}
+        </InterruptBridgeProvider>,
+      ),
+    );
+
+    expect(screen.getByTestId("agent-card")).toHaveTextContent("Building");
+    expect(screen.getByText("Keep the photo?")).toBeInTheDocument();
   });
 
   it("does not render first-class swarm/graph roots (that is KabooAssistantMessage's job)", () => {

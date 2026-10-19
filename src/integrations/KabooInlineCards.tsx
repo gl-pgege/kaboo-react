@@ -1,6 +1,8 @@
 import { useRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { AgentCard } from "../components/AgentCard";
+import { InterruptPrompt } from "../components/InterruptPrompt";
+import { useInterruptFor } from "../context/InterruptBridge";
 import { findGroupForCard } from "../utils/groups";
 import { KabooToolRender } from "./KabooToolRender";
 
@@ -30,6 +32,9 @@ const ANY_PARAMETERS = {
  * cards are rendered by {@link KabooMessageView} / {@link KabooAssistantMessage}
  * instead, anchored to the assistant turn. Groups carrying a `toolCallId` are
  * excluded there, so the two paths never double-render the same group.
+ *
+ * A request a delegate waits on (an approval or a question) reaches the caller
+ * anchored at the delegating call, so it is drawn under that delegate's card.
  */
 export function KabooInlineCards() {
   const { groups } = useActivity();
@@ -82,18 +87,28 @@ function InlineCardRenderer({
 }) {
   const { groups } = useActivity();
   const entry = findGroupForCard(groups, agentName, toolCallId);
+  const interrupt = useInterruptFor(toolCallId);
+  const prompt = interrupt ? <InterruptPrompt interrupt={interrupt} /> : null;
 
   if (!entry) {
-    return <div className="kaboo-agent-card-empty">Loading {agentName}...</div>;
+    return (
+      <>
+        <div className="kaboo-agent-card-empty">Loading {agentName}...</div>
+        {prompt}
+      </>
+    );
   }
 
   return (
-    <AgentCard
-      groupId={entry[0]}
-      group={entry[1]}
-      input={input}
-      result={result}
-      actionStatus={actionStatus}
-    />
+    <>
+      <AgentCard
+        groupId={entry[0]}
+        group={entry[1]}
+        input={input}
+        result={result}
+        actionStatus={actionStatus}
+      />
+      {prompt}
+    </>
   );
 }
