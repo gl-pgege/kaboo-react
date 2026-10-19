@@ -9,6 +9,29 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.11.2
+
+**Who:** apps with approvals or questions, and apps that recover from a refused
+answer themselves.
+
+Answers that never reach the agent (the host refuses a decision, or the request
+fails) now come back to be answered again, with the reason above them, instead
+of staying "Response submitted" until a reload. To show the reason elsewhere
+too, pass `onInterruptError`:
+
+```diff
+- <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant">
++ <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant" onInterruptError={(message) => toast.error(message)}>
+```
+
+If your app reconnected the agent itself after such a failure, remove that
+code. Pair this release with kaboo-runtime 0.7.1, which opens a run that fails
+before the agent starts with `RUN_STARTED`; older runtimes recover too.
+
+`useInterruptBridge()` also gives `failure`, `setFailure` and `clearAnswered`
+for custom cards, and tools still running in a run that errors or stops now
+show as cancelled instead of spinning.
+
 ## 0.11
 
 **Who:** everyone. 0.11 runs on CopilotKit 1.78 or later, the AG-UI 1.0

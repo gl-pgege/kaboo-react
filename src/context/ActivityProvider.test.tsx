@@ -235,6 +235,34 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
     expect(screen.getByTestId("statuses").textContent).toBe("g1=stopped,g2=completed");
   });
 
+  it("cancels a settled group's tools that were still running, so their rows stop spinning", () => {
+    function ToolProbe() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      return <div data-testid="tools">{(groups.g1?.tools ?? []).map((t) => `${t.toolUseId}=${t.status}`).join(",")}</div>;
+    }
+    render(
+      <KabooActivityProvider>
+        <ToolProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emit({
+        groups: {
+          g1: group("a", {
+            tools: [
+              { toolUseId: "t1", toolName: "run_sql", status: "running" },
+              { toolUseId: "t2", toolName: "run_sql", status: "success" },
+            ],
+          }),
+        },
+      });
+    });
+    act(() => {
+      fakeAgent.emitRunError();
+    });
+    expect(screen.getByTestId("tools").textContent).toBe("t1=cancelled,t2=success");
+  });
+
   it("marks still-active groups stopped on a successful RUN_FINISHED", () => {
     render(
       <KabooActivityProvider>

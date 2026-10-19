@@ -67,6 +67,34 @@ the composer: the AG-UI client refuses to start a run while requests are open,
 so the built-in handler drops the stale requests just before the new message's
 run starts, and the agent closes them as skipped.
 
+## When an answer can't be recorded
+
+Sometimes answers never reach the agent: the host refuses a decision (its
+approval service is down, or doesn't take it), or the request itself fails. The
+requests are still open on the server, so the built-in handler brings them back
+to be answered again, with the reason above them. Pass `onInterruptError` to
+show the reason somewhere else too, such as a toast:
+
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooProvider } from "@pgege/kaboo-react";
+
+declare function showToast(message: string): void;
+
+export function Chat({ threadId }: { threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant" threadId={threadId} onInterruptError={showToast}>
+      <CopilotChat />
+    </KabooProvider>
+  );
+}
+```
+
+The reason is the message of the run's `RUN_ERROR`, which kaboo-runtime takes
+from the error the host's `onDecision` throws, so the host should throw one a
+person can act on. A run that fails after the agent started working is left to
+the chat's usual error handling.
+
 ## Inline vs chat-slot placement
 
 - If a request is anchored to a tool call that is still visible on screen, the
@@ -92,6 +120,11 @@ export function WaitingBadge() {
   return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
 }
 ```
+
+A custom card that draws its own gate can also read `failure`, the reason the
+last answers never reached the agent (see
+[When an answer can't be recorded](#when-an-answer-cant-be-recorded)), and
+`clearAnswered()` forgets every answer so the requests can be answered again.
 
 `InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
 pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.

@@ -7,16 +7,20 @@ import { applyActivityPatch } from "../utils/activityPatch";
 const EMPTY: ActivityState = { groups: {} };
 
 /**
- * Settle any group a finished run left `"active"` to `"stopped"`, so aborted
- * or errored runs never leave cards spinning "working..." forever. Identity is
- * preserved when nothing was active, avoiding a render.
+ * Settle any group a finished run left `"active"` to `"stopped"`, and its tools
+ * still `"running"` to `"cancelled"`, so aborted or errored runs never leave
+ * cards or tool rows spinning forever. Identity is preserved when nothing was
+ * active, avoiding a render.
  */
 function settleActiveGroups(state: ActivityState): ActivityState {
   let changed = false;
   const groups: Record<string, StreamGroup> = {};
   for (const [id, g] of Object.entries(state.groups)) {
     if (g.status === "active") {
-      groups[id] = { ...g, status: "stopped" };
+      const tools = g.tools?.some((t) => t.status === "running")
+        ? g.tools.map((t) => (t.status === "running" ? { ...t, status: "cancelled" as const } : t))
+        : g.tools;
+      groups[id] = { ...g, status: "stopped", tools };
       changed = true;
     } else {
       groups[id] = g;

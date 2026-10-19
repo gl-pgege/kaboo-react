@@ -1066,6 +1066,34 @@ the composer: the AG-UI client refuses to start a run while requests are open,
 so the built-in handler drops the stale requests just before the new message's
 run starts, and the agent closes them as skipped.
 
+## When an answer can't be recorded
+
+Sometimes answers never reach the agent: the host refuses a decision (its
+approval service is down, or doesn't take it), or the request itself fails. The
+requests are still open on the server, so the built-in handler brings them back
+to be answered again, with the reason above them. Pass `onInterruptError` to
+show the reason somewhere else too, such as a toast:
+
+```tsx
+import { CopilotChat } from "@copilotkit/react-core/v2";
+import { KabooProvider } from "@pgege/kaboo-react";
+
+declare function showToast(message: string): void;
+
+export function Chat({ threadId }: { threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant" threadId={threadId} onInterruptError={showToast}>
+      <CopilotChat />
+    </KabooProvider>
+  );
+}
+```
+
+The reason is the message of the run's `RUN_ERROR`, which kaboo-runtime takes
+from the error the host's `onDecision` throws, so the host should throw one a
+person can act on. A run that fails after the agent started working is left to
+the chat's usual error handling.
+
 ## Inline vs chat-slot placement
 
 - If a request is anchored to a tool call that is still visible on screen, the
@@ -1091,6 +1119,11 @@ export function WaitingBadge() {
   return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
 }
 ```
+
+A custom card that draws its own gate can also read `failure`, the reason the
+last answers never reached the agent (see
+[When an answer can't be recorded](#when-an-answer-cant-be-recorded)), and
+`clearAnswered()` forgets every answer so the requests can be answered again.
 
 `InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
 pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.
@@ -1456,6 +1489,16 @@ Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
 - A plain-agent entry renders inline in the chat (`inlineChatOwner`), so you may
   see cards inside the chat rather than a separate panel — that's expected.
 
+## Approval cards stay "Response submitted"
+
+The answers were sent but never reached the agent: the host refused a decision,
+or the run failed before the agent started. Before 0.11.2 the cards stayed
+answered until a reload. From 0.11.2 they come back to be answered again, with
+the reason above them (see
+[When an answer can't be recorded](hitl.md#when-an-answer-cant-be-recorded)).
+Pair it with kaboo-runtime 0.7.1 or later, which opens such runs with
+`RUN_STARTED`. Then fix the refusal itself on the host.
+
 ## Peer / version errors
 
 kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)
@@ -1495,6 +1538,29 @@ The kaboo libraries can be upgraded in any order: this release reads what older
 agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
+
+## 0.11.2
+
+**Who:** apps with approvals or questions, and apps that recover from a refused
+answer themselves.
+
+Answers that never reach the agent (the host refuses a decision, or the request
+fails) now come back to be answered again, with the reason above them, instead
+of staying "Response submitted" until a reload. To show the reason elsewhere
+too, pass `onInterruptError`:
+
+```diff
+- <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant">
++ <KabooProvider runtimeUrl="/api/copilotkit" agent="assistant" onInterruptError={(message) => toast.error(message)}>
+```
+
+If your app reconnected the agent itself after such a failure, remove that
+code. Pair this release with kaboo-runtime 0.7.1, which opens a run that fails
+before the agent starts with `RUN_STARTED`; older runtimes recover too.
+
+`useInterruptBridge()` also gives `failure`, `setFailure` and `clearAnswered`
+for custom cards, and tools still running in a run that errors or stops now
+show as cancelled instead of spinning.
 
 ## 0.11
 

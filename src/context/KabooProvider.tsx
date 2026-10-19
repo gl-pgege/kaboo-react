@@ -41,6 +41,12 @@ export interface KabooProviderProps {
   toolRenderers?: ToolRenderers;
   /** Skip auto-mounting the built-in {@link KabooInterruptHandler}. */
   disableInterruptHandler?: boolean;
+  /**
+   * Called with the reason when a person's answer never reached the agent;
+   * the requests come back to be answered again. See
+   * {@link KabooInterruptHandlerProps.onInterruptError}.
+   */
+  onInterruptError?: KabooInterruptHandlerProps["onInterruptError"];
   /** Skip auto-mounting the built-in {@link KabooInlineCards}. */
   disableInlineCards?: boolean;
   /**
@@ -94,6 +100,7 @@ export function KabooProvider({
   approvalScopes,
   toolRenderers,
   disableInterruptHandler = false,
+  onInterruptError,
   disableInlineCards = false,
   references,
   slots,
@@ -116,7 +123,11 @@ export function KabooProvider({
                 <ReferencesProvider providers={references} syncObjectStateTo={agent}>
                   <KabooSlotsProvider value={slots ?? {}}>
                     {!disableInterruptHandler && (
-                      <KabooInterruptHandler agentId={agent} renderers={interruptRenderers} />
+                      <KabooInterruptHandler
+                        agentId={agent}
+                        renderers={interruptRenderers}
+                        onInterruptError={onInterruptError}
+                      />
                     )}
                     {!disableInlineCards && <KabooInlineCards />}
                     {children}

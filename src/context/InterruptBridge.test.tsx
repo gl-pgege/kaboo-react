@@ -42,6 +42,50 @@ describe("InterruptBridge", () => {
     expect(ctx!.active.map((i) => i.id)).toEqual(["a", "b"]);
   });
 
+  it("clearAnswered forgets every answer, so the requests can be answered again", () => {
+    let ctx: ReturnType<typeof useInterruptBridge>;
+    function Probe() {
+      ctx = useInterruptBridge();
+      return null;
+    }
+    render(
+      <InterruptBridgeProvider>
+        <Probe />
+      </InterruptBridgeProvider>,
+    );
+    act(() => ctx!.publish([bridge("a"), bridge("b")]));
+    act(() => {
+      ctx!.markAnswered("a");
+      ctx!.markAnswered("b");
+    });
+    expect([...ctx!.answered]).toEqual(["a", "b"]);
+
+    act(() => ctx!.clearAnswered());
+
+    expect(ctx!.answered.size).toBe(0);
+    expect(ctx!.active).toHaveLength(2);
+  });
+
+  it("holds why answers never reached the agent until it is cleared", () => {
+    let ctx: ReturnType<typeof useInterruptBridge>;
+    function Probe() {
+      ctx = useInterruptBridge();
+      return null;
+    }
+    render(
+      <InterruptBridgeProvider>
+        <Probe />
+      </InterruptBridgeProvider>,
+    );
+    expect(ctx!.failure).toBeNull();
+
+    act(() => ctx!.setFailure("Your answer wasn't recorded"));
+    expect(ctx!.failure).toBe("Your answer wasn't recorded");
+
+    act(() => ctx!.setFailure(null));
+    expect(ctx!.failure).toBeNull();
+  });
+
   it("useInterruptFor returns the matching interrupt, or undefined", () => {
     let ctx: ReturnType<typeof useInterruptBridge>;
     let forT1: ActiveInterrupt | undefined;

@@ -1,5 +1,5 @@
-import { useEffect, useRef, type ReactElement } from "react";
-import { useCopilotKit, useInterrupt } from "@copilotkit/react-core/v2";
+import { useCallback, useEffect, useRef, type ReactElement } from "react";
+import { useAgent, useCopilotKit, useInterrupt } from "@copilotkit/react-core/v2";
 import {
   InterruptBridgePublisher,
   useInterruptBridge,
@@ -37,6 +37,21 @@ function ChatInterruptSlot({
     return null;
   }
   return <InterruptPrompt interrupt={interrupt} Renderer={Renderer} />;
+}
+
+/**
+ * Why the last answers never reached the agent, above the requests that came
+ * back. Reads the bridge, so it updates while the interrupt element stays
+ * mounted.
+ */
+function InterruptFailure(): ReactElement | null {
+  const { failure } = useInterruptBridge();
+  if (!failure) return null;
+  return (
+    <p className="kaboo-interrupt-error" role="alert">
+      {failure}
+    </p>
+  );
 }
 
 function isExpired(reason: ApprovalReason): boolean {
@@ -116,6 +131,23 @@ function ContinuationResolver({
   return null;
 }
 
+type RunningAgent = NonNullable<ReturnType<typeof useAgent>["agent"]>;
+
+/**
+ * Drop the tool messages CopilotKit adds, carrying the person's answer, for
+ * each tool call an answered request resumes. They would show as the call's
+ * result until the agent sends the real one, and the agent never sees a call
+ * whose request was skipped or never reached it.
+ */
+function dropAnswerMessages(agent: RunningAgent): void {
+  const resumed = new Set(
+    (agent.pendingInterrupts ?? []).filter((i) => i.reason === "tool_call" && i.toolCallId).map((i) => i.toolCallId),
+  );
+  if (resumed.size === 0) return;
+  const messages = agent.messages.filter((m) => !(m.role === "tool" && resumed.has(m.toolCallId)));
+  if (messages.length !== agent.messages.length) agent.setMessages(messages);
+}
+
 /**
  * Sending a message while a question or approval waits skips it: the person
  * moved on. The AG-UI client refuses to start a run until every open request
@@ -123,30 +155,86 @@ function ContinuationResolver({
  * the run starts; the run then carries the new message as a fresh turn, and
  * the agent closes what it was waiting on as skipped.
  *
- * Answering them resumes the run instead. CopilotKit then adds a tool message
- * carrying the answer for each tool call it resumes, which would show as the
- * call's result until the agent sends the real one, so those are dropped.
+ * Answering them resumes the run instead. Either way the answer messages
+ * CopilotKit added are dropped (see `dropAnswerMessages`).
  */
-function useSkipOnSend(agentId: string | undefined): void {
+function useSkipOnSend(agentId: string | undefined, onSkip: () => void): void {
   const { copilotkit } = useCopilotKit();
+  const onSkipRef = useRef(onSkip);
+  onSkipRef.current = onSkip;
   useEffect(() => {
     const subscription = copilotkit.subscribe({
       onAgentRunStarted: ({ agent }) => {
         if (agentId && agent.agentId !== agentId) return;
         if (!agent.pendingInterrupts || agent.pendingInterrupts.length === 0) return;
+        dropAnswerMessages(agent);
         if (agent.messages[agent.messages.length - 1]?.role === "user") {
           agent.pendingInterrupts = [];
-          return;
+          onSkipRef.current();
         }
-        const resumed = new Set(
-          agent.pendingInterrupts.filter((i) => i.reason === "tool_call" && i.toolCallId).map((i) => i.toolCallId),
-        );
-        const messages = agent.messages.filter((m) => !(m.role === "tool" && resumed.has(m.toolCallId)));
-        if (messages.length !== agent.messages.length) agent.setMessages(messages);
       },
     });
     return () => subscription.unsubscribe();
   }, [copilotkit, agentId]);
+}
+
+/** Whether a run carries answers a person gave, as opposed to automatic continuations. */
+function answers(input: unknown): boolean {
+  const resume = (input as { resume?: Array<{ payload?: unknown }> } | undefined)?.resume;
+  if (!Array.isArray(resume) || resume.length === 0) return false;
+  return resume.some((entry) => (entry.payload as { status?: unknown } | undefined)?.status !== "continue");
+}
+
+function isAbort(error: unknown): boolean {
+  return error instanceof Error && (error.name === "AbortError" || /aborted/i.test(error.message));
+}
+
+function sendFailure(error: unknown): string {
+  const reason = error instanceof Error ? error.message : String(error);
+  return reason ? `Your answer couldn't be sent: ${reason}` : "Your answer couldn't be sent.";
+}
+
+/**
+ * Reports answers that never reached the agent: a run resuming with a
+ * person's answers that ends in `RUN_ERROR`, or fails, before the agent did
+ * anything, such as when the host refuses a decision. The requests are still
+ * open on the server, so they can be answered again.
+ */
+function useFailedAnswers(agentId: string | undefined, onFailed: (message: string) => void): void {
+  const { agent } = useAgent({ ...(agentId ? { agentId } : {}), updates: [] });
+  const onFailedRef = useRef(onFailed);
+  onFailedRef.current = onFailed;
+  useEffect(() => {
+    if (!agent) return;
+    let answering = false;
+    let progressed = false;
+    let failure: string | null = null;
+    const subscription = agent.subscribe({
+      onRunInitialized: ({ input }) => {
+        answering = answers(input);
+        progressed = false;
+        failure = null;
+      },
+      onEvent: ({ event }) => {
+        const type = String(event.type);
+        if (type !== "RUN_STARTED" && type !== "RUN_ERROR") progressed = true;
+      },
+      onRunErrorEvent: ({ event }) => {
+        if (answering && !progressed) failure = event.message || "Your answer couldn't be recorded.";
+      },
+      onRunFailed: ({ error }) => {
+        if (answering && !progressed && !isAbort(error)) failure = sendFailure(error);
+      },
+      onRunFinalized: () => {
+        answering = false;
+        if (failure === null) return;
+        const message = failure;
+        failure = null;
+        onFailedRef.current(message);
+      },
+    });
+    return () => subscription.unsubscribe();
+  }, [agent]);
 }
 
 /** Props for {@link KabooInterruptHandler}. */
@@ -161,6 +249,13 @@ export interface KabooInterruptHandlerProps {
    * requires an `InterruptBridgeProvider` (included in `KabooProvider`).
    */
   bridge?: boolean;
+  /**
+   * Called with the reason when an answer never reached the agent (the host
+   * refused it, or it couldn't be sent). The requests come back to be
+   * answered again either way; use this to show the reason elsewhere too,
+   * such as a toast.
+   */
+  onInterruptError?: (message: string) => void;
 }
 
 /**
@@ -175,6 +270,10 @@ export interface KabooInterruptHandlerProps {
  *
  * Two or more approvals waiting at once get "Approve all" and "Deny all". A
  * message sent while anything waits skips it, so the chat is never stuck.
+ *
+ * When answers never reach the agent (the host refuses a decision, or the
+ * request fails), the requests come back to be answered again, with the reason
+ * above them and passed to `onInterruptError`.
  *
  * @example
  * ```tsx
@@ -198,9 +297,44 @@ export function KabooInterruptHandler({
   agentId,
   renderers,
   bridge = true,
+  onInterruptError,
 }: KabooInterruptHandlerProps): ReactElement | null {
-  const { markAnswered } = useInterruptBridge();
-  useSkipOnSend(agentId);
+  const { markAnswered, clearAnswered, setFailure } = useInterruptBridge();
+  const { copilotkit } = useCopilotKit();
+  const { agent } = useAgent({ ...(agentId ? { agentId } : {}), updates: [] });
+  const onInterruptErrorRef = useRef(onInterruptError);
+  onInterruptErrorRef.current = onInterruptError;
+  const recovering = useRef(false);
+
+  const recover = useCallback(
+    (message: string) => {
+      if (recovering.current) return;
+      recovering.current = true;
+      setFailure(message);
+      onInterruptErrorRef.current?.(message);
+      clearAnswered();
+      if (!agent) {
+        recovering.current = false;
+        return;
+      }
+      dropAnswerMessages(agent);
+      void Promise.resolve(copilotkit.connectAgent({ agent }))
+        .catch(() => undefined)
+        .finally(() => {
+          recovering.current = false;
+        });
+    },
+    [agent, copilotkit, clearAnswered, setFailure],
+  );
+
+  useSkipOnSend(agentId, () => setFailure(null));
+  useFailedAnswers(agentId, recover);
+
+  const settle = (pending: unknown) => {
+    void Promise.resolve(pending).catch((error: unknown) => {
+      if (!isAbort(error)) recover(sendFailure(error));
+    });
+  };
 
   useInterrupt({
     ...(agentId ? { agentId } : {}),
@@ -227,11 +361,13 @@ export function KabooInterruptHandler({
             toolCallId: (intr as { toolCallId?: string }).toolCallId,
             onResolve: (payload: unknown) => {
               markAnswered(intr.id);
-              resolve(payload, intr.id);
+              setFailure(null);
+              settle(resolve(payload, intr.id));
             },
             onCancel: () => {
               markAnswered(intr.id);
-              cancel(intr.id);
+              setFailure(null);
+              settle(cancel(intr.id));
             },
           };
         })
@@ -250,6 +386,7 @@ export function KabooInterruptHandler({
       return (
         <>
           {resumer}
+          <InterruptFailure />
           {bridge && <InterruptBridgePublisher interrupts={active} />}
           {approvals.length > 1 && <ApprovalBatchBar approvals={approvals} />}
           {active.map((a) => (

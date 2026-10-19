@@ -26,6 +26,16 @@ Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
 - A plain-agent entry renders inline in the chat (`inlineChatOwner`), so you may
   see cards inside the chat rather than a separate panel — that's expected.
 
+## Approval cards stay "Response submitted"
+
+The answers were sent but never reached the agent: the host refused a decision,
+or the run failed before the agent started. Before 0.11.2 the cards stayed
+answered until a reload. From 0.11.2 they come back to be answered again, with
+the reason above them (see
+[When an answer can't be recorded](hitl.md#when-an-answer-cant-be-recorded)).
+Pair it with kaboo-runtime 0.7.1 or later, which opens such runs with
+`RUN_STARTED`. Then fix the refusal itself on the host.
+
 ## Peer / version errors
 
 kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)

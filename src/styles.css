@@ -747,6 +747,15 @@
   font-style: italic;
 }
 
+.kaboo-interrupt-error {
+  padding: 8px 14px;
+  margin: 8px 0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--kaboo-error);
+  background: color-mix(in srgb, var(--kaboo-error) 10%, transparent);
+}
+
 /* ── Answered ask_user prompt (durable, inline Q&A) ── */
 .kaboo-askuser {
   border: 1px solid var(--kaboo-border);

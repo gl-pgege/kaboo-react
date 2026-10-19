@@ -6,7 +6,7 @@
 
 > **useInterruptBridge**(): `object`
 
-Defined in: [src/context/InterruptBridge.tsx:111](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L111)
+Defined in: [src/context/InterruptBridge.tsx:121](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/InterruptBridge.tsx#L121)
 
 Reads the InterruptBridge: the list of open interrupts plus `publish`, and
 which of them were already answered. Most consumers want
@@ -26,6 +26,25 @@ Every open interrupt from the current run, in emission order.
 > **answered**: `ReadonlySet`\<`string`\>
 
 Ids of open interrupts already answered while the run waits on the rest.
+
+### clearAnswered
+
+> **clearAnswered**: () => `void`
+
+Forget every recorded answer, so the open interrupts can be answered again.
+`KabooInterruptHandler` calls it when an answer couldn't be recorded.
+
+#### Returns
+
+`void`
+
+### failure
+
+> **failure**: `string` \| `null`
+
+Why the last answers never reached the agent, while the requests wait to
+be answered again; `null` otherwise. Cleared when the person answers or
+sends a message.
 
 ### markAnswered
 
@@ -54,6 +73,22 @@ Replace the set of interrupts published to the bridge.
 ##### interrupts
 
 [`ActiveInterrupt`](../interfaces/ActiveInterrupt.md)[]
+
+#### Returns
+
+`void`
+
+### setFailure
+
+> **setFailure**: (`message`) => `void`
+
+Record why answers never reached the agent, or clear it with `null`.
+
+#### Parameters
+
+##### message
+
+`string` \| `null`
 
 #### Returns
 

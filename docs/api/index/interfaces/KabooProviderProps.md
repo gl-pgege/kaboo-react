@@ -36,7 +36,7 @@ all three (`once`, `thread`, `always`).
 
 > **children**: `ReactNode`
 
-Defined in: [src/context/KabooProvider.tsx:60](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L60)
+Defined in: [src/context/KabooProvider.tsx:66](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L66)
 
 Your app subtree, rendered inside all kaboo contexts.
 
@@ -46,7 +46,7 @@ Your app subtree, rendered inside all kaboo contexts.
 
 > `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"children"` \| `"agent"` \| `"runtimeUrl"` \| `"threadId"`\>\>
 
-Defined in: [src/context/KabooProvider.tsx:58](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L58)
+Defined in: [src/context/KabooProvider.tsx:64](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L64)
 
 Extra props forwarded to the underlying `<CopilotKit>`.
 
@@ -56,7 +56,7 @@ Extra props forwarded to the underlying `<CopilotKit>`.
 
 > `optional` **disableInlineCards?**: `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:45](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L45)
+Defined in: [src/context/KabooProvider.tsx:51](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L51)
 
 Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/KabooInlineCards.md).
 
@@ -83,11 +83,33 @@ Renderer overrides for the built-in HITL handler, keyed by request kind:
 
 ***
 
+### onInterruptError?
+
+> `optional` **onInterruptError?**: (`message`) => `void`
+
+Defined in: [src/context/KabooProvider.tsx:49](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L49)
+
+Called with the reason when a person's answer never reached the agent;
+the requests come back to be answered again. See
+[KabooInterruptHandlerProps.onInterruptError](../../copilotkit/interfaces/KabooInterruptHandlerProps.md#oninterrupterror).
+
+#### Parameters
+
+##### message
+
+`string`
+
+#### Returns
+
+`void`
+
+***
+
 ### references?
 
 > `optional` **references?**: [`ReferenceProvider`](ReferenceProvider.md)\<`unknown`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L50)
+Defined in: [src/context/KabooProvider.tsx:56](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L56)
 
 `@` reference providers made available to the composer / `useReferences`.
 File upload is not implicit — include `uploadProvider()` to offer uploads.
@@ -108,7 +130,7 @@ URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
 > `optional` **slots?**: [`KabooSlots`](KabooSlots.md)
 
-Defined in: [src/context/KabooProvider.tsx:56](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L56)
+Defined in: [src/context/KabooProvider.tsx:62](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L62)
 
 App-supplied render slots for the chat surfaces (end-of-turn footer,
 per-message footers, run-start indicator). All optional; nothing is

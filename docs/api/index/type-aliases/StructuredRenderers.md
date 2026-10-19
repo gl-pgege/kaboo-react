@@ -6,7 +6,7 @@
 
 > **StructuredRenderers** = `Record`\<`string`, (`data`) => `ReactElement`\>
 
-Defined in: [src/context/ActivityProvider.tsx:42](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L42)
+Defined in: [src/context/ActivityProvider.tsx:46](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L46)
 
 A map of custom renderers for structured agent output, keyed by the output
 schema name. When a group carries `structuredOutput` and a matching

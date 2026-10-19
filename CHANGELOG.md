@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2]
+
+See [Upgrading](docs/upgrading.md#0112).
+
+### Added
+
+- **`onInterruptError`** on `KabooProvider` and `KabooInterruptHandler`, called
+  with the reason when a person's answers never reached the agent.
+- **`useInterruptBridge()` gives `failure`, `setFailure` and `clearAnswered`,**
+  so custom cards can show why answers failed and take them again.
+
+### Fixed
+
+- **Answers that never reach the agent come back to be answered again.** When
+  the host refused a decision, the resumed run ended before the agent started,
+  CopilotKit's interrupt state stayed sealed and the cards stayed "Response
+  submitted", with tool rows spinning, until a reload. The handler now
+  reconnects the agent, so the still-open requests come back unanswered, and
+  shows the reason above them. A request that fails to send recovers the same
+  way, instead of leaving an unhandled rejection.
+- **A message sent after a failed answer leaves no made-up results.** The tool
+  messages CopilotKit adds with an answer are dropped when a message skips the
+  requests, as they already were when a resume started, so the agent never
+  reads an answer as a tool's result.
+- **Tools still running when a run errors or stops show as cancelled** instead
+  of spinning in a settled group.
+
 ## [0.11.1]
 
 ### Fixed

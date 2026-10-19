@@ -6,7 +6,7 @@
 
 > **KabooInterruptHandler**(`__namedParameters`): `ReactElement`\<`unknown`, `string` \| `JSXElementConstructor`\<`any`\>\> \| `null`
 
-Defined in: [src/integrations/KabooInterruptHandler.tsx:197](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L197)
+Defined in: [src/integrations/KabooInterruptHandler.tsx:296](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInterruptHandler.tsx#L296)
 
 Ready-made human-in-the-loop interrupt handler. CopilotKit surfaces every open
 interrupt of a run at once (e.g. two gated tools called in parallel); we render
@@ -19,6 +19,10 @@ tool's position; the rest fall back to the chat slot.
 
 Two or more approvals waiting at once get "Approve all" and "Deny all". A
 message sent while anything waits skips it, so the chat is never stuck.
+
+When answers never reach the agent (the host refuses a decision, or the
+request fails), the requests come back to be answered again, with the reason
+above them and passed to `onInterruptError`.
 
 ## Parameters
 

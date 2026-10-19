@@ -2,8 +2,9 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 
-const { capturedProps } = vi.hoisted(() => ({
+const { capturedProps, handlerProps } = vi.hoisted(() => ({
   capturedProps: { current: {} as Record<string, unknown> },
+  handlerProps: { current: {} as Record<string, unknown> },
 }));
 
 vi.mock("@copilotkit/react-core/v2", () => ({
@@ -17,7 +18,10 @@ vi.mock("@copilotkit/react-core/v2", () => ({
 }));
 
 vi.mock("../integrations/KabooInterruptHandler", () => ({
-  KabooInterruptHandler: () => <div data-testid="interrupt-handler" />,
+  KabooInterruptHandler: (props: Record<string, unknown>) => {
+    handlerProps.current = props;
+    return <div data-testid="interrupt-handler" />;
+  },
 }));
 
 vi.mock("../integrations/KabooInlineCards", () => ({
@@ -65,6 +69,17 @@ describe("KabooProvider", () => {
     );
     expect(screen.queryByTestId("inline-cards")).toBeNull();
     expect(screen.getByTestId("interrupt-handler")).toBeInTheDocument();
+  });
+
+  it("hands onInterruptError to the interrupt handler", () => {
+    const onInterruptError = vi.fn();
+    render(
+      <KabooProvider runtimeUrl="/api/copilotkit" agent="entry" onInterruptError={onInterruptError}>
+        <div />
+      </KabooProvider>,
+    );
+    expect(handlerProps.current.onInterruptError).toBe(onInterruptError);
+    expect(handlerProps.current.agentId).toBe("entry");
   });
 
   it("forwards runtimeUrl and copilotKitProps to CopilotKit", () => {

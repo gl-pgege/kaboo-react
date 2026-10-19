@@ -43,6 +43,9 @@ interface InterruptBridgeValue {
   /** Ids of open interrupts already answered while the run waits on the rest. */
   answered: ReadonlySet<string>;
   markAnswered: (id: string) => void;
+  clearAnswered: () => void;
+  failure: string | null;
+  setFailure: (message: string | null) => void;
 }
 
 const NONE: ReadonlySet<string> = new Set();
@@ -52,6 +55,9 @@ const InterruptBridgeContext = createContext<InterruptBridgeValue>({
   publish: () => {},
   answered: NONE,
   markAnswered: () => {},
+  clearAnswered: () => {},
+  failure: null,
+  setFailure: () => {},
 });
 
 /**
@@ -83,9 +89,13 @@ export function InterruptBridgeProvider({ children }: { children: ReactNode }) {
   const markAnswered = useCallback((id: string) => {
     setAnswered((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   }, []);
+  const clearAnswered = useCallback(() => setAnswered(NONE), []);
+  const [failure, setFailure] = useState<string | null>(null);
 
   return (
-    <InterruptBridgeContext.Provider value={{ active, publish, answered, markAnswered }}>
+    <InterruptBridgeContext.Provider
+      value={{ active, publish, answered, markAnswered, clearAnswered, failure, setFailure }}
+    >
       {children}
     </InterruptBridgeContext.Provider>
   );
@@ -117,6 +127,19 @@ export function useInterruptBridge(): {
   answered: ReadonlySet<string>;
   /** Record that an open interrupt was answered. */
   markAnswered: (id: string) => void;
+  /**
+   * Forget every recorded answer, so the open interrupts can be answered again.
+   * `KabooInterruptHandler` calls it when an answer couldn't be recorded.
+   */
+  clearAnswered: () => void;
+  /**
+   * Why the last answers never reached the agent, while the requests wait to
+   * be answered again; `null` otherwise. Cleared when the person answers or
+   * sends a message.
+   */
+  failure: string | null;
+  /** Record why answers never reached the agent, or clear it with `null`. */
+  setFailure: (message: string | null) => void;
 } {
   return useContext(InterruptBridgeContext);
 }
