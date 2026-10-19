@@ -24,6 +24,12 @@ export interface TurnFooterContext {
   /** Every activity group the turn produced (roots and nested), in stream order. */
   groups: GroupEntry[];
   /**
+   * Every AG-UI run the turn spanned, in order. A turn paused for an approval
+   * or a question resumes in a new run, so anything a host keys by run (files
+   * or versions the turn made) is found under one of these.
+   */
+  runIds: string[];
+  /**
    * OpenTelemetry trace id of the turn's root run, when the workflow service
    * ran with telemetry enabled. Hosts use this to attach feedback scores to
    * the exact trace. Absent when telemetry is off.

@@ -59,6 +59,12 @@ the same answers, and the host forwards the decision to the tool's service.
 A denial is sent as `cancelled` so an agent that predates denial reasons can
 never mistake it for an approval.
 
+The answers resume the turn in a new run, and the chat still shows one turn:
+the `turnFooter` slot renders after the turn's last reply, and its `runIds`
+list every run the turn spanned, so anything your app keys by run (files or
+versions the turn made) is found under one of them. This needs kaboo-workflows
+0.28.2 or later, whose activity groups record each run that resumed them.
+
 ## Moving on
 
 If the person sends a message while a question or approval waits, what was

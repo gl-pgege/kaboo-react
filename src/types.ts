@@ -255,6 +255,12 @@ export interface StreamGroup {
    */
   runId?: string | null;
   /**
+   * Every AG-UI run that streamed into this group, in order: the run that
+   * opened it, then each run that resumed the turn after an approval or a
+   * question (kaboo-workflows 0.28.2 and later; absent for older streams).
+   */
+  runIds?: string[] | null;
+  /**
    * The logical turn that produced this group — stable across an
    * interrupt/resume (server-stamped). All groups of one user turn share it, so
    * the UI can bind them to that turn's single chat reply without fragmenting

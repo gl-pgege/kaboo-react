@@ -11,8 +11,8 @@ agent. Features that span the stack light up once every piece is upgraded — se
 
 ## 0.11.2
 
-**Who:** apps with approvals or questions, and apps that recover from a refused
-answer themselves.
+**Who:** apps with approvals or questions, apps that recover from a refused
+answer themselves, and apps with a `turnFooter`.
 
 Answers that never reach the agent (the host refuses a decision, or the request
 fails) now come back to be answered again, with the reason above them, instead
@@ -31,6 +31,11 @@ before the agent starts with `RUN_STARTED`; older runtimes recover too.
 `useInterruptBridge()` also gives `failure`, `setFailure` and `clearAnswered`
 for custom cards, and tools still running in a run that errors or stops now
 show as cancelled instead of spinning.
+
+With kaboo-workflows 0.28.2, a turn resumed after an answer ends after its last
+reply: the `turnFooter` slot renders there, and its new `runIds` list every run
+of the turn. If your footer looked things up by the groups' `runId`, use
+`runIds` instead; the groups' `runId` is only the run that opened them.
 
 ## 0.11
 

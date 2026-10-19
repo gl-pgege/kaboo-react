@@ -6,7 +6,7 @@
 
 > **useKabooSlots**(): [`KabooSlots`](../interfaces/KabooSlots.md)
 
-Defined in: [src/context/KabooSlots.tsx:75](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L75)
+Defined in: [src/context/KabooSlots.tsx:81](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L81)
 
 Read the nearest [KabooSlots](../interfaces/KabooSlots.md).
 

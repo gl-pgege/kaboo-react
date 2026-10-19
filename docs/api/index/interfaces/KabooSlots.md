@@ -4,7 +4,7 @@
 
 # Interface: KabooSlots
 
-Defined in: [src/context/KabooSlots.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L43)
+Defined in: [src/context/KabooSlots.tsx:49](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L49)
 
 App-supplied render slots for the chat surfaces. kaboo-react renders nothing
 in these positions by default — each slot is pure mechanism, letting hosts
@@ -20,7 +20,7 @@ Provide them once on [KabooProvider](../functions/KabooProvider.md) (or per-view
 
 > `optional` **assistantMessageFooter?**: (`message`) => `ReactNode`
 
-Defined in: [src/context/KabooSlots.tsx:54](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L54)
+Defined in: [src/context/KabooSlots.tsx:60](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L60)
 
 Rendered under each assistant message (e.g. a timestamp row).
 
@@ -40,7 +40,7 @@ Rendered under each assistant message (e.g. a timestamp row).
 
 > `optional` **runStartIndicator?**: `ComponentType`
 
-Defined in: [src/context/KabooSlots.tsx:64](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L64)
+Defined in: [src/context/KabooSlots.tsx:70](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L70)
 
 Rendered while a run is in flight until the current turn's first activity
 group appears (a swarm/graph member or a delegated agent, active or
@@ -56,7 +56,7 @@ Defaults to CopilotKit's streaming cursor.
 
 > `optional` **turnFooter?**: (`ctx`) => `ReactNode`
 
-Defined in: [src/context/KabooSlots.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L50)
+Defined in: [src/context/KabooSlots.tsx:56](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L56)
 
 Rendered once per completed turn, after the turn's final assistant
 message, with every activity group that turn produced. The natural home
@@ -79,7 +79,7 @@ built"), derived from `structuredOutput` on the turn's groups.
 
 > `optional` **userMessageFooter?**: (`message`) => `ReactNode`
 
-Defined in: [src/context/KabooSlots.tsx:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L52)
+Defined in: [src/context/KabooSlots.tsx:58](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L58)
 
 Rendered under each user message bubble (e.g. a timestamp row).
 

@@ -6,7 +6,7 @@
 
 > **directChildren**(`groups`, `parentId`): [`GroupEntry`](../type-aliases/GroupEntry.md)[]
 
-Defined in: [src/utils/groups.ts:78](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/groups.ts#L78)
+Defined in: [src/utils/groups.ts:84](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/groups.ts#L84)
 
 Direct children of `parentId` (one level deep) via the `parentGroup` field.
 

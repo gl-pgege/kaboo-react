@@ -13,6 +13,12 @@ export function groupTurnKey(g: StreamGroup): string | null {
   return g.turnId ?? g.runId ?? null;
 }
 
+/** Every run that streamed into a group, falling back to its `runId` for older streams. */
+export function groupRuns(g: StreamGroup): string[] {
+  if (g.runIds?.length) return g.runIds;
+  return g.runId ? [g.runId] : [];
+}
+
 /**
  * Split child groups into those anchored to a delegating tool call present in
  * *timeline* (keyed by that tool-call id, so they can be interleaved at their

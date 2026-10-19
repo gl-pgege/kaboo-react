@@ -9,7 +9,7 @@ import {
 } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { AgentCard } from "../components/AgentCard";
-import { chatRootGroups, groupTurnKey, type GroupEntry } from "../utils/groups";
+import { chatRootGroups, groupRuns, groupTurnKey, type GroupEntry } from "../utils/groups";
 import { useMessageMeta } from "../context/MessageMeta";
 import { TurnBindingProvider } from "../context/TurnBinding";
 import { useKabooSlots, type KabooSlots } from "../context/KabooSlots";
@@ -85,7 +85,8 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
         const runToTurn = new Map<string, string>();
         for (const g of Object.values(groups)) {
           const key = groupTurnKey(g);
-          if (g.runId && key) runToTurn.set(g.runId, key);
+          if (!key) continue;
+          for (const run of groupRuns(g)) runToTurn.set(run, key);
         }
 
         // Resolve each assistant reply → its run → its turn's roots. A turn

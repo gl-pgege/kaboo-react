@@ -40,11 +40,23 @@ Id of the turn's final assistant message (the footer's anchor).
 
 ***
 
+### runIds
+
+> **runIds**: `string`[]
+
+Defined in: [src/context/KabooSlots.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L31)
+
+Every AG-UI run the turn spanned, in order. A turn paused for an approval
+or a question resumes in a new run, so anything a host keys by run (files
+or versions the turn made) is found under one of these.
+
+***
+
 ### traceId?
 
 > `optional` **traceId?**: `string`
 
-Defined in: [src/context/KabooSlots.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L31)
+Defined in: [src/context/KabooSlots.tsx:37](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooSlots.tsx#L37)
 
 OpenTelemetry trace id of the turn's root run, when the workflow service
 ran with telemetry enabled. Hosts use this to attach feedback scores to

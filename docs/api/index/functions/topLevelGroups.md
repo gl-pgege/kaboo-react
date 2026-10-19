@@ -6,7 +6,7 @@
 
 > **topLevelGroups**(`groups`): [`GroupEntry`](../type-aliases/GroupEntry.md)[]
 
-Defined in: [src/utils/groups.ts:57](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/groups.ts#L57)
+Defined in: [src/utils/groups.ts:63](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/groups.ts#L63)
 
 Top-level groups are those without a parent. Uses the explicit
 `parentGroup` field rather than parsing dot-paths out of the group id, so

@@ -7,6 +7,7 @@ import { useTurnBinding } from "../context/TurnBinding";
 import { useKabooSlots, type SlotMessage } from "../context/KabooSlots";
 import { resolveTurnIds } from "../feedback/useTurnFeedback";
 import { useActivity } from "../hooks/useActivity";
+import { groupRuns } from "../utils/groups";
 
 /**
  * Drop-in replacement for CopilotKit's assistant-message renderer that prepends
@@ -63,6 +64,7 @@ export function KabooAssistantMessage(props: CopilotChatAssistantMessageProps) {
             messageId,
             message: message as unknown as SlotMessage,
             groups: turnGroups,
+            runIds: [...new Set(turnGroups.flatMap(([, group]) => groupRuns(group)))],
             traceId: turnTraceId,
           })}
         </div>

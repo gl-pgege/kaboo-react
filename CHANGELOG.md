@@ -17,6 +17,9 @@ See [Upgrading](docs/upgrading.md#0112).
   with the reason when a person's answers never reached the agent.
 - **`useInterruptBridge()` gives `failure`, `setFailure` and `clearAnswered`,**
   so custom cards can show why answers failed and take them again.
+- **`TurnFooterContext.runIds`,** every run the turn spanned, and
+  `StreamGroup.runIds`, every run that streamed into a group (kaboo-workflows
+  0.28.2).
 
 ### Fixed
 
@@ -33,6 +36,11 @@ See [Upgrading](docs/upgrading.md#0112).
   reads an answer as a tool's result.
 - **Tools still running when a run errors or stops show as cancelled** instead
   of spinning in a settled group.
+- **A turn resumed after an answer ends after its last reply.** The resumed
+  run's messages weren't tied to their turn, so the `turnFooter` slot rendered
+  under the last message before the pause, with only the first run's groups,
+  and nothing after the reply. Runs now map to their turn through the groups'
+  `runIds` (kaboo-workflows 0.28.2).
 
 ## [0.11.1]
 
