@@ -6,7 +6,7 @@
 
 > **KabooUserMessage**(`props`): `Element`
 
-Defined in: [src/integrations/KabooUserMessage.tsx:149](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooUserMessage.tsx#L149)
+Defined in: [src/integrations/KabooUserMessage.tsx:147](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooUserMessage.tsx#L147)
 
 Drop-in replacement for `CopilotChatMessageView`'s `userMessage` slot that
 renders every reference the user sent as a **non-interactive chip**, so a

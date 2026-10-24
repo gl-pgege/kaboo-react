@@ -8,12 +8,10 @@ import type { PendingReference } from "../references/types";
 import { useMessageMeta } from "../context/MessageMeta";
 import { useKabooSlots, type SlotMessage } from "../context/KabooSlots";
 
-// CopilotKit's own wrapper/bubble classes, replicated so our custom layout
-// (via the children render-prop) matches the native user message exactly.
-const WRAP_CLASS =
-  "copilotKitMessage copilotKitUserMessage cpk:flex cpk:flex-col cpk:items-end cpk:group cpk:pt-10";
-const BUBBLE_CLASS =
-  "cpk:prose cpk:dark:prose-invert cpk:bg-muted cpk:relative cpk:max-w-[80%] cpk:rounded-[18px] cpk:px-4 cpk:py-1.5 cpk:inline-block cpk:whitespace-pre-wrap";
+const Bubble = CopilotChatUserMessage.MessageRenderer as unknown as (props: {
+  content: ReactNode;
+  className?: string;
+}) => ReactNode;
 
 const AtIcon = (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -165,37 +163,33 @@ export function KabooUserMessage(props: CopilotChatUserMessageProps) {
   const hasChipRow = files.length > 0 || trayRefs.length > 0;
 
   const MessageRenderer = ({ content, className }: { content: string; className?: string }) => (
-    <div className={className ? `${BUBBLE_CLASS} ${className}` : BUBBLE_CLASS}>
-      {renderInline(content, inlineRefs)}
-    </div>
+    <>
+      {hasChipRow && (
+        <div className="kaboo-msg-refs">
+          {files.map((f, i) => (
+            <FileChip key={`f${i}`} file={f} />
+          ))}
+          {trayRefs.map((r) => (
+            <ObjectChip key={r.id} reference={r} />
+          ))}
+        </div>
+      )}
+      <Bubble content={renderInline(content, inlineRefs)} className={className} />
+      {userMessageFooter && (
+        <div className="kaboo-message-footer">
+          {userMessageFooter(message as unknown as SlotMessage)}
+        </div>
+      )}
+    </>
   );
 
   return (
     <CopilotChatUserMessage
       {...props}
+      message={{ ...props.message, content: text }}
+      onEditMessage={props.onEditMessage && (() => props.onEditMessage?.({ message: props.message }))}
+      className={props.className ? `kaboo-user-message ${props.className}` : "kaboo-user-message"}
       messageRenderer={MessageRenderer as unknown as typeof CopilotChatUserMessage.MessageRenderer}
-    >
-      {({ messageRenderer, toolbar }) => (
-        <div data-copilotkit data-message-id={id} className={`${WRAP_CLASS} kaboo-user-message`}>
-          {hasChipRow && (
-            <div className="kaboo-msg-refs">
-              {files.map((f, i) => (
-                <FileChip key={`f${i}`} file={f} />
-              ))}
-              {trayRefs.map((r) => (
-                <ObjectChip key={r.id} reference={r} />
-              ))}
-            </div>
-          )}
-          {messageRenderer}
-          {userMessageFooter && (
-            <div className="kaboo-message-footer">
-              {userMessageFooter(message as unknown as SlotMessage)}
-            </div>
-          )}
-          {toolbar}
-        </div>
-      )}
-    </CopilotChatUserMessage>
+    />
   );
 }

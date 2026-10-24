@@ -9,6 +9,14 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.12.1
+
+**Who:** no one needs to change anything.
+
+A sent message renders in CopilotKit's own message and bubble instead of a copy
+of its classes, so it follows CopilotKit's styling, and `fast-json-patch` is no
+longer installed.
+
 ## 0.12
 
 0.12 reads AG-UI's own events: sub-agents as `SUBAGENT_*` events, questions as

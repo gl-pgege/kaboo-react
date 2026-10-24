@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1]
+
+### Fixed
+
+- **A sent message renders in CopilotKit's own message and bubble.** To place
+  its reference chips around the bubble, the user message copied CopilotKit's
+  classes, and the copy had fallen behind CopilotKit's own. It now fills
+  CopilotKit's bubble slot, so it follows CopilotKit's styling.
+
+### Removed
+
+- **`fast-json-patch`**, which nothing has imported since 0.12.0.
+
 ## [0.12.0]
 
 See [Upgrading](docs/upgrading.md#012).
