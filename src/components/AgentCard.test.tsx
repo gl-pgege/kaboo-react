@@ -61,6 +61,31 @@ describe("AgentCard cancellation echo", () => {
 
     expect(screen.getByText("Here is the answer.")).toBeInTheDocument();
   });
+
+  it("says a sub-agent waiting on the person needs input", () => {
+    const g = group({ agentName: "researcher", title: "Researcher", status: "interrupted" });
+    render(withActivity({ "coordinator.researcher": g }, <AgentCard groupId="coordinator.researcher" group={g} />));
+
+    expect(screen.getByText("needs input")).toBeInTheDocument();
+    expect(screen.queryByText("working...")).toBeNull();
+  });
+
+  it("shows the answer once when the agent's own text already says it", () => {
+    const g = group({
+      agentName: "researcher",
+      title: "Researcher",
+      status: "completed",
+      timeline: [{ type: "text", text: "Here is the answer." }],
+    });
+    render(
+      withActivity(
+        { "coordinator.researcher": g },
+        <AgentCard groupId="coordinator.researcher" group={g} result="Here is the answer." />,
+      ),
+    );
+
+    expect(screen.getAllByText("Here is the answer.")).toHaveLength(1);
+  });
 });
 
 describe("AgentCard token usage chip", () => {
@@ -144,9 +169,10 @@ describe("AgentCard recursion", () => {
       agentName: "writer",
       title: "Writer",
       isChatReply: true,
+      tools: [tool],
       timeline: [
         { type: "text", text: "THE FINAL ANSWER" },
-        { type: "tool", tool },
+        { type: "tool", toolUseId: "t1" },
       ],
     });
 
@@ -155,7 +181,7 @@ describe("AgentCard recursion", () => {
     // The chat-reply text is the chat bubble already; it must not repeat here.
     expect(screen.queryByText("THE FINAL ANSWER")).toBeNull();
     // But the tool row is still shown.
-    expect(screen.getByText(/search/)).toBeInTheDocument();
+    expect(screen.getByText(/search/i)).toBeInTheDocument();
   });
 
   it("keeps a non-chat-reply member's findings text in its inline card", () => {
@@ -205,13 +231,13 @@ describe("AgentCard recursion", () => {
       toolUseId: "a1",
       toolName: "ask_user",
       status: "success",
-      toolInput: { questions: [{ question: "Which segment?", type: "radio", options: ["GPUs", "APIs"] }] },
+      toolInput: { questions: [{ question: "Which segment?", options: ["GPUs", "APIs"] }] },
       toolResult: JSON.stringify({ "Which segment?": "GPUs" }),
     };
     const active = group({
       title: "Researcher",
       tools: [askTool],
-      timeline: [{ type: "tool", tool: askTool }],
+      timeline: [{ type: "tool", toolUseId: "a1" }],
     });
     const { rerender } = render(withActivity({ r: active }, <AgentCard groupId="r" group={active} />));
 

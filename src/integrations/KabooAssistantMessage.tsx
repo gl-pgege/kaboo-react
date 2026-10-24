@@ -7,7 +7,6 @@ import { useTurnBinding } from "../context/TurnBinding";
 import { useKabooSlots, type SlotMessage } from "../context/KabooSlots";
 import { resolveTurnIds } from "../feedback/useTurnFeedback";
 import { useActivity } from "../hooks/useActivity";
-import { groupRuns } from "../utils/groups";
 
 /**
  * Drop-in replacement for CopilotKit's assistant-message renderer that prepends
@@ -38,15 +37,27 @@ import { groupRuns } from "../utils/groups";
  */
 export function KabooAssistantMessage(props: CopilotChatAssistantMessageProps) {
   const { message } = props;
-  const { rootsByMessageId, turnGroupsByMessageId } = useTurnBinding();
+  const { rootsByMessageId, turnGroupsByMessageId, turnRunsByMessageId } = useTurnBinding();
   const { turnFooter, assistantMessageFooter } = useKabooSlots();
   const activity = useActivity();
   const messageId = (message as { id?: string })?.id;
   const mine = messageId ? rootsByMessageId.get(messageId) ?? [] : [];
-  const turnGroups = messageId ? turnGroupsByMessageId.get(messageId) : undefined;
-  const turnTraceId = turnGroups
-    ? resolveTurnIds(turnGroups, activity.traceByRun).traceId
-    : undefined;
+  const turnGroups = messageId ? turnGroupsByMessageId.get(messageId) ?? [] : [];
+  const turnRuns = messageId ? turnRunsByMessageId.get(messageId) : undefined;
+  const turnTraceId =
+    resolveTurnIds(turnGroups, activity.traceByRun).traceId ??
+    turnRuns?.map((run) => activity.traceByRun?.[run]).find(Boolean);
+  const subagentRunId = (message as { subagentRunId?: string })?.subagentRunId;
+
+  if (subagentRunId) {
+    const group = activity.groups[subagentRunId];
+    return (
+      <div className="kaboo-request-from-agent">
+        <div className="kaboo-request-agent">{group?.title ?? group?.agentName ?? "A sub-agent"}</div>
+        <CopilotChatAssistantMessage {...props} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -58,13 +69,13 @@ export function KabooAssistantMessage(props: CopilotChatAssistantMessageProps) {
         </div>
       )}
       <CopilotChatAssistantMessage {...props} />
-      {turnFooter && messageId && turnGroups && turnGroups.length > 0 && (
+      {turnFooter && messageId && turnRuns && (
         <div className="kaboo-turn-footer">
           {turnFooter({
             messageId,
             message: message as unknown as SlotMessage,
             groups: turnGroups,
-            runIds: [...new Set(turnGroups.flatMap(([, group]) => groupRuns(group)))],
+            runIds: turnRuns,
             traceId: turnTraceId,
           })}
         </div>

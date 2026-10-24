@@ -8,7 +8,6 @@ import {
   chatRootGroups,
   latestRunId,
   partitionChildrenByToolCall,
-  pendingToolAnchorExists,
   groupTurnKey,
   type GroupEntry,
 } from "./groups";
@@ -171,60 +170,8 @@ describe("partitionChildrenByToolCall", () => {
     expect(byToolCall.size).toBe(0);
     expect(leftover.map(([id]) => id)).toEqual(["team.planner", "team.writer"]);
   });
-
-  it("anchors against a tool embedded in the entry, as older snapshots carry it", () => {
-    const childEntries: GroupEntry[] = [
-      ["coord.team.researcher", group({ toolCallId: "tc-1" })],
-    ];
-    const timeline: TimelineEntry[] = [
-      { type: "tool", tool: { toolUseId: "tc-1", toolName: "field_researcher" } as ToolCall },
-    ];
-
-    const { byToolCall } = partitionChildrenByToolCall(childEntries, timeline);
-
-    expect(byToolCall.get("tc-1")?.[0]).toBe("coord.team.researcher");
-  });
 });
 
-describe("pendingToolAnchorExists", () => {
-  const askTool = (overrides: Partial<ToolCall> = {}): ToolCall => ({
-    toolUseId: "tc-1",
-    toolName: "ask_user",
-    status: "running",
-    ...overrides,
-  });
-
-  it("finds a pending ask_user tool by tool-call id (a card will render it inline)", () => {
-    const groups = {
-      "team.researcher": group({ tools: [askTool()] }),
-    };
-    expect(pendingToolAnchorExists(groups, "tc-1")).toBe(true);
-  });
-
-  it("finds a pending gated (non-ask_user) tool so its approval anchors inline", () => {
-    const groups = {
-      "team.researcher": group({
-        tools: [askTool({ toolName: "research_search_web", toolUseId: "tc-2" })],
-      }),
-    };
-    expect(pendingToolAnchorExists(groups, "tc-2")).toBe(true);
-  });
-
-  it("returns false once the tool has a result (no live prompt to anchor)", () => {
-    const groups = {
-      "team.researcher": group({ tools: [askTool({ toolResult: "{\"q\":\"a\"}" })] }),
-    };
-    expect(pendingToolAnchorExists(groups, "tc-1")).toBe(false);
-  });
-
-  it("returns false for a missing or unknown id", () => {
-    const groups = {
-      "team.researcher": group({ tools: [askTool({ toolUseId: "tc-2" })] }),
-    };
-    expect(pendingToolAnchorExists(groups, "tc-1")).toBe(false);
-    expect(pendingToolAnchorExists(groups, undefined)).toBe(false);
-  });
-});
 
 describe("latestRunId", () => {
   it("returns the most recent run id by arrival order", () => {

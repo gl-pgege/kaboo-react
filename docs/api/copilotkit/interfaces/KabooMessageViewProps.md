@@ -4,7 +4,7 @@
 
 # Interface: KabooMessageViewProps
 
-Defined in: [src/integrations/KabooMessageView.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L20)
+Defined in: [src/integrations/KabooMessageView.tsx:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L21)
 
 Props for [KabooMessageView](../variables/KabooMessageView.md): CopilotKit's message-view props plus per-view slot overrides.
 
@@ -68,7 +68,7 @@ Indicates whether assistive technologies will present all, or only parts of, the
 
 ### aria-autocomplete?
 
-> `optional` **aria-autocomplete?**: `"none"` \| `"list"` \| `"inline"` \| `"both"`
+> `optional` **aria-autocomplete?**: `"none"` \| `"inline"` \| `"list"` \| `"both"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2592
 
@@ -242,7 +242,7 @@ aria-owns.
 
 ### aria-current?
 
-> `optional` **aria-current?**: `boolean` \| `"step"` \| `"true"` \| `"false"` \| `"date"` \| `"time"` \| `"page"` \| `"location"`
+> `optional` **aria-current?**: `boolean` \| `"true"` \| `"false"` \| `"step"` \| `"date"` \| `"time"` \| `"page"` \| `"location"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2636
 
@@ -919,7 +919,7 @@ Defines the human readable text alternative of aria-valuenow for a range widget.
 
 > `optional` **assistantMessage?**: `SlotValue`\<*typeof* `CopilotChatAssistantMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1211
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1211
 
 #### Inherited from
 
@@ -929,7 +929,7 @@ Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:
 
 ### autoCapitalize?
 
-> `optional` **autoCapitalize?**: `string` & `object` \| `"none"` \| `"off"` \| `"on"` \| `"sentences"` \| `"words"` \| `"characters"`
+> `optional` **autoCapitalize?**: `"none"` \| `string` & `object` \| `"off"` \| `"on"` \| `"sentences"` \| `"words"` \| `"characters"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2888
 
@@ -979,7 +979,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2928
 
 > `optional` **children?**: (`props`) => `ReactElement`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1246
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1246
 
 #### Parameters
 
@@ -1075,7 +1075,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2892
 
 > `optional` **cursor?**: `SlotValue`\<(`__namedParameters`) => `Element`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1214
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1214
 
 #### Inherited from
 
@@ -1191,7 +1191,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2962
 
 > `optional` **groupMessages?**: (`messages`) => `MessageRow`[]
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1244
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1244
 
 Splits the message list into rows. Return `messageRow(message)` for a
 message that renders on its own, and `messageGroup({ key, messages,
@@ -1274,7 +1274,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2917
 
 ### inputMode?
 
-> `optional` **inputMode?**: `"text"` \| `"search"` \| `"url"` \| `"none"` \| `"email"` \| `"tel"` \| `"numeric"` \| `"decimal"`
+> `optional` **inputMode?**: `"text"` \| `"search"` \| `"none"` \| `"url"` \| `"email"` \| `"tel"` \| `"numeric"` \| `"decimal"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2953
 
@@ -1294,7 +1294,7 @@ Hints at the type of data that might be entered by the user while editing the el
 
 > `optional` **intelligenceIndicator?**: `SlotValue`\<(`__namedParameters`) => `ReactElement`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1215
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1215
 
 #### Inherited from
 
@@ -1324,7 +1324,7 @@ Specify that a standard HTML element should behave like a defined custom built-i
 
 > `optional` **isRunning?**: `boolean`
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1217
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1217
 
 #### Inherited from
 
@@ -1408,7 +1408,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2898
 
 > `optional` **messages?**: `Message`[]
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1218
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1218
 
 #### Inherited from
 
@@ -3544,7 +3544,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2908
 
 > `optional` **reasoningMessage?**: `SlotValue`\<*typeof* `CopilotChatReasoningMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1213
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1213
 
 #### Inherited from
 
@@ -3640,7 +3640,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2900
 
 > `optional` **slots?**: [`KabooSlots`](../../index/interfaces/KabooSlots.md)
 
-Defined in: [src/integrations/KabooMessageView.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L25)
+Defined in: [src/integrations/KabooMessageView.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L26)
 
 Per-view [KabooSlots](../../index/interfaces/KabooSlots.md) overrides. Merged over the slots provided on
 `KabooProvider`; individual keys win over the provider's.
@@ -3723,7 +3723,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2904
 
 > `optional` **transformMessages?**: (`messages`) => `Message`[]
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1231
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1231
 
 Reshapes the message list before it renders: drop, replace or reorder
 messages with the whole list in view. Receives the list after duplicate
@@ -3792,7 +3792,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2937
 
 > `optional` **userMessage?**: `SlotValue`\<*typeof* `CopilotChatUserMessage`\>
 
-Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-D1y8IyXh.d.mts:1212
+Defined in: node\_modules/@copilotkit/react-core/dist/copilotkit-Yz8qXx00.d.mts:1212
 
 #### Inherited from
 

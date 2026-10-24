@@ -4,7 +4,7 @@
 
 # Interface: ApprovalSubject
 
-Defined in: [src/types.ts:78](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L78)
+Defined in: [src/types.ts:63](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L63)
 
 What a remembered decision covers, as the agent described it.
 
@@ -14,7 +14,7 @@ What a remembered decision covers, as the agent described it.
 
 > **key**: `string`
 
-Defined in: [src/types.ts:80](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L80)
+Defined in: [src/types.ts:65](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L65)
 
 Stable key the agent matches calls against (by default the tool name).
 
@@ -24,6 +24,6 @@ Stable key the agent matches calls against (by default the tool name).
 
 > **label**: `string`
 
-Defined in: [src/types.ts:82](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L82)
+Defined in: [src/types.ts:67](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L67)
 
 Human label for the subject.

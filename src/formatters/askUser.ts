@@ -1,44 +1,34 @@
 import type { FormQuestion } from "../types";
 
-/** The `ask_user` tool's input, in the current and the pre-0.27 shapes. */
+/** The `ask_user` tool's input: a list of questions, or a single one. */
 export interface AskUserParams {
   question?: string;
   options?: string[];
   multiple?: boolean;
-  /** @deprecated Sent by agents before kaboo-workflows 0.27; use `multiple`. */
-  input_type?: FormQuestion["type"];
   questions?: Array<{
     question?: string;
     options?: string[];
     multiple?: boolean;
-    /** @deprecated Sent by agents before kaboo-workflows 0.27; use `multiple`. */
-    type?: FormQuestion["type"];
   }>;
 }
 
 /**
- * Read one question in either shape: `multiple` wins, the deprecated `type`
- * (`checkbox`) is honoured when it is absent, and missing options become an
- * empty list (a pre-0.27 free-text question, answered through Other alone).
+ * Read one question as the card renders it. Missing options become an empty
+ * list, a free-text question answered through Other alone.
  *
  * @example
  * ```ts
  * import { toFormQuestion } from "@pgege/kaboo-react";
  *
- * toFormQuestion({ question: "Which sectors?", type: "checkbox", options: ["B2B", "B2C"] });
+ * toFormQuestion({ question: "Which sectors?", options: ["B2B", "B2C"], multiple: true });
  * // { question: "Which sectors?", options: ["B2B", "B2C"], multiple: true }
  * ```
  */
-export function toFormQuestion(raw: {
-  question?: string;
-  options?: string[];
-  multiple?: boolean;
-  type?: FormQuestion["type"];
-}): FormQuestion {
+export function toFormQuestion(raw: { question?: string; options?: string[]; multiple?: boolean }): FormQuestion {
   return {
     question: raw.question ?? "",
     options: Array.isArray(raw.options) ? raw.options.map(String) : [],
-    multiple: typeof raw.multiple === "boolean" ? raw.multiple : raw.type === "checkbox",
+    multiple: raw.multiple === true,
   };
 }
 
@@ -54,14 +44,7 @@ export function normalizeQuestions(params: AskUserParams | undefined): FormQuest
     return params.questions.map(toFormQuestion);
   }
   if (typeof params.question === "string") {
-    return [
-      toFormQuestion({
-        question: params.question,
-        options: params.options,
-        multiple: params.multiple,
-        type: params.input_type,
-      }),
-    ];
+    return [toFormQuestion({ question: params.question, options: params.options, multiple: params.multiple })];
   }
   return [];
 }

@@ -6,7 +6,7 @@
 
 > **useTurnGroups**(`messageId`): [`GroupEntry`](../type-aliases/GroupEntry.md)[]
 
-Defined in: [src/context/TurnBinding.tsx:75](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/TurnBinding.tsx#L75)
+Defined in: [src/context/TurnBinding.tsx:82](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/TurnBinding.tsx#L82)
 
 All activity groups of the turn anchored on `messageId` (the turn's final
 assistant message), or an empty array for any other message. Lets custom

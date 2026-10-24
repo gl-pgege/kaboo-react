@@ -11,17 +11,24 @@
 
 kaboo-react renders a live, hierarchical view of what your agents are doing —
 sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
-navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
-stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+navigation, questions and approvals. Sub-agents ride the **same AG-UI run
+stream** as the chat, as AG-UI's own `SUBAGENT_*` events, so there is no separate
 endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 
 ## Features
 
 - **Live hierarchical activity** — nested agent/tool cards that stream in as work
-  happens, inside the chat transcript.
+  happens, inside the chat transcript, with what needs the person lifted into
+  the main chat under the agent's name.
 - **Drill-down navigation** — breadcrumb + detail view to explore any sub-agent.
-- **Human-in-the-loop** — approval gates and forms, with N parallel interrupts
-  resolved independently.
+- **Questions and requests** — `useAskUserTool` and `useRequestTool` register
+  the browser's tools, with arguments checked against their schema.
+- **Approvals** — on CopilotKit's `useInterrupt`, with N parallel requests
+  resolved independently, remembered scopes and deadlines.
+- **Canvas hooks** — `useAgentState`, `useLiveToolCalls` and `useAgentPresence`
+  let a canvas follow the agents.
+- **Generative UI** — A2UI, Open Generative UI and MCP Apps pass through to
+  CopilotKit, with sub-agents' surfaces labelled.
 - **Structured renderers** — plug custom UI for schema-shaped agent output.
 - **References & attachments** — files and your own objects (tables, dashboards,
   …) as interactive inline chips, added from one shared **+** / **@** popover.
@@ -35,7 +42,7 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 yarn add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.78).
+Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.79.1).
 
 Import the stylesheet once, near your app root:
 
@@ -67,20 +74,22 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 }
 ```
 
-That's it — `KabooProvider` nests the three contexts (`KabooActivityProvider`,
-`DrillProvider`, `InterruptBridgeProvider`) plus the built-in `KabooInlineCards`
-and `KabooInterruptHandler`. Disable the auto-mounted handlers with
-`disableInlineCards` / `disableInterruptHandler`, and forward extra CopilotKit
-props via `copilotKitProps`.
+That's it — `KabooProvider` renders `<CopilotKit>` and nests kaboo's contexts
+(`KabooActivityProvider`, `DrillProvider`, the renderer registries) plus the
+built-in `KabooInlineCards` and `KabooInterruptHandler`. It passes
+`properties`, `renderToolCalls`, `renderActivityMessages`, `a2ui` and
+`openGenerativeUI` through to CopilotKit. Disable the auto-mounted handlers with
+`disableInlineCards` / `disableInterruptHandler`, and forward any other
+CopilotKit props via `copilotKitProps`.
 
 ## Core concepts
 
-- **Activity rides the run stream.** The backend emits activity as
-  `ACTIVITY_SNAPSHOT` events on the same AG-UI run stream as the chat, so there is
-  no separate activity endpoint. `KabooActivityProvider` subscribes to the
-  CopilotKit agent and exposes it via `useActivity()`.
-- **Providers nest under `KabooProvider`.** Activity → drill → interrupt bridge,
-  with the built-in handlers mounted inside.
+- **Sub-agents ride the run stream.** The backend streams them as `SUBAGENT_*`
+  events with their tagged text and tool calls, on the same AG-UI run stream as
+  the chat. `KabooActivityProvider` folds them into groups and exposes them via
+  `useActivity()`, live and on replay alike.
+- **Providers nest under `KabooProvider`.** Activity → drill → renderers, with
+  the built-in handlers mounted inside.
 - **Two barrels.** Import framework-agnostic pieces from `kaboo-react`, and the
   CopilotKit-coupled integrations from `@pgege/kaboo-react/copilotkit`.
 - **The `threadId` scopes everything.** Each conversation gets its own
@@ -170,7 +179,7 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 ## Compatibility & versioning
 
 - **React** 18 and 19 (`react` / `react-dom` >= 18 as peer deps).
-- **CopilotKit** `@copilotkit/react-core` >= 1.78 (peer dep), the AG-UI 1.0
+- **CopilotKit** `@copilotkit/react-core` >= 1.79.1 (peer dep), the AG-UI 1.0
   generation; kaboo-react 0.10 covers CopilotKit 1.62 to 1.71.1.
 - Follows [semantic versioning](https://semver.org). See
   [CHANGELOG.md](./CHANGELOG.md).

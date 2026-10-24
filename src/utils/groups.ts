@@ -128,30 +128,6 @@ export function latestRunId(entries: GroupEntry[]): string | null {
 }
 
 /**
- * True when a still-pending tool call with the given tool-call id exists in some
- * group's timeline. That tool row is the chronological home for the live prompt
- * (an `ask_user` form or a gated-tool approval), so the owning agent card
- * renders it inline there — and the top-level / drill interrupt slots suppress
- * it to avoid a duplicate that would float out of order. Returns `false` (no
- * anchor) when no such tool is present, so those slots still render the prompt
- * as a fallback.
- */
-export function pendingToolAnchorExists(
-  groups: Record<string, StreamGroup>,
-  toolCallId: string | undefined,
-): boolean {
-  if (!toolCallId) return false;
-  for (const g of Object.values(groups)) {
-    for (const t of g.tools) {
-      if (t.toolUseId === toolCallId && t.toolResult == null) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-/**
  * Correlate an inline chat card to its activity group by the delegate tool call
  * that spawned it. A group carries the AG-UI `toolCallId` of the coordinator's
  * delegating call (stamped server-side); the same id is exposed by CopilotKit's

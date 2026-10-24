@@ -102,6 +102,15 @@ describe("KabooMessageView — a turn resumed in a new run", () => {
     expect(footers[0]).toHaveTextContent("run-1 run-2");
   });
 
+  it("ends a turn the agent answered without delegating once, with every run since the person's message", () => {
+    render(view({}));
+
+    const footers = screen.getAllByTestId("turn-footer");
+    expect(footers).toHaveLength(1);
+    expect(footers[0]).toHaveAttribute("data-anchor", "a2");
+    expect(footers[0]).toHaveTextContent("run-1 run-2");
+  });
+
   it("gives a single-run turn from an older stream its one run", () => {
     render(view(assistantGroup()));
 

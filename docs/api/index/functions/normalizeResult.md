@@ -6,7 +6,7 @@
 
 > **normalizeResult**(`result`): `string` \| `null`
 
-Defined in: [src/formatters/output.ts:124](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L124)
+Defined in: [src/formatters/output.ts:120](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L120)
 
 Normalizes a raw result string for display: unwraps one layer of JSON string
 encoding, converts escaped `\n` into real newlines, and returns `null` for

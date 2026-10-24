@@ -6,7 +6,7 @@
 
 > **ApprovalDecision** = \{ `scope?`: [`ApprovalScope`](ApprovalScope.md); `status`: `"approved"`; `tool_input?`: `unknown`; \} \| \{ `reason?`: `string`; `status`: `"cancelled"`; \}
 
-Defined in: [src/types.ts:116](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L116)
+Defined in: [src/types.ts:101](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L101)
 
 The answer an approval card sends back. An approval runs the call (with an
 optional edit and how far it reaches); a denial is sent as `cancelled`, so an

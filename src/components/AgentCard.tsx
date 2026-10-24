@@ -4,6 +4,7 @@ import { isControlOnlyStatus, normalizeResult } from "../formatters/output";
 import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 import { MarkdownContent } from "./MarkdownContent";
 import { Timeline } from "./Timeline";
+import { ValueView } from "./ValueView";
 import { useDrill } from "../hooks/useDrill";
 import { useActivity } from "../hooks/useActivity";
 import { StructuredRenderersContext } from "../context/ActivityProvider";
@@ -64,7 +65,7 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   const structuredRenderers = useContext(StructuredRenderersContext);
   const childEntries = showChildren ? directChildren(groups, groupId) : [];
   const isDone = group.status === "completed" || actionStatus === "complete";
-  const isInterrupted = group.status === "interrupted" && group.interrupt;
+  const isInterrupted = group.status === "interrupted";
   const isStopped = group.status === "stopped";
   const isError = group.status === "error";
   // Anything not actively running: stops timeline animation and auto-scroll.
@@ -96,6 +97,9 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
     showChildren && group.isChatReply
       ? (group.timeline ?? []).filter((e) => e.type === "tool")
       : (group.timeline ?? []);
+  const lastEntry = [...timeline].reverse().find((e) => e.type === "text");
+  const lastText = lastEntry?.type === "text" ? lastEntry.text.trim() : undefined;
+  const shownResult = lastText && resultText?.trim().startsWith(lastText) ? null : resultText;
 
   useEffect(() => {
     if (expanded && !isSettled && bodyRef.current) {
@@ -198,9 +202,9 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
             </div>
           )}
 
-          {resultText && (
+          {shownResult && (
             <div className="kaboo-agent-card-result">
-              <MarkdownContent text={resultText} />
+              <MarkdownContent text={shownResult} />
             </div>
           )}
 
@@ -214,9 +218,9 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
                 <summary className="kaboo-agent-card-structured-summary">
                   Structured output ({group.outputSchemaName})
                 </summary>
-                <pre className="kaboo-agent-card-structured-pre">
-                  {JSON.stringify(group.structuredOutput, null, 2)}
-                </pre>
+                <div className="kaboo-agent-card-structured-pre">
+                  <ValueView value={group.structuredOutput} />
+                </div>
               </details>
             );
           })()}

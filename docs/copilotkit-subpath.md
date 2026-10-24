@@ -16,15 +16,16 @@ explicit and keeps the main barrel usable in more contexts.
 
 | Export | Purpose | Wiring |
 | --- | --- | --- |
-| `KabooMessageView` | Live in-chat member cards, from the first agent. | `CopilotChat` `messageView` slot. |
+| `KabooChat` | `CopilotChat` with kaboo's transcript and the sub-agent drill-down; its composer sends through `useKabooSend`, so a new message skips open requests. | Render it in place of `CopilotChat`. |
+| `KabooMessageView` | Live in-chat member cards, and what needs the person lifted into the transcript. | `CopilotChat` `messageView` slot. |
 | `KabooAssistantMessage` | Cards above a settled assistant reply. | Used by `KabooMessageView` (assistant-message slot). |
 | `KabooInlineCards` | Delegate sub-agent cards at the tool-call position. | Auto-mounted by `KabooProvider`. |
-| `KabooInterruptHandler` | Human-in-the-loop handler. | Auto-mounted by `KabooProvider`. |
-| `KabooAskUser` | `ask_user` questions inline: the live form while waiting, then the answers. | Used by the interrupt handler. |
+| `KabooInterruptHandler` | Approvals and an app's own interrupt kinds, on `useInterrupt`. | Auto-mounted by `KabooProvider`. |
 | `KabooToolRender` | Wildcard tool renderer. | Used by `KabooInlineCards`. |
+| `withSubagentLabel` | Wraps an activity renderer (an A2UI surface) so a sub-agent's surface is labelled with the agent. | Pass to `renderActivityMessages`. |
 
-Most apps only import **`KabooMessageView`** directly — the rest are auto-mounted
-by `KabooProvider`.
+Most apps only render **`KabooChat`** — the rest are auto-mounted by
+`KabooProvider`.
 
 ## Wiring `KabooMessageView`
 

@@ -1,11 +1,11 @@
 import type { ReactElement } from "react";
 import type { FormQuestion } from "../types";
+import { describeValue } from "../formatters/value";
 
 function formatAnswer(value: unknown): string {
   if (value == null) return "";
   if (Array.isArray(value)) return value.map((v) => String(v)).join(", ");
-  if (typeof value === "object") return JSON.stringify(value);
-  return String(value);
+  return describeValue(value);
 }
 
 /**

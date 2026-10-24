@@ -4,7 +4,7 @@
 
 # Interface: DrillState
 
-Defined in: [src/types.ts:375](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L375)
+Defined in: [src/types.ts:352](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L352)
 
 Drill-down navigation state: the current path into the activity tree plus the
 actions to move through it. Exposed by [useDrill](../functions/useDrill.md).
@@ -15,7 +15,7 @@ actions to move through it. Exposed by [useDrill](../functions/useDrill.md).
 
 > **activeDrill**: `string` \| `null`
 
-Defined in: [src/types.ts:379](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L379)
+Defined in: [src/types.ts:356](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L356)
 
 The deepest group id in the path, or `null` at the root.
 
@@ -25,7 +25,7 @@ The deepest group id in the path, or `null` at the root.
 
 > **drillIn**: (`groupId`) => `void`
 
-Defined in: [src/types.ts:381](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L381)
+Defined in: [src/types.ts:358](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L358)
 
 Push a group id, descending one level.
 
@@ -45,7 +45,7 @@ Push a group id, descending one level.
 
 > **drillPath**: `string`[]
 
-Defined in: [src/types.ts:377](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L377)
+Defined in: [src/types.ts:354](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L354)
 
 Group ids from root to the current level.
 
@@ -55,7 +55,7 @@ Group ids from root to the current level.
 
 > **drillToLevel**: (`level`) => `void`
 
-Defined in: [src/types.ts:387](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L387)
+Defined in: [src/types.ts:364](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L364)
 
 Trim the path to `level` (0-based), jumping to a breadcrumb.
 
@@ -75,7 +75,7 @@ Trim the path to `level` (0-based), jumping to a breadcrumb.
 
 > **drillToRoot**: () => `void`
 
-Defined in: [src/types.ts:385](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L385)
+Defined in: [src/types.ts:362](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L362)
 
 Clear the path, returning to the root.
 
@@ -89,7 +89,7 @@ Clear the path, returning to the root.
 
 > **drillUp**: () => `void`
 
-Defined in: [src/types.ts:383](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L383)
+Defined in: [src/types.ts:360](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L360)
 
 Pop the last group id, ascending one level.
 

@@ -20,6 +20,7 @@ vi.mock("@copilotkit/react-core/v2", () => ({
     );
   },
   useAgent: () => ({ agent: null }),
+  useCopilotKit: () => ({ copilotkit: null }),
   useCopilotChatConfiguration: () => null,
 }));
 

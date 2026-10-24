@@ -6,12 +6,13 @@
 
 > **formatToolInput**(`input`): `object`
 
-Defined in: [src/formatters/input.ts:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/input.ts#L15)
+Defined in: [src/formatters/input.ts:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/input.ts#L18)
 
 Condenses arbitrary tool input into a short one-line `summary` for a tool row.
-Prefers well-known fields (`query`/`table_name`/`url`), unwraps single-key
-objects, and otherwise joins `key: value` pairs. `detail` is reserved for
-future expansion and is currently always `null`.
+Prefers well-known fields (`query`/`sql`/`table_name`/`url`), unwraps
+single-key objects, and otherwise joins `key: value` pairs. Values read as
+text, never JSON. `detail` is reserved for future expansion and is currently
+always `null`.
 
 ## Parameters
 

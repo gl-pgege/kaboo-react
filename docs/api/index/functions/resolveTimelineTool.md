@@ -6,7 +6,7 @@
 
 > **resolveTimelineTool**(`entry`, `tools`): [`ToolCall`](../interfaces/ToolCall.md) \| `undefined`
 
-Defined in: [src/utils/timeline.ts:36](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/timeline.ts#L36)
+Defined in: [src/utils/timeline.ts:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/utils/timeline.ts#L28)
 
 Resolve a timeline tool entry to its [ToolCall](../interfaces/ToolCall.md).
 

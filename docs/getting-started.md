@@ -2,14 +2,14 @@
 
 !!! note "Compatibility"
     kaboo-react needs **React 18+**, **Node.js 18+**, and
-    **`@copilotkit/react-core` >= 1.78** as peers.
+    **`@copilotkit/react-core` >= 1.79.1** as peers.
 
 This guide wires kaboo-react into a CopilotKit app from scratch.
 
 ## Prerequisites
 
-You need a **CopilotKit runtime endpoint** that streams kaboo activity as
-`ACTIVITY_SNAPSHOT` events on the AG-UI run stream. The
+You need a **CopilotKit runtime endpoint** that streams an agent's sub-agents as
+AG-UI `SUBAGENT_*` events on the run stream. The
 [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime) package (a CopilotKit
 runtime persistence/orchestration plugin) plus a
 [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) backend is the

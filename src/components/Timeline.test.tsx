@@ -1,14 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, act } from "@testing-library/react";
-import type { TimelineEntry, ToolCall } from "../types";
+import { render, screen } from "@testing-library/react";
+import { CopilotKitProvider, useRenderTool } from "@copilotkit/react-core/v2";
+import type { ReactNode } from "react";
+import type { StreamGroup, TimelineEntry, ToolCall } from "../types";
 import { Timeline } from "./Timeline";
-import {
-  InterruptBridgeProvider,
-  InterruptBridgePublisher,
-} from "../context/InterruptBridge";
-import { InterruptRenderersProvider } from "../context/InterruptRenderers";
 import { ToolRenderersProvider } from "../context/ToolRenderers";
-import type { InterruptRendererProps } from "../types";
+import { ActivityContext } from "../context/ActivityProvider";
 
 /**
  * Timeline entries as the producer emits them: a reference per tool, with the
@@ -54,69 +51,7 @@ describe("Timeline ask_user rendering", () => {
     expect(container.querySelector(".kaboo-askuser")).toBeNull();
   });
 
-  it("renders the live form inline when an active interrupt matches the pending tool", () => {
-    const askTool: ToolCall = {
-      toolUseId: "a3",
-      toolName: "ask_user",
-      status: "running",
-      toolInput: { question: "Which segment?", input_type: "radio", options: ["GPUs", "APIs"] },
-    };
 
-    render(
-      <InterruptBridgeProvider>
-        <InterruptBridgePublisher
-          interrupts={[
-            {
-              id: "i-a3",
-              reason: {
-                type: "form",
-                questions: [
-                  { question: "Which segment?", type: "radio", options: ["GPUs", "APIs"] },
-                ],
-              },
-              toolCallId: "a3",
-              onResolve: () => {},
-              onCancel: () => {},
-            },
-          ]}
-        />
-        <Timeline timeline={refs(askTool)} tools={[askTool]} active={true} />
-      </InterruptBridgeProvider>,
-    );
-
-    // The interactive prompt (question + Submit) is drawn at the tool position.
-    expect(screen.getByText("Which segment?")).toBeInTheDocument();
-    expect(screen.getByText("Submit")).toBeInTheDocument();
-  });
-
-  it("does not render a live form for a pending tool a different interrupt owns", () => {
-    const askTool: ToolCall = {
-      toolUseId: "a4",
-      toolName: "ask_user",
-      status: "running",
-      toolInput: { question: "Which segment?", input_type: "radio", options: ["GPUs"] },
-    };
-
-    render(
-      <InterruptBridgeProvider>
-        <InterruptBridgePublisher
-          interrupts={[
-            {
-              id: "i-diff",
-              reason: { type: "form", questions: [{ question: "Other?", type: "text" }] },
-              toolCallId: "different",
-              onResolve: () => {},
-              onCancel: () => {},
-            },
-          ]}
-        />
-        <Timeline timeline={refs(askTool)} tools={[askTool]} active={true} />
-      </InterruptBridgeProvider>,
-    );
-
-    expect(screen.queryByText("Which segment?")).toBeNull();
-    expect(screen.queryByText("Submit")).toBeNull();
-  });
 
   it("still renders a plain tool as a tool row", () => {
     const tool: ToolCall = {
@@ -146,122 +81,7 @@ describe("Timeline ask_user rendering", () => {
   });
 });
 
-describe("Timeline parallel approval rendering", () => {
-  it("renders an approval prompt inline under each gated tool row and resolves each by id", () => {
-    const searchTool: ToolCall = {
-      toolUseId: "tc-search",
-      toolName: "research_search_web",
-      toolLabel: "research_search_web",
-      status: "running",
-      toolInput: { query: "cloud gpu" },
-    };
-    const priceTool: ToolCall = {
-      toolUseId: "tc-price",
-      toolName: "research_fetch_pricing",
-      toolLabel: "research_fetch_pricing",
-      status: "running",
-      toolInput: { segment: "cloud gpu" },
-    };
-    const resolved: string[] = [];
 
-    render(
-      <InterruptBridgeProvider>
-        <InterruptBridgePublisher
-          interrupts={[
-            {
-              id: "i-search",
-              reason: {
-                type: "approval",
-                message: "Agent wants to call research_search_web",
-                tool_name: "research_search_web",
-              },
-              toolCallId: "tc-search",
-              onResolve: () => resolved.push("search"),
-              onCancel: () => {},
-            },
-            {
-              id: "i-price",
-              reason: {
-                type: "approval",
-                message: "Agent wants to call research_fetch_pricing",
-                tool_name: "research_fetch_pricing",
-              },
-              toolCallId: "tc-price",
-              onResolve: () => resolved.push("price"),
-              onCancel: () => {},
-            },
-          ]}
-        />
-        <Timeline
-          timeline={refs(searchTool, priceTool)}
-          tools={[searchTool, priceTool]}
-          active={true}
-        />
-      </InterruptBridgeProvider>,
-    );
-
-    // Two independent Approve buttons — one per gated tool row.
-    const approveButtons = screen.getAllByText("Approve");
-    expect(approveButtons).toHaveLength(2);
-    expect(
-      screen.getByText("Agent wants to call research_search_web"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Agent wants to call research_fetch_pricing"),
-    ).toBeInTheDocument();
-
-    // Approving the first leaves the second still open and pending.
-    act(() => {
-      approveButtons[0].click();
-    });
-    expect(resolved).toEqual(["search"]);
-    expect(screen.getAllByText("Approve")).toHaveLength(1);
-  });
-});
-
-describe("Timeline custom interrupt renderer", () => {
-  it("renders the anchored approval gate with the app's interruptRenderers override", () => {
-    const tool: ToolCall = {
-      toolUseId: "tc-gated",
-      toolName: "create_work_item",
-      status: "running",
-      toolInput: { title: "T" },
-    };
-    const Custom = ({ reason }: InterruptRendererProps) => (
-      <div data-testid="custom-approval">
-        {reason.type === "approval" ? reason.message : ""}
-      </div>
-    );
-
-    render(
-      <InterruptBridgeProvider>
-        <InterruptRenderersProvider renderers={{ approval: Custom }}>
-          <InterruptBridgePublisher
-            interrupts={[
-              {
-                id: "i-gated",
-                reason: {
-                  type: "approval",
-                  message: "Agent wants to call create_work_item",
-                  tool_name: "create_work_item",
-                },
-                toolCallId: "tc-gated",
-                onResolve: () => {},
-                onCancel: () => {},
-              },
-            ]}
-          />
-          <Timeline timeline={refs(tool)} tools={[tool]} active={true} />
-        </InterruptRenderersProvider>
-      </InterruptBridgeProvider>,
-    );
-
-    expect(screen.getByTestId("custom-approval").textContent).toBe(
-      "Agent wants to call create_work_item",
-    );
-    expect(screen.queryByText("Approve")).toBeNull();
-  });
-});
 
 describe("Timeline per-tool-name renderers (toolRenderers)", () => {
   const tool: ToolCall = {
@@ -297,33 +117,80 @@ describe("Timeline per-tool-name renderers (toolRenderers)", () => {
     expect(screen.getByText(/Create work item/)).toBeInTheDocument();
   });
 
-  it("still renders the anchored approval gate under a custom card", () => {
-    const Card = () => <div data-testid="custom-tool-card" />;
-    render(
-      <InterruptBridgeProvider>
-        <ToolRenderersProvider renderers={{ create_work_item: Card }}>
-          <InterruptBridgePublisher
-            interrupts={[
-              {
-                id: "i-c",
-                reason: {
-                  type: "approval",
-                  message: "Approve create_work_item",
-                  tool_name: "create_work_item",
-                },
-                toolCallId: "tc-create",
-                onResolve: () => {},
-                onCancel: () => {},
-              },
-            ]}
-          />
-          <Timeline timeline={refs(tool)} tools={[tool]} active={true} />
-        </ToolRenderersProvider>
-      </InterruptBridgeProvider>,
-    );
+});
 
-    expect(screen.getByTestId("custom-tool-card")).toBeInTheDocument();
-    expect(screen.getByText("Approve")).toBeInTheDocument();
+describe("Timeline with renderers registered in CopilotKit", () => {
+  const anyParameters = {
+    "~standard": { version: 1 as const, vendor: "test", validate: (value: unknown) => ({ value }) },
+  };
+
+  function SqlRenderer() {
+    useRenderTool({
+      name: "run_sql",
+      parameters: anyParameters,
+      render: ({ status, parameters, result }) => (
+        <div data-testid="sql-card">{`${status}|${(parameters as { sql?: string }).sql}|${result ?? ""}`}</div>
+      ),
+    });
+    return null;
+  }
+
+  const sql: ToolCall = {
+    toolUseId: "s1",
+    toolName: "run_sql",
+    status: "success",
+    toolInput: { sql: "select 1" },
+    toolResult: "one row",
+  };
+
+  const withRenderer = (children: ReactNode) => (
+    <CopilotKitProvider>
+      <SqlRenderer />
+      {children}
+    </CopilotKitProvider>
+  );
+
+  it("draws a finished call with the renderer registered for its name", async () => {
+    render(withRenderer(<Timeline timeline={refs(sql)} tools={[sql]} active={false} />));
+    expect((await screen.findByTestId("sql-card")).textContent).toBe("complete|select 1|one row");
+  });
+
+  it("draws a running call with the arguments streamed so far", async () => {
+    const running: ToolCall = { ...sql, status: "running", toolInput: { sql: "sel" }, toolResult: undefined };
+    render(withRenderer(<Timeline timeline={refs(running)} tools={[running]} active />));
+    expect((await screen.findByTestId("sql-card")).textContent).toBe("inProgress|sel|");
+  });
+
+  it("keeps a call that started a sub-agent as a row", async () => {
+    const delegating: ToolCall = { ...sql, toolUseId: "d1" };
+    const spawned: StreamGroup = {
+      title: "Analyst",
+      agentName: "run_sql",
+      parentGroup: null,
+      toolCallId: "d1",
+      status: "completed",
+      tools: [],
+      timeline: [],
+    };
+    const { container } = render(
+      withRenderer(
+        <ActivityContext.Provider value={{ groups: { analyst: spawned } }}>
+          <Timeline timeline={refs(sql, delegating)} tools={[sql, delegating]} active={false} />
+        </ActivityContext.Provider>,
+      ),
+    );
+    await screen.findByTestId("sql-card");
+    expect(screen.getAllByTestId("sql-card")).toHaveLength(1);
+    expect(container.querySelectorAll(".kaboo-tool-row")).toHaveLength(1);
+    expect(screen.getByText("Run sql")).toBeInTheDocument();
+  });
+});
+
+describe("Timeline surface tools", () => {
+  it("draws no row for render_a2ui, whose surface renders in the chat", () => {
+    const render_a2ui: ToolCall = { toolUseId: "r1", toolName: "render_a2ui", status: "success", toolResult: "Rendered." };
+    const { container } = render(<Timeline timeline={refs(render_a2ui)} tools={[render_a2ui]} active={false} />);
+    expect(container.querySelector(".kaboo-tool-row")).toBeNull();
   });
 });
 
@@ -359,14 +226,6 @@ describe("Timeline tool entry shapes", () => {
     render(
       <Timeline timeline={[{ type: "tool", toolUseId: "t9" }]} tools={[tool]} active={false} />,
     );
-
-    expect(screen.getByText(/Searching the web/)).toBeInTheDocument();
-  });
-
-  it("still renders a tool embedded in the entry", () => {
-    // Snapshots written before the reference form inlined the call, and threads
-    // persisted then still replay.
-    render(<Timeline timeline={[{ type: "tool", tool }]} tools={[]} active={false} />);
 
     expect(screen.getByText(/Searching the web/)).toBeInTheDocument();
   });

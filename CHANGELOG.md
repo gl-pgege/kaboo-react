@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0]
+
+See [Upgrading](docs/upgrading.md#012).
+
+### Changed
+
+- **Cards come from AG-UI's `SUBAGENT_*` events** and the events tagged with
+  their `subagentRunId`, folded the same way live and on replay. The entry agent
+  has no group.
+- **Approvals render on CopilotKit's `useInterrupt`.**
+- **The turn footer renders for every turn**, with every run since the person's
+  message, including a turn answered without delegating.
+- **Needs CopilotKit 1.79.1 or later.**
+
+### Added
+
+- **`useAskUserTool` and `useRequestTool`** register the browser's question and
+  request tools, check calls against their schema, and show several requests in
+  order.
+- **`KabooChat` and `useKabooSend`**: a new message skips any open request.
+- **`useAgentState`, `useLiveToolCalls` and `useAgentPresence`** for canvases.
+- **`withSubagentLabel`** for sub-agents' generative UI surfaces.
+- **`KabooProvider` passes `properties`, `renderToolCalls`,
+  `renderActivityMessages`, `a2ui` and `openGenerativeUI`** to CopilotKit.
+- **Tool renderers registered with CopilotKit draw inside sub-agent cards.**
+- **Tool labels, structured outputs' schema names, run usage and trace ids**
+  are read from kaboo-workflows 0.29's events.
+- **`toolSchema` and `checkArguments`**, with their schema types, for browser
+  tools described without a schema library.
+
+### Removed
+
+- **`KabooAskUser`**, the InterruptBridge (`InterruptBridgeProvider`,
+  `InterruptBridgePublisher`, `useInterruptBridge`, `useInterruptFor`),
+  `applyActivityPatch`, `StreamGroup.tokens`, embedded timeline tools, the
+  continuation resolver, and pre-0.27 question shapes.
+
+### Fixed
+
+- **The CommonJS build has its own type declarations**, so `require` consumers
+  type-check.
+
 ## [0.11.3]
 
 ### Fixed

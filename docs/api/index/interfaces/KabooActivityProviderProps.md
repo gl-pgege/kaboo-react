@@ -16,8 +16,8 @@ Props for [KabooActivityProvider](../functions/KabooActivityProvider.md).
 
 Defined in: [src/context/ActivityProvider.tsx:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L59)
 
-CopilotKit agent id whose activity snapshots to consume. Omit to use the
-provider's default agent. Agent and thread scoping come from CopilotKit.
+CopilotKit agent id whose run stream to read. Omit to use the provider's
+default agent. Agent and thread scoping come from CopilotKit.
 
 ***
 

@@ -1,8 +1,6 @@
 import { useRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { AgentCard } from "../components/AgentCard";
-import { InterruptPrompt } from "../components/InterruptPrompt";
-import { useInterruptFor } from "../context/InterruptBridge";
 import { findGroupForCard } from "../utils/groups";
 import { KabooToolRender } from "./KabooToolRender";
 
@@ -87,28 +85,18 @@ function InlineCardRenderer({
 }) {
   const { groups } = useActivity();
   const entry = findGroupForCard(groups, agentName, toolCallId);
-  const interrupt = useInterruptFor(toolCallId);
-  const prompt = interrupt ? <InterruptPrompt interrupt={interrupt} /> : null;
 
   if (!entry) {
-    return (
-      <>
-        <div className="kaboo-agent-card-empty">Loading {agentName}...</div>
-        {prompt}
-      </>
-    );
+    return <div className="kaboo-agent-card-empty">Loading {agentName}...</div>;
   }
 
   return (
-    <>
-      <AgentCard
-        groupId={entry[0]}
-        group={entry[1]}
-        input={input}
-        result={result}
-        actionStatus={actionStatus}
-      />
-      {prompt}
-    </>
+    <AgentCard
+      groupId={entry[0]}
+      group={entry[1]}
+      input={input}
+      result={result}
+      actionStatus={actionStatus}
+    />
   );
 }

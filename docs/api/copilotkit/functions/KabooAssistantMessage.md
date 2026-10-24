@@ -6,7 +6,7 @@
 
 > **KabooAssistantMessage**(`props`): `Element`
 
-Defined in: [src/integrations/KabooAssistantMessage.tsx:39](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooAssistantMessage.tsx#L39)
+Defined in: [src/integrations/KabooAssistantMessage.tsx:38](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooAssistantMessage.tsx#L38)
 
 Drop-in replacement for CopilotKit's assistant-message renderer that prepends
 a first-class swarm/graph turn's member cards ABOVE the assistant's text —

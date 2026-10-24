@@ -95,6 +95,7 @@ describe("KabooProvider", () => {
     );
     expect(capturedProps.current.runtimeUrl).toBe("/api/copilotkit");
     expect(capturedProps.current.agent).toBe("entry");
+    expect(capturedProps.current.agentId).toBe("entry");
     expect(capturedProps.current["data-forwarded"]).toBe("yes");
   });
 });

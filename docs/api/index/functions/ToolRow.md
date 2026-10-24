@@ -6,11 +6,12 @@
 
 > **ToolRow**(`__namedParameters`): `Element`
 
-Defined in: [src/components/ToolRow.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ToolRow.tsx#L29)
+Defined in: [src/components/ToolRow.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ToolRow.tsx#L31)
 
-Renders a single [ToolCall](../interfaces/ToolCall.md) as a collapsible row: status icon, label, an
-input summary, and — when expanded — the formatted result (a [MiniTable](MiniTable.md)
-for tabular JSON, otherwise text). Used inside the [Timeline](Timeline.md).
+Renders a single [ToolCall](../interfaces/ToolCall.md) as a collapsible row: status icon, label (the
+tool's name read as words when it has no label), an input summary, and — when
+expanded — the input and result laid out as fields and tables, never JSON.
+Used inside the [Timeline](Timeline.md).
 
 ## Parameters
 

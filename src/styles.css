@@ -169,7 +169,6 @@
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 0.75rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   overflow-x: auto;
   max-height: 200px;
   margin-top: 4px;
@@ -291,12 +290,10 @@
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 0.78rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   border-left: 3px solid var(--kaboo-border);
   margin-bottom: 6px;
-  max-height: 120px;
+  max-height: 180px;
   overflow-y: auto;
-  white-space: pre-wrap;
   word-break: break-word;
   color: var(--kaboo-fg);
 }
@@ -314,7 +311,21 @@
   color: var(--kaboo-fg);
 }
 .kaboo-tool-result-table { padding: 4px 0; white-space: normal; }
+.kaboo-tool-result-value { white-space: normal; max-height: 240px; }
 .kaboo-tool-result-cancelled { color: var(--kaboo-muted-fg); font-style: italic; }
+
+/* ── Value View ── */
+.kaboo-value-list { display: grid; gap: 3px; margin: 0; }
+.kaboo-value-row { display: grid; grid-template-columns: minmax(72px, max-content) minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.kaboo-value-row dt { color: var(--kaboo-muted-fg); text-transform: capitalize; }
+.kaboo-value-row dd { margin: 0; min-width: 0; word-break: break-word; }
+.kaboo-value-code {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.74rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
 /* ── Mini Table ── */
 .kaboo-mini-table {
@@ -527,7 +538,6 @@
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 0.75rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   overflow-x: auto;
   max-height: 160px;
   margin-top: 4px;
@@ -735,6 +745,15 @@
 }
 
 .kaboo-permissions-empty {
+  font-size: 0.8rem;
+  color: var(--kaboo-muted-fg);
+}
+
+.kaboo-request-queued {
+  padding: 8px 14px;
+  margin: 4px 0 8px;
+  border: 1px dashed var(--kaboo-border);
+  border-radius: 10px;
   font-size: 0.8rem;
   color: var(--kaboo-muted-fg);
 }
@@ -1193,3 +1212,15 @@
 
 /* ── Animations ── */
 @keyframes kaboo-blink { 50% { opacity: 0; } }
+
+.kaboo-request-from-agent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kaboo-request-agent {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.7;
+}

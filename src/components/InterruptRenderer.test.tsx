@@ -117,13 +117,8 @@ describe("question card", () => {
     expect(onResolve).toHaveBeenCalledWith({ "Which sectors?": ["B2B", "Gov", "Edu"] });
   });
 
-  it("reads the multi-select of a question sent by an older agent", () => {
-    renderCard(form([{ question: "Which sectors?", options: ["B2B", "B2C"], type: "checkbox" }]));
-    expect(screen.getAllByRole("checkbox").length).toBeGreaterThanOrEqual(2);
-  });
-
-  it("asks an older agent's free-text question through Other alone, with no text box", () => {
-    const { onResolve } = renderCard(form([{ question: "Anything else?", type: "text" }]));
+  it("asks a free-text question through Other alone, with no text box", () => {
+    const { onResolve } = renderCard(form([{ question: "Anything else?", options: [] }]));
     expect(document.querySelector("textarea")).toBeNull();
     fireEvent.change(screen.getByLabelText("Other answer to: Anything else?"), { target: { value: "No" } });
     fireEvent.click(screen.getByText("Submit"));

@@ -36,15 +36,7 @@ export type TimelineEntry =
        * Reference to the call in the owning group's `tools`, which holds the
        * only copy. Resolve it with `resolveTimelineTool`.
        */
-      toolUseId?: string;
-      /**
-       * The embedded call. Producers before the reference form inlined it
-       * here, which serialised every input and result twice per snapshot;
-       * threads persisted then still replay, so it is read when present.
-       *
-       * @deprecated Prefer `toolUseId`.
-       */
-      tool?: ToolCall;
+      toolUseId: string;
     };
 
 /**
@@ -59,13 +51,6 @@ export interface FormQuestion {
   options: string[];
   /** Whether the person may choose several options. */
   multiple?: boolean;
-  /**
-   * Control type sent by kaboo-workflows before 0.27 (`checkbox` meant
-   * multi-select). Read only when `multiple` is absent.
-   *
-   * @deprecated Use `multiple`.
-   */
-  type?: "radio" | "checkbox" | "text";
 }
 
 /**
@@ -294,14 +279,6 @@ export interface StreamGroup {
   status: "active" | "completed" | "error" | "interrupted" | "stopped";
   /** Every tool call made in this group, in call order. */
   tools: ToolCall[];
-  /**
-   * Accumulated streamed text for this group.
-   *
-   * @deprecated No longer emitted. It duplicated {@link StreamGroup.timeline},
-   * which is the rendered copy, and cost its full length in every snapshot and
-   * every delta. Read the timeline's text entries instead.
-   */
-  tokens?: string;
   /** Interleaved text/tool entries in chronological order. */
   timeline: TimelineEntry[];
   /** The open interrupt for this group, when it is paused for input. */

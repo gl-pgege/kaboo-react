@@ -6,12 +6,11 @@
 
 > **DrillDetailView**(): `Element`
 
-Defined in: [src/components/DrillDetailView.tsx:47](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/DrillDetailView.tsx#L47)
+Defined in: [src/components/DrillDetailView.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/DrillDetailView.tsx#L28)
 
 Detail pane for the currently drilled-in group: its task, full timeline
-(with delegated sub-agents interleaved at their tool-call position), any
-unanchored interrupt prompts, and a "Sub-agents" section for swarm/graph
-members. Renders a hidden placeholder at the root. Pair with [GlassTabs](GlassTabs.md).
+(with delegated sub-agents interleaved at their tool-call position), and a
+"Sub-agents" section for swarm/graph members. Renders a hidden placeholder at the root. Pair with [GlassTabs](GlassTabs.md).
 
 ## Returns
 

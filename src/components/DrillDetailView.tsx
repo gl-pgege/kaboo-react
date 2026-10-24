@@ -1,34 +1,15 @@
 import { useEffect, useRef } from "react";
 import { useActivity } from "../hooks/useActivity";
 import { useDrill } from "../hooks/useDrill";
-import {
-  useInterruptBridge,
-  type ActiveInterrupt,
-} from "../context/InterruptBridge";
-import {
-  directChildren,
-  partitionChildrenByToolCall,
-  pendingToolAnchorExists,
-} from "../utils/groups";
+import { directChildren, partitionChildrenByToolCall } from "../utils/groups";
 import { AgentCard } from "./AgentCard";
-import { InterruptPrompt } from "./InterruptPrompt";
 import { Timeline } from "./Timeline";
 import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 
 /**
- * Renders one unanchored interrupt through the renderer registered for its
- * reason type, so the drill view presents the same prompt UI as the chat
- * surface ({@link ChatInterruptSlot}) and the anchored timeline rows.
- */
-function DrillInterruptSlot({ interrupt }: { interrupt: ActiveInterrupt }) {
-  return <InterruptPrompt interrupt={interrupt} />;
-}
-
-/**
  * Detail pane for the currently drilled-in group: its task, full timeline
- * (with delegated sub-agents interleaved at their tool-call position), any
- * unanchored interrupt prompts, and a "Sub-agents" section for swarm/graph
- * members. Renders a hidden placeholder at the root. Pair with {@link GlassTabs}.
+ * (with delegated sub-agents interleaved at their tool-call position), and a
+ * "Sub-agents" section for swarm/graph members. Renders a hidden placeholder at the root. Pair with {@link GlassTabs}.
  *
  * @example
  * ```tsx
@@ -47,7 +28,6 @@ function DrillInterruptSlot({ interrupt }: { interrupt: ActiveInterrupt }) {
 export function DrillDetailView() {
   const { activeDrill } = useDrill();
   const { groups } = useActivity();
-  const { active: activeInterrupts } = useInterruptBridge();
   const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,19 +42,6 @@ export function DrillDetailView() {
 
   const group = groups[activeDrill];
   const timeline = group?.timeline ?? [];
-  // Prompts anchored to a pending tool call are rendered inline by the Timeline
-  // at that tool's position (chronological); this block handles interrupts with
-  // no on-screen tool anchor, and the ones this group forwarded to its caller,
-  // which arrive anchored at its delegating call in the parent — never a duplicate.
-  const unanchoredInterrupts =
-    group?.status === "interrupted"
-      ? activeInterrupts.filter(
-          (i) =>
-            (group.toolCallId != null && i.toolCallId === group.toolCallId) ||
-            !pendingToolAnchorExists(groups, i.toolCallId),
-        )
-      : [];
-
   const childEntries = directChildren(groups, activeDrill);
   // Interleave delegated children at their delegating tool-call position so a
   // sub-agent's card sits where it was delegated (before the parent's summary
@@ -130,14 +97,6 @@ export function DrillDetailView() {
               variant="drill"
               renderToolCard={renderToolCard}
             />
-          </div>
-        )}
-
-        {unanchoredInterrupts.length > 0 && (
-          <div className="kaboo-drill-interrupt">
-            {unanchoredInterrupts.map((it) => (
-              <DrillInterruptSlot key={it.id} interrupt={it} />
-            ))}
           </div>
         )}
 

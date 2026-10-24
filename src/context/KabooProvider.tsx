@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { CopilotKit, type CopilotKitProps } from "@copilotkit/react-core/v2";
 import { KabooActivityProvider, type StructuredRenderers } from "./ActivityProvider";
 import { DrillProvider } from "./DrillContext";
-import { InterruptBridgeProvider } from "./InterruptBridge";
 import { InterruptRenderersProvider } from "./InterruptRenderers";
 import { ToolRenderersProvider, type ToolRenderers } from "./ToolRenderers";
 import { KabooInterruptHandler, type KabooInterruptHandlerProps } from "../integrations/KabooInterruptHandler";
@@ -60,15 +59,25 @@ export interface KabooProviderProps {
    * rendered in those positions unless provided.
    */
   slots?: KabooSlots;
-  /** Extra props forwarded to the underlying `<CopilotKit>`. */
-  copilotKitProps?: Partial<Omit<CopilotKitProps, "children" | "runtimeUrl" | "agent" | "threadId">>;
+  /** Sent to the agent as `forwardedProps` with every run. */
+  properties?: CopilotKitProps["properties"];
+  /** Renderers for tool calls: the controlled tier of generative UI. */
+  renderToolCalls?: CopilotKitProps["renderToolCalls"];
+  /** Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps. */
+  renderActivityMessages?: CopilotKitProps["renderActivityMessages"];
+  /** The A2UI catalog, theme and action handler. */
+  a2ui?: CopilotKitProps["a2ui"];
+  /** Open Generative UI: the sandbox functions and the design skill. */
+  openGenerativeUI?: CopilotKitProps["openGenerativeUI"];
+  /** Any other props for the underlying `<CopilotKit>`. */
+  copilotKitProps?: Partial<Omit<CopilotKitProps, "children" | "runtimeUrl" | "agent" | "agentId" | "threadId">>;
   /** Your app subtree, rendered inside all kaboo contexts. */
   children: ReactNode;
 }
 
 /**
  * Batteries-included CopilotKit plugin. Renders `<CopilotKit>` and nests every
- * kaboo context (activity -> drill -> interrupt bridge) plus the built-in HITL
+ * kaboo context (activity -> drill -> renderers) plus the built-in request
  * and inline-card handlers, so integrators drop this once near the root and use
  * only kaboo-react. Activity rides the AG-UI run stream, so there is no separate
  * activity endpoint to configure.
@@ -104,6 +113,11 @@ export function KabooProvider({
   disableInlineCards = false,
   references,
   slots,
+  properties,
+  renderToolCalls,
+  renderActivityMessages,
+  a2ui,
+  openGenerativeUI,
   copilotKitProps,
   children,
 }: KabooProviderProps) {
@@ -111,14 +125,19 @@ export function KabooProvider({
     <CopilotKit
       runtimeUrl={runtimeUrl}
       agent={agent}
+      agentId={agent}
       threadId={threadId}
       useSingleEndpoint={false}
+      properties={properties}
+      renderToolCalls={renderToolCalls}
+      renderActivityMessages={renderActivityMessages}
+      a2ui={a2ui}
+      openGenerativeUI={openGenerativeUI}
       {...copilotKitProps}
     >
       <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
         <DrillProvider>
-          <InterruptBridgeProvider>
-            <InterruptRenderersProvider renderers={interruptRenderers} approvalScopes={approvalScopes}>
+          <InterruptRenderersProvider renderers={interruptRenderers} approvalScopes={approvalScopes}>
               <ToolRenderersProvider renderers={toolRenderers}>
                 <ReferencesProvider providers={references} syncObjectStateTo={agent}>
                   <KabooSlotsProvider value={slots ?? {}}>
@@ -135,7 +154,6 @@ export function KabooProvider({
                 </ReferencesProvider>
               </ToolRenderersProvider>
             </InterruptRenderersProvider>
-          </InterruptBridgeProvider>
         </DrillProvider>
       </KabooActivityProvider>
     </CopilotKit>

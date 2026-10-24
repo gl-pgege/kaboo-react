@@ -1,16 +1,31 @@
 # Human-in-the-loop
 
-When a run pauses for the person, kaboo-react shows the request in the chat and
-resumes the run with the answer. There are two built-in kinds of request, on the
-same mechanism: a **question** the agent asks with `ask_user`, and a tool call
-waiting for **approval**. Apps add their own kinds (a file picker, a data
-source picker) with their own renderers.
+When an agent needs the person, kaboo-react shows the request in the chat and
+the agent carries on with the answer. There are two mechanisms:
+
+- **Questions and requests** are tools the browser runs. `useAskUserTool`
+  registers `ask_user`; `useRequestTool` registers any other request (a file,
+  a data source) with your own panel. An agent calls them only when its
+  workflow allows it (kaboo-workflows' `client_tools`), delegates included.
+- **Approvals** pause the run on an interrupt, and the built-in
+  `KabooInterruptHandler` draws the card on CopilotKit's `useInterrupt`. Apps
+  add their own interrupt kinds with their own renderers.
 
 A request waits with no time limit. The pause lives in the stored conversation,
 so the person can close the tab, come back days later on another device, and
 answer; if they send a message instead, the request is skipped.
 
 ## Questions
+
+```tsx
+import { useAskUserTool } from "@pgege/kaboo-react";
+import { KabooChat } from "@pgege/kaboo-react/copilotkit";
+
+export function Chat() {
+  useAskUserTool();
+  return <KabooChat />;
+}
+```
 
 Questions are multiple choice, like Cursor's:
 
@@ -22,7 +37,65 @@ Questions are multiple choice, like Cursor's:
 
 The answer is a `{question: answer}` map — a string, a list for multi-select,
 the person's own words for Other — and the answered Q&A stays in the
-transcript.
+transcript. A call whose arguments don't match the tool's schema is answered
+with an error naming the problem, so the model asks again properly instead of
+the person seeing a broken card.
+
+## Requests
+
+```tsx
+import { toolSchema, useRequestTool, type KabooRequestRenderProps } from "@pgege/kaboo-react";
+
+interface DatasourcesArgs {
+  reason: string;
+  kinds: string[];
+}
+
+const requestDatasources = toolSchema<DatasourcesArgs>(
+  {
+    type: "object",
+    properties: { reason: { type: "string" }, kinds: { type: "array", items: { type: "string" } } },
+    required: ["reason", "kinds"],
+  },
+  (value) => (Array.isArray((value as { kinds?: unknown })?.kinds) ? [] : ["kinds must be a list"]),
+);
+
+function DatasourcesPanel({ args, status, answer, skip }: KabooRequestRenderProps<DatasourcesArgs>) {
+  if (status !== "waiting") return null;
+  return (
+    <div className="kaboo-interrupt">
+      <p>{args.reason}</p>
+      <button onClick={() => answer({ datasources: args.kinds })}>Use all</button>
+      <button onClick={skip}>Skip</button>
+    </div>
+  );
+}
+
+export function BrowserTools() {
+  useRequestTool({
+    name: "request_datasources",
+    description: "Ask the person to pick data sources and wait for the choice.",
+    parameters: requestDatasources,
+    render: DatasourcesPanel,
+  });
+  return null;
+}
+```
+
+`parameters` takes any Standard Schema, such as a zod schema, or one built with
+`toolSchema`. The panel gets the call's `args`, its `status`, and `answer` and
+`skip`. An object passed to `answer` is sent as JSON; `skip` tells the agent the
+person declined. Define the panel outside the component that registers it, so it
+keeps its state.
+
+## Several requests at once
+
+One agent's questions show as one card that steps through them. When several
+agents wait — parallel delegates asking at once — their requests show one at a
+time, in the order they were asked, and the next waits under "Up next" until the
+one above is answered. A delegate's request shows in the main transcript,
+labelled with the agent, while it waits; once answered, the Q&A stays in that
+agent's card.
 
 ## Approvals
 
@@ -41,6 +114,7 @@ input") and the options the request offers:
   passed, only **Dismiss** remains.
 
 With two or more approvals waiting, **Approve all** and **Deny all** appear.
+A delegate's approval shows at its real tool row, labelled with the agent.
 
 A tool that enforces its own approvals (kaboo-workflows'
 `interrupt.tool_approvals`) raises the same approval request, so the same card
@@ -53,7 +127,6 @@ the same answers, and the host forwards the decision to the tool's service.
 |---|---|---|
 | approves | `onResolve({ status: "approved", scope })` | runs the call |
 | denies | `onResolve({ status: "cancelled", reason? })` | cancels it and reads the reason |
-| answers questions | `onResolve({ "<question>": answer })` | reads the answers |
 | skips or dismisses | `onCancel()` | cancels it as skipped |
 
 A denial is sent as `cancelled` so an agent that predates denial reasons can
@@ -62,16 +135,15 @@ never mistake it for an approval.
 The answers resume the turn in a new run, and the chat still shows one turn:
 the `turnFooter` slot renders after the turn's last reply, and its `runIds`
 list every run the turn spanned, so anything your app keys by run (files or
-versions the turn made) is found under one of them. This needs kaboo-workflows
-0.28.2 or later, whose activity groups record each run that resumed them.
+versions the turn made) is found under one of them.
 
 ## Moving on
 
-If the person sends a message while a question or approval waits, what was
-waiting is skipped and the agent answers the message. You do not need to block
-the composer: the AG-UI client refuses to start a run while requests are open,
-so the built-in handler drops the stale requests just before the new message's
-run starts, and the agent closes them as skipped.
+If the person sends a message while a question, request or approval waits, what
+was waiting is skipped and the agent answers the message. You do not need to
+block the composer: sending through `KabooChat` or `useKabooSend` answers each
+open request with "Skipped: the person sent a message instead of answering" and
+cancels each open approval in the same run as the new message.
 
 ## When an answer can't be recorded
 
@@ -100,40 +172,6 @@ The reason is the message of the run's `RUN_ERROR`, which kaboo-runtime takes
 from the error the host's `onDecision` throws, so the host should throw one a
 person can act on. A run that fails after the agent started working is left to
 the chat's usual error handling.
-
-## Inline vs chat-slot placement
-
-- If a request is anchored to a tool call that is still visible on screen, the
-  prompt renders **inline at that tool's position**, in chronological order.
-- Otherwise it renders in a fallback slot in the chat.
-
-You don't configure this — it's automatic — but it's why prompts appear "in the
-right place" rather than floating on top of the turn.
-
-## The InterruptBridge
-
-The bridge holds the open requests, and which of them were already answered, so
-any surface can render or count them. `useInterruptFor(toolCallId)` finds the
-request anchored to a tool call; `useInterruptBridge()` gives the whole set, for
-example for a "waiting for you" badge:
-
-```tsx
-import { useInterruptBridge } from "@pgege/kaboo-react";
-
-export function WaitingBadge() {
-  const { active, answered } = useInterruptBridge();
-  const waiting = active.filter((i) => !answered.has(i.id)).length;
-  return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
-}
-```
-
-A custom card that draws its own gate can also read `failure`, the reason the
-last answers never reached the agent (see
-[When an answer can't be recorded](#when-an-answer-cant-be-recorded)), and
-`clearAnswered()` forgets every answer so the requests can be answered again.
-
-`InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
-pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.
 
 ## Choosing the approval options
 
@@ -164,17 +202,14 @@ The built-in cards read the theme tokens and use a stable set of class names, so
 most apps restyle them rather than replace them — see
 [Theming](theming.md#questions-and-approvals).
 
-## Custom renderers
-
-`interruptRenderers` replaces the UI for a request kind: the built-in `approval`
-and `form`, or an app's own kind. A renderer receives `InterruptRendererProps`
-(the `reason` plus `onResolve`/`onCancel`), typed with the reason it handles.
+## Custom cards
 
 ### A custom approval card that keeps the standard options
 
-Render your own summary and reuse `ApprovalActions` (or `useApprovalDecision`
-for your own buttons), so the scopes, deny reason, deadline and batch behaviour
-stay standard:
+`interruptRenderers` replaces the UI for an interrupt kind: the built-in
+`approval`, or an app's own kind. Render your own summary and reuse
+`ApprovalActions` (or `useApprovalDecision` for your own buttons), so the
+scopes, deny reason, deadline and batch behaviour stay standard:
 
 ```tsx
 import { ApprovalActions, KabooProvider } from "@pgege/kaboo-react";
@@ -205,18 +240,19 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 ### A custom question card
 
-Read questions with `toFormQuestion` (it also reads the shape older agents send)
-and answer with `buildAnswerPayload`, so the agent and the answered Q&A card
+Pass `render` to `useAskUserTool`. Read questions with `toFormQuestion` and
+answer with `buildAnswerPayload`, so the agent and the answered Q&A card
 receive the same answer as from the built-in card:
 
 ```tsx
 import { useState } from "react";
-import { buildAnswerPayload, toFormQuestion } from "@pgege/kaboo-react";
-import type { FormReason, InterruptRendererProps } from "@pgege/kaboo-react";
+import { buildAnswerPayload, toFormQuestion, useAskUserTool } from "@pgege/kaboo-react";
+import type { AskUserArgs, KabooRequestRenderProps } from "@pgege/kaboo-react";
 
-export function ChipQuestions({ reason, onResolve, onCancel }: InterruptRendererProps<FormReason>) {
-  const questions = reason.questions.map(toFormQuestion);
+function ChipQuestions({ args, status, answer, skip }: KabooRequestRenderProps<AskUserArgs>) {
+  const questions = args.questions.map(toFormQuestion);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  if (status !== "waiting") return null;
   return (
     <div>
       {questions.map((q, idx) => (
@@ -229,39 +265,45 @@ export function ChipQuestions({ reason, onResolve, onCancel }: InterruptRenderer
           ))}
         </fieldset>
       ))}
-      <button onClick={() => onResolve(buildAnswerPayload(questions, answers))}>Send</button>
-      <button onClick={onCancel}>Skip</button>
+      <button onClick={() => answer(buildAnswerPayload(questions, answers))}>Send</button>
+      <button onClick={skip}>Skip</button>
     </div>
   );
 }
+
+export function Questions() {
+  useAskUserTool({ render: ChipQuestions });
+  return null;
+}
 ```
 
-### An app's own request kind
+### An app's own interrupt kind
 
-A tool that needs something other than an answer — a file, a data source —
-raises its own kind (`type: "files"`), and the app registers a renderer for it.
+A server tool that needs something only the server can check raises its own
+interrupt kind (`type: "account"`), and the app registers a renderer for it.
 Its fields arrive on `reason`. A kind with no registered renderer gets a minimal
-card with its `message` and Skip, so the chat never stalls.
+card with its `message` and Skip, so the chat never stalls. Prefer a browser
+request (`useRequestTool`) when the server needs nothing but the answer.
 
 ```tsx
 import { KabooProvider } from "@pgege/kaboo-react";
 import type { InterruptRendererProps } from "@pgege/kaboo-react";
 
-interface FilesRequest {
+interface AccountRequest {
   type: string;
   message?: string;
-  accept?: string[];
+  accounts?: string[];
 }
 
-function FilesPicker({ reason, onResolve, onCancel }: InterruptRendererProps<FilesRequest>) {
+function AccountPicker({ reason, onResolve, onCancel }: InterruptRendererProps<AccountRequest>) {
   return (
     <div>
       <p>{reason.message}</p>
-      <input
-        type="file"
-        accept={reason.accept?.join(",")}
-        onChange={(e) => onResolve({ files: [...(e.target.files ?? [])].map((f) => f.name) })}
-      />
+      {(reason.accounts ?? []).map((account) => (
+        <button key={account} onClick={() => onResolve({ account })}>
+          {account}
+        </button>
+      ))}
       <button onClick={onCancel}>Skip</button>
     </div>
   );
@@ -273,7 +315,7 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
       runtimeUrl="/api/copilotkit"
       agent={agent}
       threadId={threadId}
-      interruptRenderers={{ files: FilesPicker }}
+      interruptRenderers={{ account: AccountPicker }}
     >
       <div />
     </KabooProvider>
@@ -300,3 +342,11 @@ export function AssistantPermissions({
   return <PermissionList grants={grants} onRevoke={revoke} />;
 }
 ```
+
+Lab scenarios:
+[question-several](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/question-several.yaml),
+[question-parallel](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/question-parallel.yaml),
+[request-datasources](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/request-datasources.yaml),
+[approval-subagent](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/approval-subagent.yaml)
+and
+[approval-grant](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/approval-grant.yaml).

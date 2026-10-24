@@ -15,6 +15,7 @@ import { TurnBindingProvider } from "../context/TurnBinding";
 import { useKabooSlots, type KabooSlots } from "../context/KabooSlots";
 import { KabooAssistantMessage } from "./KabooAssistantMessage";
 import { KabooUserMessage } from "./KabooUserMessage";
+import { requestToolTest } from "../requests/openRequests";
 
 /** Props for {@link KabooMessageView}: CopilotKit's message-view props plus per-view slot overrides. */
 export interface KabooMessageViewProps extends CopilotChatMessageViewProps {
@@ -27,9 +28,18 @@ export interface KabooMessageViewProps extends CopilotChatMessageViewProps {
 
 type ChatMessage = NonNullable<CopilotChatMessageViewProps["messages"]>[number];
 
-function collapseReasoning(messages: ChatMessage[]): ChatMessage[] {
+function visibleMessages(messages: ChatMessage[], isRequestTool: (name: string) => boolean): ChatMessage[] {
   const out: ChatMessage[] = [];
+  const answered = new Set(messages.flatMap((m) => (m.role === "tool" ? [m.toolCallId] : [])));
   for (const m of messages) {
+    // A sub-agent's messages render inside its card; only the requests it still
+    // waits on come into the transcript, and the answered ones stay in its card.
+    if ((m as { subagentRunId?: string }).subagentRunId) {
+      if (m.role !== "assistant") continue;
+      const calls = (m.toolCalls ?? []).filter((call) => isRequestTool(call.function.name) && !answered.has(call.id));
+      if (calls.length > 0) out.push({ ...m, content: "", toolCalls: calls });
+      continue;
+    }
     if (m.role !== "reasoning") {
       out.push(m);
       continue;
@@ -54,15 +64,15 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
   const slots = { ...contextSlots, ...slotOverrides };
   const agentId = config?.agentId;
   const threadId = config?.threadId;
-  const visibleMessages = useMemo(
-    () => collapseReasoning(props.messages ?? []),
-    [props.messages],
+  const shown = useMemo(
+    () => visibleMessages(props.messages ?? [], requestToolTest(copilotkit, agentId)),
+    [props.messages, copilotkit, agentId],
   );
 
   return (
     <CopilotChatMessageView
       {...props}
-      messages={visibleMessages}
+      messages={shown}
       assistantMessage={
         KabooAssistantMessage as unknown as typeof CopilotChatAssistantMessage
       }
@@ -96,8 +106,11 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
         // The LAST assistant message of each turn, in transcript order — the
         // anchor for the turn footer slot and `useTurnGroups`.
         const lastMessageOfTurn = new Map<string, string>();
+        const runsOfTurn = new Map<string, Set<string>>();
         const list = messages as Array<{ id?: string; role?: string }>;
+        let userTurn: string | undefined;
         for (const m of list) {
+          if (m?.role === "user") userTurn = undefined;
           if (m?.role !== "assistant" || !m.id) continue;
           // Prefer the run id recovered from the event stream: it is correct
           // on replay too, where CopilotKit's registry attributes every
@@ -108,9 +121,11 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
             (agentId && threadId
               ? copilotkit.getRunIdForMessage(agentId, threadId, m.id)
               : undefined);
-          const key = runId ? runToTurn.get(runId) ?? runId : undefined;
-          if (!key) continue;
+          if (!runId) continue;
+          const key = userTurn ?? runToTurn.get(runId) ?? runId;
+          userTurn = key;
           lastMessageOfTurn.set(key, m.id);
+          runsOfTurn.set(key, (runsOfTurn.get(key) ?? new Set()).add(runId));
           const turnRoots = rootsByTurn.get(key);
           if (turnRoots) {
             rootsByMessageId.set(m.id, turnRoots);
@@ -122,11 +137,14 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
         // turn's final assistant message, so end-of-turn surfaces can see
         // structured outputs regardless of how deep the producing agent sat.
         const turnGroupsByMessageId = new Map<string, GroupEntry[]>();
+        const turnRunsByMessageId = new Map<string, string[]>();
         for (const [key, messageId] of lastMessageOfTurn) {
           const entries = Object.entries(groups).filter(
             ([, g]) => groupTurnKey(g) === key,
           ) as GroupEntry[];
           if (entries.length > 0) turnGroupsByMessageId.set(messageId, entries);
+          const runs = new Set([...entries.flatMap(([, g]) => groupRuns(g)), ...(runsOfTurn.get(key) ?? [])]);
+          turnRunsByMessageId.set(messageId, [...runs]);
         }
 
         const pending = roots.filter(([, g]) => {
@@ -145,7 +163,7 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
         const StartIndicator = slots.runStartIndicator;
 
         return (
-          <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId }}>
+          <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId, turnRunsByMessageId }}>
             {messageElements}
             {pending.length > 0 && (
               <div className="kaboo-inline-cards">

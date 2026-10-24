@@ -6,11 +6,12 @@
 
 > **formatToolResult**(`raw`): `object`
 
-Defined in: [src/formatters/output.ts:14](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L14)
+Defined in: [src/formatters/output.ts:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/output.ts#L17)
 
 Parses a raw tool result into a renderable shape: `rows` (for tabular JSON —
-either `{ rows: [...] }` or a top-level array of objects) or `text` (a
-`key: value` rendering of an object, or the raw string when it isn't JSON).
+`{ rows: [...] }`, a query page `{ columns, rows }`, or a top-level array of
+objects) or `text` (a `key: value` rendering of an object that reads as text,
+never JSON, or the raw string when it isn't JSON).
 
 ## Parameters
 

@@ -4,7 +4,7 @@
 
 # Type Alias: TimelineEntry
 
-> **TimelineEntry** = \{ `text`: `string`; `type`: `"text"`; \} \| \{ `tool?`: [`ToolCall`](../interfaces/ToolCall.md); `toolUseId?`: `string`; `type`: `"tool"`; \}
+> **TimelineEntry** = \{ `text`: `string`; `type`: `"text"`; \} \| \{ `toolUseId`: `string`; `type`: `"tool"`; \}
 
 Defined in: [src/types.ts:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L25)
 
@@ -33,23 +33,11 @@ Discriminator: a streamed text segment.
 
 ### Type Literal
 
-\{ `tool?`: [`ToolCall`](../interfaces/ToolCall.md); `toolUseId?`: `string`; `type`: `"tool"`; \}
+\{ `toolUseId`: `string`; `type`: `"tool"`; \}
 
-#### ~~tool?~~
+#### toolUseId
 
-> `optional` **tool?**: [`ToolCall`](../interfaces/ToolCall.md)
-
-The embedded call. Producers before the reference form inlined it
-here, which serialised every input and result twice per snapshot;
-threads persisted then still replay, so it is read when present.
-
-##### Deprecated
-
-Prefer `toolUseId`.
-
-#### toolUseId?
-
-> `optional` **toolUseId?**: `string`
+> **toolUseId**: `string`
 
 Reference to the call in the owning group's `tools`, which holds the
 only copy. Resolve it with `resolveTimelineTool`.

@@ -14,6 +14,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { CopilotChatInput, useAgent, useCopilotChatConfiguration } from "@copilotkit/react-core/v2";
+import { useKabooSend } from "../hooks/useKabooSend";
 import { useReferences } from "./ReferencesProvider";
 import { isUploadProvider, uploadFileToReference, UPLOAD_MARKER } from "./uploadProvider";
 import { buildUserContent, serializeReferences } from "./serialize";
@@ -157,6 +158,7 @@ export function KabooReferenceInput({ trigger = "@", ...inputProps }: KabooRefer
   const config = useCopilotChatConfiguration();
   const configAgentId = (config as { agentId?: string } | null)?.agentId;
   const { agent } = useAgent(configAgentId ? { agentId: configAgentId } : undefined);
+  const send = useKabooSend(configAgentId);
   const placeholder =
     (config as { labels?: { chatInputPlaceholder?: string } } | null)?.labels
       ?.chatInputPlaceholder ?? "Type a message...";
@@ -767,23 +769,13 @@ export function KabooReferenceInput({ trigger = "@", ...inputProps }: KabooRefer
     }
   }, [inputProps.value, markEmpty]);
 
-  // Build the multimodal message and run the agent ourselves (files ride as
-  // attachment parts; object refs travel on state.kaboo_references).
+  // Build the multimodal message (files ride as attachment parts; object refs
+  // travel on state.kaboo_references) and send it through CopilotKit.
   const handleSubmit = useCallback(
     (message: string) => {
       const text = message.trim();
       const { attachmentParts } = serializeReferences(pending);
-      const target = agent as unknown as {
-        addMessage?: (m: unknown) => void;
-        runAgent?: () => Promise<unknown> | void;
-      } | null;
       if (text.length === 0 && attachmentParts.length === 0) return;
-      if (!target?.addMessage || !target.runAgent) {
-        // Fallback: let CopilotKit's own send handle plain text.
-        (inputProps.onSubmitMessage as ((m: string) => void) | undefined)?.(message);
-        close();
-        return;
-      }
       const content =
         attachmentParts.length > 0 ? buildUserContent(text, attachmentParts) : text;
       const id =
@@ -796,16 +788,13 @@ export function KabooReferenceInput({ trigger = "@", ...inputProps }: KabooRefer
         id,
         pending.filter((r) => r.transport === "object"),
       );
-      target.addMessage({ id, role: "user", content });
-      void Promise.resolve(target.runAgent()).catch((err) =>
-        console.error("[kaboo] runAgent failed", err),
-      );
+      void send(content, { id }).catch((err) => console.error("[kaboo] send failed", err));
       const root = editorRef.current;
       if (root) root.textContent = "";
       markEmpty();
       close();
     },
-    [pending, agent, inputProps, close, markEmpty, recordMessageReferences],
+    [pending, send, close, markEmpty, recordMessageReferences],
   );
 
   // Tray = staged references not rendered inline (added via `+`).

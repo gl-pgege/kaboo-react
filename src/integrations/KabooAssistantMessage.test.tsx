@@ -37,9 +37,10 @@ function withBinding(
   rootsByMessageId: Map<string, GroupEntry[]>,
   node: ReactNode,
   turnGroupsByMessageId: Map<string, GroupEntry[]> = new Map(),
+  turnRunsByMessageId: Map<string, string[]> = new Map([...turnGroupsByMessageId.keys()].map((id) => [id, ["r1"]])),
 ) {
   return (
-    <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId }}>
+    <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId, turnRunsByMessageId }}>
       {node}
     </TurnBindingProvider>
   );
@@ -104,6 +105,22 @@ describe("KabooAssistantMessage", () => {
       </KabooSlotsProvider>,
     );
     expect(screen.queryByTestId("turn-footer")).toBeNull();
+  });
+
+  it("renders the turn footer for a turn the agent answered without delegating", () => {
+    const slots = {
+      turnFooter: ({ runIds, groups }: { runIds: string[]; groups: GroupEntry[] }) => (
+        <div data-testid="turn-footer">
+          {runIds.join(",")}:{groups.length}
+        </div>
+      ),
+    };
+    render(
+      <KabooSlotsProvider value={slots}>
+        {withBinding(new Map(), <KabooAssistantMessage message={msg("m1")} />, new Map(), new Map([["m1", ["r7"]]]))}
+      </KabooSlotsProvider>,
+    );
+    expect(screen.getByTestId("turn-footer")).toHaveTextContent("r7:0");
   });
 
   it("renders no turn footer at all when the slot is not provided", () => {

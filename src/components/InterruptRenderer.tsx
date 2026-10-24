@@ -1,5 +1,6 @@
 import { useState, type ReactElement } from "react";
 import { ApprovalActions } from "./ApprovalActions";
+import { ValueView } from "./ValueView";
 import { buildAnswerPayload, toFormQuestion } from "../formatters/askUser";
 import type {
   ApprovalReason,
@@ -31,7 +32,9 @@ function ApprovalVariant(props: InterruptRendererProps<ApprovalReason>): ReactEl
       {reason.tool_input != null && (
         <details className="kaboo-interrupt-details">
           <summary>View input</summary>
-          <pre className="kaboo-interrupt-pre">{JSON.stringify(reason.tool_input, null, 2)}</pre>
+          <div className="kaboo-interrupt-pre">
+            <ValueView value={reason.tool_input} />
+          </div>
         </details>
       )}
       <ApprovalActions {...props} />

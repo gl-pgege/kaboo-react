@@ -13,17 +13,24 @@
 
 kaboo-react renders a live, hierarchical view of what your agents are doing —
 sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
-navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
-stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+navigation, questions and approvals. Sub-agents ride the **same AG-UI run
+stream** as the chat, as AG-UI's own `SUBAGENT_*` events, so there is no separate
 endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 
 ## Features
 
 - **Live hierarchical activity** — nested agent/tool cards that stream in as work
-  happens, inside the chat transcript.
+  happens, inside the chat transcript, with what needs the person lifted into
+  the main chat under the agent's name.
 - **Drill-down navigation** — breadcrumb + detail view to explore any sub-agent.
-- **Human-in-the-loop** — approval gates and forms, with N parallel interrupts
-  resolved independently.
+- **Questions and requests** — `useAskUserTool` and `useRequestTool` register
+  the browser's tools, with arguments checked against their schema.
+- **Approvals** — on CopilotKit's `useInterrupt`, with N parallel requests
+  resolved independently, remembered scopes and deadlines.
+- **Canvas hooks** — `useAgentState`, `useLiveToolCalls` and `useAgentPresence`
+  let a canvas follow the agents.
+- **Generative UI** — A2UI, Open Generative UI and MCP Apps pass through to
+  CopilotKit, with sub-agents' surfaces labelled.
 - **Structured renderers** — plug custom UI for schema-shaped agent output.
 - **References & attachments** — files and your own objects (tables, dashboards,
   …) as interactive inline chips, added from one shared **+** / **@** popover.
@@ -37,7 +44,7 @@ endpoint to wire up: kaboo-react is a batteries-included CopilotKit plugin.
 yarn add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.78).
+Peer dependencies: `react`, `react-dom`, and `@copilotkit/react-core` (>= 1.79.1).
 
 Import the stylesheet once, near your app root:
 
@@ -69,20 +76,22 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 }
 ```
 
-That's it — `KabooProvider` nests the three contexts (`KabooActivityProvider`,
-`DrillProvider`, `InterruptBridgeProvider`) plus the built-in `KabooInlineCards`
-and `KabooInterruptHandler`. Disable the auto-mounted handlers with
-`disableInlineCards` / `disableInterruptHandler`, and forward extra CopilotKit
-props via `copilotKitProps`.
+That's it — `KabooProvider` renders `<CopilotKit>` and nests kaboo's contexts
+(`KabooActivityProvider`, `DrillProvider`, the renderer registries) plus the
+built-in `KabooInlineCards` and `KabooInterruptHandler`. It passes
+`properties`, `renderToolCalls`, `renderActivityMessages`, `a2ui` and
+`openGenerativeUI` through to CopilotKit. Disable the auto-mounted handlers with
+`disableInlineCards` / `disableInterruptHandler`, and forward any other
+CopilotKit props via `copilotKitProps`.
 
 ## Core concepts
 
-- **Activity rides the run stream.** The backend emits activity as
-  `ACTIVITY_SNAPSHOT` events on the same AG-UI run stream as the chat, so there is
-  no separate activity endpoint. `KabooActivityProvider` subscribes to the
-  CopilotKit agent and exposes it via `useActivity()`.
-- **Providers nest under `KabooProvider`.** Activity → drill → interrupt bridge,
-  with the built-in handlers mounted inside.
+- **Sub-agents ride the run stream.** The backend streams them as `SUBAGENT_*`
+  events with their tagged text and tool calls, on the same AG-UI run stream as
+  the chat. `KabooActivityProvider` folds them into groups and exposes them via
+  `useActivity()`, live and on replay alike.
+- **Providers nest under `KabooProvider`.** Activity → drill → renderers, with
+  the built-in handlers mounted inside.
 - **Two barrels.** Import framework-agnostic pieces from `kaboo-react`, and the
   CopilotKit-coupled integrations from `@pgege/kaboo-react/copilotkit`.
 - **The `threadId` scopes everything.** Each conversation gets its own
@@ -172,7 +181,7 @@ of every public export is in [docs/api-inventory.md](./docs/api-inventory.md).
 ## Compatibility & versioning
 
 - **React** 18 and 19 (`react` / `react-dom` >= 18 as peer deps).
-- **CopilotKit** `@copilotkit/react-core` >= 1.78 (peer dep), the AG-UI 1.0
+- **CopilotKit** `@copilotkit/react-core` >= 1.79.1 (peer dep), the AG-UI 1.0
   generation; kaboo-react 0.10 covers CopilotKit 1.62 to 1.71.1.
 - Follows [semantic versioning](https://semver.org). See
   [CHANGELOG.md](./CHANGELOG.md).
@@ -208,8 +217,8 @@ MIT — see [LICENSE](./LICENSE).
 
 kaboo-react renders a live, hierarchical view of what your agents are doing —
 sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
-navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
-stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+navigation, questions and approvals. Sub-agents ride the **same AG-UI run
+stream** as the chat, as AG-UI's own `SUBAGENT_*` events, so there is no separate
 endpoint to wire up.
 
 ## Install
@@ -222,7 +231,7 @@ npm install @pgege/kaboo-react
 pnpm add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
+Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.79.1).
 
 Import the stylesheet once, near your app root:
 
@@ -253,10 +262,11 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 ## Next steps
 
 - [Getting started](getting-started.md) — a step-by-step walkthrough.
-- [Concepts](concepts.md) — the data model (`ACTIVITY_SNAPSHOT` → `StreamGroup`).
+- [Concepts](concepts.md) — the data model (sub-agent events → `StreamGroup`) and the canvas hooks.
 - [Theming](theming.md) — CSS variables and `--kaboo-*` tokens.
 - [Structured renderers](structured-renderers.md) — custom UI for schema output.
-- [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
+- [Human-in-the-loop](hitl.md) — questions, requests, approvals, and parallel gates.
+- [Generative UI](generative-ui.md) — A2UI, Open Generative UI and MCP Apps.
 - [Activity panel & drill-down](activity-panel.md) — the activity tree.
 - [CopilotKit subpath](copilotkit-subpath.md) — the `kaboo-react/copilotkit` barrel.
 - [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.
@@ -278,14 +288,14 @@ the whole picture.
 
 !!! note "Compatibility"
     kaboo-react needs **React 18+**, **Node.js 18+**, and
-    **`@copilotkit/react-core` >= 1.78** as peers.
+    **`@copilotkit/react-core` >= 1.79.1** as peers.
 
 This guide wires kaboo-react into a CopilotKit app from scratch.
 
 ## Prerequisites
 
-You need a **CopilotKit runtime endpoint** that streams kaboo activity as
-`ACTIVITY_SNAPSHOT` events on the AG-UI run stream. The
+You need a **CopilotKit runtime endpoint** that streams an agent's sub-agents as
+AG-UI `SUBAGENT_*` events on the run stream. The
 [kaboo-runtime](https://github.com/gl-pgege/kaboo-runtime) package (a CopilotKit
 runtime persistence/orchestration plugin) plus a
 [kaboo-workflows](https://github.com/gl-pgege/kaboo-workflows) backend is the
@@ -407,44 +417,61 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 # Concepts — the data model
 
-How kaboo-react turns an AG-UI stream into the hierarchical activity you see.
+How kaboo-react turns an AG-UI stream into the chat, the agent cards and the
+canvas you see.
 
-## One stream, two views
+## One stream
 
-Activity rides the **same AG-UI run stream** as the chat — there is no second
-endpoint. kaboo-workflows emits `ACTIVITY_SNAPSHOT` events interleaved with the
-normal `TEXT_MESSAGE_*` / `TOOL_CALL_*` events. kaboo-react consumes those
-snapshots and materializes them into a tree of `StreamGroup`s that the chat and
-the activity panel both read from.
+Everything rides the **same AG-UI run stream** as the chat — there is no second
+endpoint. The entry agent's text and tool calls are the chat. Each agent it
+delegates to arrives as AG-UI's own sub-agent events: `SUBAGENT_STARTED`, its
+text, reasoning and tool events tagged with its `subagentRunId`, and
+`SUBAGENT_FINISHED`. kaboo-react folds those into a tree of `StreamGroup`s that
+the chat, the agent cards and the drill-in view all read from. The same fold
+runs live and on replay, so a reload draws the same cards.
 
 ```mermaid
 flowchart LR
-    Stream["AG-UI run stream"] -->|ACTIVITY_SNAPSHOT| Reducer["kaboo-react reducer"]
-    Reducer --> State["ActivityState<br/>(groups keyed by id)"]
-    State -->|useActivity| Chat["KabooMessageView (inline cards)"]
-    State -->|useActivity| Panel["ActivityPanel / drill-down"]
+    Stream["AG-UI run stream"] -->|SUBAGENT_* and tagged events| Fold["kaboo-react fold"]
+    Fold --> State["ActivityState<br/>(groups keyed by subagentRunId)"]
+    State -->|useActivity| Chat["KabooChat (cards in the transcript)"]
+    State -->|useActivity| Panel["drill-in view"]
 ```
 
-## `StreamGroup` — one node of the tree
+## `StreamGroup` — one sub-agent invocation
 
-Each agent run is a `StreamGroup`. The tree is formed by `parentGroup` (a group
-id or `null` for a root). The fields you'll touch most:
+Each invocation is a `StreamGroup`, keyed by its `subagentRunId`. The tree is
+formed by `parentGroup` (a group id or `null` for a top-level group), and each
+top-level group sits in the transcript at the call that started it
+(`toolCallId`). The fields you'll touch most:
 
 | Field | Meaning |
 |-------|---------|
-| `title` / `agentName` | Display title and machine name of the run. |
+| `title` / `agentName` | Display title and machine name of the agent. |
 | `parentGroup` | Parent group id, or `null` for a top-level group. |
-| `status` | `active` \| `completed` \| `error` \| `interrupted`. |
+| `toolCallId` | The delegating call the card sits at. |
+| `status` | `active` \| `completed` \| `interrupted` \| `error` \| `stopped`. |
 | `task` | What this agent was asked to do (shown atop its card). |
-| `timeline` | Interleaved text/tool entries in order. |
-| `tools` | Every tool call in the group, in call order. |
-| `tokens` | Accumulated streamed text. |
-| `structuredOutput` / `outputSchemaName` | Schema-shaped output + which renderer to use. |
-| `interrupt` | The open HITL interrupt when the group is paused. |
-| `turnId` | Stable per user turn (survives interrupt/resume) — prefer it over `runId` for turn scoping. |
+| `timeline` | Interleaved text and tool entries, in order. |
+| `tools` | Every tool call in the group, in call order, with `toolLabel` when the workflow names it. |
+| `structuredOutput` / `outputSchemaName` | Schema-shaped output, and which renderer draws it. |
+| `usage` | The agent's token usage. |
+| `runIds` | Every run that streamed into the group: a paused agent resumes in a new run. |
+| `traceId` | The agent's trace, for feedback scores. |
 
-Inline flags (`inlineChatOwner`, `isChatReply`) let the chat avoid drawing a
-card's text twice when the agent's reply already appears in the chat bubble.
+`ActivityState` also holds `usageByRun` and `traceByRun`, from each run's
+`RUN_FINISHED`.
+
+## What the transcript shows
+
+- **A delegate is a card** at the call that started it, not a tool row. Its own
+  tool calls render inside it, with the same renderers as the chat.
+- **What needs the person is lifted into the transcript.** A delegate's
+  question, request or approval shows in the main chat, labelled with the agent,
+  while it waits; once answered it stays in the agent's card.
+- **Tool calls render as they stream.** Arguments arrive as the model writes
+  them, so a renderer can draw a query or a widget before the call runs
+  ([Custom tool cards](tool-cards.md)).
 
 ## Reading the tree
 
@@ -461,7 +488,33 @@ export function RootCount() {
 ```
 
 See [Activity panel & drill-down](activity-panel.md) for the components that
-render this tree, and [Human-in-the-loop](hitl.md) for how `interrupt` surfaces.
+render this tree, and [Human-in-the-loop](hitl.md) for questions and approvals.
+
+## Shared state and the canvas
+
+The agents' shared state arrives as `STATE_SNAPSHOT` and `STATE_DELTA` events.
+Three hooks let a canvas follow the agent:
+
+| Hook | Returns |
+|------|---------|
+| `useAgentState(select)` | A slice of the shared state, read again whenever the state changes. |
+| `useLiveToolCalls(match)` | The calls in flight whose tool name matches, with their arguments so far — for ghost widgets while a plot call streams. |
+| `useAgentPresence()` | Which sub-agents are working now, and on which tool. |
+
+```tsx
+import { useAgentPresence, useAgentState, useLiveToolCalls } from "@pgege/kaboo-react";
+
+export function CanvasStatus() {
+  const dashboards = useAgentState((state) => Object.keys((state.kaboo_workspace as { dashboards?: object })?.dashboards ?? {}));
+  const plotting = useLiveToolCalls(/___plot_widgets$/);
+  const working = useAgentPresence();
+  return (
+    <p>
+      {dashboards.length} dashboards · {plotting.length} plotting · {working.map((agent) => agent.title).join(", ")}
+    </p>
+  );
+}
+```
 
 ## Where it sits in the stack
 
@@ -620,15 +673,17 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 ## How a renderer is selected
 
-When an activity group carries both `structuredOutput` (the data) and
-`outputSchemaName` (the key), kaboo-react looks up `renderers[outputSchemaName]`:
+A sub-agent's `SUBAGENT_FINISHED` carries its result and, for a structured
+output, the schema's name (`metadata.outputSchema`, kaboo-workflows 0.29 or
+later). kaboo-react keeps them on the group as `structuredOutput` (the data) and
+`outputSchemaName` (the key), and looks up `renderers[outputSchemaName]`:
 
 - **Match found** → your component renders the data.
-- **No match** → a collapsible "Structured output (`<schemaName>`)" JSON view is
-  shown instead.
+- **No match** → a collapsible "Structured output (`<schemaName>`)" view shows
+  the data as a readable list.
 
-This means you can add renderers incrementally: unrendered schemas degrade
-gracefully to JSON.
+This means you can add renderers incrementally: unrendered schemas still read
+well without one.
 
 To replace how a *tool call* draws rather than how a result object draws, see
 [custom tool cards](tool-cards.md).
@@ -639,90 +694,28 @@ To replace how a *tool call* draws rather than how a result object draws, see
 
 # Custom tool cards
 
-By default every tool call draws as a `ToolRow` — name, a summarized input, a
-collapsible result. When a tool means something in your app (a SQL query, a
-document it wrote, a ticket it opened), you can replace that row with your own
+By default every tool call draws as a `ToolRow` — name or label, a summarized
+input, a readable result. When a tool means something in your app (a SQL query,
+a document it wrote, a ticket it opened), you can replace that row with your own
 card: your layout, your click handlers, your drawer.
 
-## The two surfaces
+## Register once
 
-A tool call can appear in two places, and each has its own registration point.
-Register both if a tool can be called by a plain agent *and* from inside a
-delegate or swarm.
-
-| Where | What draws it | How you override |
-|-------|---------------|------------------|
-| The chat transcript | CopilotKit's tool render slot | `useRenderTool({ name, render })` |
-| Activity timelines — agent cards, drill views, sub-agent activity | kaboo's `Timeline` | `toolRenderers` on `KabooProvider` |
-
-## Timelines: `toolRenderers`
-
-Keyed by exact tool name. A match replaces the built-in row everywhere a
-`Timeline` draws that tool, at any nesting depth:
-
-```tsx
-import { KabooProvider } from "@pgege/kaboo-react";
-import type { ToolRenderers, ToolRendererProps } from "@pgege/kaboo-react";
-
-declare function openQueryDrawer(toolCallId: string): void;
-
-function RunSqlCard({ tool }: ToolRendererProps) {
-  const input = tool.toolInput as { query?: string } | undefined;
-  return (
-    <button
-      type="button"
-      className="my-tool-card"
-      disabled={tool.status === "running"}
-      onClick={() => openQueryDrawer(tool.toolUseId)}
-    >
-      <code>{input?.query ?? "…"}</code>
-      <span>{tool.status === "running" ? "Running…" : "View results"}</span>
-    </button>
-  );
-}
-
-const toolRenderers: ToolRenderers = { run_sql: RunSqlCard };
-
-export function App({ agent, threadId }: { agent: string; threadId: string }) {
-  return (
-    <KabooProvider
-      runtimeUrl="/api/copilotkit"
-      agent={agent}
-      threadId={threadId}
-      toolRenderers={toolRenderers}
-    >
-      <div />
-    </KabooProvider>
-  );
-}
-```
-
-`ToolRendererProps` carries one `tool`:
-
-| Field | Use it for |
-|-------|-----------|
-| `toolUseId` | The stable id. Correlate with your own state, and key anything you open. |
-| `toolName` | The machine name that matched. |
-| `toolInput` | The raw arguments, as sent. Cast to your tool's shape. |
-| `toolResult` | The raw result once it lands; `undefined` while running. |
-| `status` | `running` / `done` / `success` / `error` / `cancelled`. |
-
-An approval gate on a gated tool still renders under your card, so a custom
-renderer never hides a pending question.
-
-## The transcript: `useRenderTool`
-
-kaboo registers a wildcard renderer that draws any plain tool call inline in the
-chat. A renderer registered for an exact name takes precedence over it:
+Register a renderer with CopilotKit — `useRenderTool`, or `renderToolCalls` on
+`KabooProvider` — and it draws the tool everywhere: in the chat transcript, and
+inside every sub-agent's card and drill view, at any depth.
 
 ```tsx no-verify
 import { useRenderTool } from "@copilotkit/react-core/v2";
 
-function RunSqlTranscriptCard() {
+declare function openQueryDrawer(toolCallId: string): void;
+
+function RunSqlCard() {
   useRenderTool({
     name: "run_sql",
-    render: ({ toolCallId, args, status, result }) => (
+    render: ({ toolCallId, args, status }) => (
       <button type="button" onClick={() => openQueryDrawer(toolCallId)}>
+        <code>{(args as { query?: string }).query ?? "…"}</code>
         {status === "complete" ? "View results" : "Running…"}
       </button>
     ),
@@ -731,10 +724,57 @@ function RunSqlTranscriptCard() {
 }
 ```
 
-Mount it anywhere inside `KabooProvider`. Sharing one card between the two
-surfaces is usually a matter of writing the card against your own props and
-adapting at each registration, since the transcript hands you CopilotKit's
-render props and the timeline hands you a `ToolCall`.
+Mount it anywhere inside `KabooProvider`. A call that starts a sub-agent is drawn
+as that agent's card instead, whatever is registered for its name.
+
+## Draw it while it streams
+
+Tool arguments arrive as the model writes them — from sub-agents as from the
+agent answering the chat — so a card can show the SQL as it's written, or a
+widget's outline before it's plotted:
+
+- **`inProgress`** — `args` is partial and grows with each update.
+- **`executing`** — the arguments are complete and the tool is running.
+- **`complete`** — `result` holds what the tool returned.
+
+Render every status. A card that reads the result unconditionally flashes empty
+while the call streams.
+
+## The fallback: `toolRenderers`
+
+`toolRenderers` on `KabooProvider` still draws a tool inside sub-agent timelines
+when nothing is registered with CopilotKit for its name. It hands you kaboo's
+`ToolCall` — `toolUseId`, `toolName`, `toolLabel`, `toolInput`, `toolResult`,
+`status` — rather than CopilotKit's render props:
+
+```tsx
+import { KabooProvider } from "@pgege/kaboo-react";
+import type { ToolRenderers, ToolRendererProps } from "@pgege/kaboo-react";
+
+declare function openQueryDrawer(toolCallId: string): void;
+
+function RunSqlRow({ tool }: ToolRendererProps) {
+  const input = tool.toolInput as { query?: string } | undefined;
+  return (
+    <button type="button" disabled={tool.status === "running"} onClick={() => openQueryDrawer(tool.toolUseId)}>
+      <code>{input?.query ?? "…"}</code>
+    </button>
+  );
+}
+
+const toolRenderers: ToolRenderers = { run_sql: RunSqlRow };
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider runtimeUrl="/api/copilotkit" agent={agent} threadId={threadId} toolRenderers={toolRenderers}>
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
+An approval on a gated tool still renders with your card, so a custom renderer
+never hides a pending question.
 
 ## Making a card interactive
 
@@ -742,16 +782,12 @@ The card is ordinary React inside your app's tree, so a click handler may open a
 drawer, route, or mutate — nothing has to travel through the agent. Two things
 are worth getting right:
 
-- **Key by `toolUseId`, not by tool name or index.** A tool can be called many
+- **Key by the call's id, not by tool name or index.** A tool can be called many
   times in one run, and a timeline re-renders as the run streams.
-- **Render every status.** `running` arrives before `toolInput` is complete and
-  long before `toolResult` exists, so a card that reads the result
-  unconditionally will flash empty. Treat the result as the last state, not the
-  only one.
-
-If the card needs data the tool call doesn't carry, fetch it in the card from
-your own API by the ids in `toolInput` rather than widening the tool's result —
-the result is transcript, and it is replayed on every reconnect.
+- **Fetch by reference.** If the card needs data the tool call doesn't carry,
+  fetch it in the card from your own API by the ids in the arguments rather than
+  widening the tool's result — the result is transcript, and it is replayed on
+  every reconnect.
 
 ## Choosing between a tool card and structured output
 
@@ -759,6 +795,11 @@ A tool card is right when the *call* is the thing worth showing. When the agent
 is producing a result object with a schema — a report, a risk matrix, a table —
 use a [structured renderer](structured-renderers.md) instead, keyed by the
 schema name rather than the tool name.
+
+Lab scenarios:
+[plain-dashboard](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/plain-dashboard.yaml)
+and
+[delegate-dashboard](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/delegate-dashboard.yaml).
 
 ---
 
@@ -999,17 +1040,32 @@ a resolver tool, so both stacks agree without translation.
 
 # Human-in-the-loop
 
-When a run pauses for the person, kaboo-react shows the request in the chat and
-resumes the run with the answer. There are two built-in kinds of request, on the
-same mechanism: a **question** the agent asks with `ask_user`, and a tool call
-waiting for **approval**. Apps add their own kinds (a file picker, a data
-source picker) with their own renderers.
+When an agent needs the person, kaboo-react shows the request in the chat and
+the agent carries on with the answer. There are two mechanisms:
+
+- **Questions and requests** are tools the browser runs. `useAskUserTool`
+  registers `ask_user`; `useRequestTool` registers any other request (a file,
+  a data source) with your own panel. An agent calls them only when its
+  workflow allows it (kaboo-workflows' `client_tools`), delegates included.
+- **Approvals** pause the run on an interrupt, and the built-in
+  `KabooInterruptHandler` draws the card on CopilotKit's `useInterrupt`. Apps
+  add their own interrupt kinds with their own renderers.
 
 A request waits with no time limit. The pause lives in the stored conversation,
 so the person can close the tab, come back days later on another device, and
 answer; if they send a message instead, the request is skipped.
 
 ## Questions
+
+```tsx
+import { useAskUserTool } from "@pgege/kaboo-react";
+import { KabooChat } from "@pgege/kaboo-react/copilotkit";
+
+export function Chat() {
+  useAskUserTool();
+  return <KabooChat />;
+}
+```
 
 Questions are multiple choice, like Cursor's:
 
@@ -1021,7 +1077,65 @@ Questions are multiple choice, like Cursor's:
 
 The answer is a `{question: answer}` map — a string, a list for multi-select,
 the person's own words for Other — and the answered Q&A stays in the
-transcript.
+transcript. A call whose arguments don't match the tool's schema is answered
+with an error naming the problem, so the model asks again properly instead of
+the person seeing a broken card.
+
+## Requests
+
+```tsx
+import { toolSchema, useRequestTool, type KabooRequestRenderProps } from "@pgege/kaboo-react";
+
+interface DatasourcesArgs {
+  reason: string;
+  kinds: string[];
+}
+
+const requestDatasources = toolSchema<DatasourcesArgs>(
+  {
+    type: "object",
+    properties: { reason: { type: "string" }, kinds: { type: "array", items: { type: "string" } } },
+    required: ["reason", "kinds"],
+  },
+  (value) => (Array.isArray((value as { kinds?: unknown })?.kinds) ? [] : ["kinds must be a list"]),
+);
+
+function DatasourcesPanel({ args, status, answer, skip }: KabooRequestRenderProps<DatasourcesArgs>) {
+  if (status !== "waiting") return null;
+  return (
+    <div className="kaboo-interrupt">
+      <p>{args.reason}</p>
+      <button onClick={() => answer({ datasources: args.kinds })}>Use all</button>
+      <button onClick={skip}>Skip</button>
+    </div>
+  );
+}
+
+export function BrowserTools() {
+  useRequestTool({
+    name: "request_datasources",
+    description: "Ask the person to pick data sources and wait for the choice.",
+    parameters: requestDatasources,
+    render: DatasourcesPanel,
+  });
+  return null;
+}
+```
+
+`parameters` takes any Standard Schema, such as a zod schema, or one built with
+`toolSchema`. The panel gets the call's `args`, its `status`, and `answer` and
+`skip`. An object passed to `answer` is sent as JSON; `skip` tells the agent the
+person declined. Define the panel outside the component that registers it, so it
+keeps its state.
+
+## Several requests at once
+
+One agent's questions show as one card that steps through them. When several
+agents wait — parallel delegates asking at once — their requests show one at a
+time, in the order they were asked, and the next waits under "Up next" until the
+one above is answered. A delegate's request shows in the main transcript,
+labelled with the agent, while it waits; once answered, the Q&A stays in that
+agent's card.
 
 ## Approvals
 
@@ -1040,6 +1154,7 @@ input") and the options the request offers:
   passed, only **Dismiss** remains.
 
 With two or more approvals waiting, **Approve all** and **Deny all** appear.
+A delegate's approval shows at its real tool row, labelled with the agent.
 
 A tool that enforces its own approvals (kaboo-workflows'
 `interrupt.tool_approvals`) raises the same approval request, so the same card
@@ -1052,7 +1167,6 @@ the same answers, and the host forwards the decision to the tool's service.
 |---|---|---|
 | approves | `onResolve({ status: "approved", scope })` | runs the call |
 | denies | `onResolve({ status: "cancelled", reason? })` | cancels it and reads the reason |
-| answers questions | `onResolve({ "<question>": answer })` | reads the answers |
 | skips or dismisses | `onCancel()` | cancels it as skipped |
 
 A denial is sent as `cancelled` so an agent that predates denial reasons can
@@ -1061,16 +1175,15 @@ never mistake it for an approval.
 The answers resume the turn in a new run, and the chat still shows one turn:
 the `turnFooter` slot renders after the turn's last reply, and its `runIds`
 list every run the turn spanned, so anything your app keys by run (files or
-versions the turn made) is found under one of them. This needs kaboo-workflows
-0.28.2 or later, whose activity groups record each run that resumed them.
+versions the turn made) is found under one of them.
 
 ## Moving on
 
-If the person sends a message while a question or approval waits, what was
-waiting is skipped and the agent answers the message. You do not need to block
-the composer: the AG-UI client refuses to start a run while requests are open,
-so the built-in handler drops the stale requests just before the new message's
-run starts, and the agent closes them as skipped.
+If the person sends a message while a question, request or approval waits, what
+was waiting is skipped and the agent answers the message. You do not need to
+block the composer: sending through `KabooChat` or `useKabooSend` answers each
+open request with "Skipped: the person sent a message instead of answering" and
+cancels each open approval in the same run as the new message.
 
 ## When an answer can't be recorded
 
@@ -1099,40 +1212,6 @@ The reason is the message of the run's `RUN_ERROR`, which kaboo-runtime takes
 from the error the host's `onDecision` throws, so the host should throw one a
 person can act on. A run that fails after the agent started working is left to
 the chat's usual error handling.
-
-## Inline vs chat-slot placement
-
-- If a request is anchored to a tool call that is still visible on screen, the
-  prompt renders **inline at that tool's position**, in chronological order.
-- Otherwise it renders in a fallback slot in the chat.
-
-You don't configure this — it's automatic — but it's why prompts appear "in the
-right place" rather than floating on top of the turn.
-
-## The InterruptBridge
-
-The bridge holds the open requests, and which of them were already answered, so
-any surface can render or count them. `useInterruptFor(toolCallId)` finds the
-request anchored to a tool call; `useInterruptBridge()` gives the whole set, for
-example for a "waiting for you" badge:
-
-```tsx
-import { useInterruptBridge } from "@pgege/kaboo-react";
-
-export function WaitingBadge() {
-  const { active, answered } = useInterruptBridge();
-  const waiting = active.filter((i) => !answered.has(i.id)).length;
-  return waiting > 0 ? <span>{waiting} waiting for you</span> : null;
-}
-```
-
-A custom card that draws its own gate can also read `failure`, the reason the
-last answers never reached the agent (see
-[When an answer can't be recorded](#when-an-answer-cant-be-recorded)), and
-`clearAnswered()` forgets every answer so the requests can be answered again.
-
-`InterruptBridgeProvider` and `InterruptBridgePublisher` are the lower-level
-pieces; both are wired for you by `KabooProvider` + `KabooInterruptHandler`.
 
 ## Choosing the approval options
 
@@ -1163,17 +1242,14 @@ The built-in cards read the theme tokens and use a stable set of class names, so
 most apps restyle them rather than replace them — see
 [Theming](theming.md#questions-and-approvals).
 
-## Custom renderers
-
-`interruptRenderers` replaces the UI for a request kind: the built-in `approval`
-and `form`, or an app's own kind. A renderer receives `InterruptRendererProps`
-(the `reason` plus `onResolve`/`onCancel`), typed with the reason it handles.
+## Custom cards
 
 ### A custom approval card that keeps the standard options
 
-Render your own summary and reuse `ApprovalActions` (or `useApprovalDecision`
-for your own buttons), so the scopes, deny reason, deadline and batch behaviour
-stay standard:
+`interruptRenderers` replaces the UI for an interrupt kind: the built-in
+`approval`, or an app's own kind. Render your own summary and reuse
+`ApprovalActions` (or `useApprovalDecision` for your own buttons), so the
+scopes, deny reason, deadline and batch behaviour stay standard:
 
 ```tsx
 import { ApprovalActions, KabooProvider } from "@pgege/kaboo-react";
@@ -1204,18 +1280,19 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 ### A custom question card
 
-Read questions with `toFormQuestion` (it also reads the shape older agents send)
-and answer with `buildAnswerPayload`, so the agent and the answered Q&A card
+Pass `render` to `useAskUserTool`. Read questions with `toFormQuestion` and
+answer with `buildAnswerPayload`, so the agent and the answered Q&A card
 receive the same answer as from the built-in card:
 
 ```tsx
 import { useState } from "react";
-import { buildAnswerPayload, toFormQuestion } from "@pgege/kaboo-react";
-import type { FormReason, InterruptRendererProps } from "@pgege/kaboo-react";
+import { buildAnswerPayload, toFormQuestion, useAskUserTool } from "@pgege/kaboo-react";
+import type { AskUserArgs, KabooRequestRenderProps } from "@pgege/kaboo-react";
 
-export function ChipQuestions({ reason, onResolve, onCancel }: InterruptRendererProps<FormReason>) {
-  const questions = reason.questions.map(toFormQuestion);
+function ChipQuestions({ args, status, answer, skip }: KabooRequestRenderProps<AskUserArgs>) {
+  const questions = args.questions.map(toFormQuestion);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  if (status !== "waiting") return null;
   return (
     <div>
       {questions.map((q, idx) => (
@@ -1228,39 +1305,45 @@ export function ChipQuestions({ reason, onResolve, onCancel }: InterruptRenderer
           ))}
         </fieldset>
       ))}
-      <button onClick={() => onResolve(buildAnswerPayload(questions, answers))}>Send</button>
-      <button onClick={onCancel}>Skip</button>
+      <button onClick={() => answer(buildAnswerPayload(questions, answers))}>Send</button>
+      <button onClick={skip}>Skip</button>
     </div>
   );
 }
+
+export function Questions() {
+  useAskUserTool({ render: ChipQuestions });
+  return null;
+}
 ```
 
-### An app's own request kind
+### An app's own interrupt kind
 
-A tool that needs something other than an answer — a file, a data source —
-raises its own kind (`type: "files"`), and the app registers a renderer for it.
+A server tool that needs something only the server can check raises its own
+interrupt kind (`type: "account"`), and the app registers a renderer for it.
 Its fields arrive on `reason`. A kind with no registered renderer gets a minimal
-card with its `message` and Skip, so the chat never stalls.
+card with its `message` and Skip, so the chat never stalls. Prefer a browser
+request (`useRequestTool`) when the server needs nothing but the answer.
 
 ```tsx
 import { KabooProvider } from "@pgege/kaboo-react";
 import type { InterruptRendererProps } from "@pgege/kaboo-react";
 
-interface FilesRequest {
+interface AccountRequest {
   type: string;
   message?: string;
-  accept?: string[];
+  accounts?: string[];
 }
 
-function FilesPicker({ reason, onResolve, onCancel }: InterruptRendererProps<FilesRequest>) {
+function AccountPicker({ reason, onResolve, onCancel }: InterruptRendererProps<AccountRequest>) {
   return (
     <div>
       <p>{reason.message}</p>
-      <input
-        type="file"
-        accept={reason.accept?.join(",")}
-        onChange={(e) => onResolve({ files: [...(e.target.files ?? [])].map((f) => f.name) })}
-      />
+      {(reason.accounts ?? []).map((account) => (
+        <button key={account} onClick={() => onResolve({ account })}>
+          {account}
+        </button>
+      ))}
       <button onClick={onCancel}>Skip</button>
     </div>
   );
@@ -1272,7 +1355,7 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
       runtimeUrl="/api/copilotkit"
       agent={agent}
       threadId={threadId}
-      interruptRenderers={{ files: FilesPicker }}
+      interruptRenderers={{ account: AccountPicker }}
     >
       <div />
     </KabooProvider>
@@ -1299,6 +1382,14 @@ export function AssistantPermissions({
   return <PermissionList grants={grants} onRevoke={revoke} />;
 }
 ```
+
+Lab scenarios:
+[question-several](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/question-several.yaml),
+[question-parallel](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/question-parallel.yaml),
+[request-datasources](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/request-datasources.yaml),
+[approval-subagent](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/approval-subagent.yaml)
+and
+[approval-grant](https://github.com/gl-pgege/kaboo-docs/blob/main/examples/kaboo-workflows-demo/scenarios/approval-grant.yaml).
 
 ---
 
@@ -1415,15 +1506,16 @@ explicit and keeps the main barrel usable in more contexts.
 
 | Export | Purpose | Wiring |
 | --- | --- | --- |
-| `KabooMessageView` | Live in-chat member cards, from the first agent. | `CopilotChat` `messageView` slot. |
+| `KabooChat` | `CopilotChat` with kaboo's transcript and the sub-agent drill-down; its composer sends through `useKabooSend`, so a new message skips open requests. | Render it in place of `CopilotChat`. |
+| `KabooMessageView` | Live in-chat member cards, and what needs the person lifted into the transcript. | `CopilotChat` `messageView` slot. |
 | `KabooAssistantMessage` | Cards above a settled assistant reply. | Used by `KabooMessageView` (assistant-message slot). |
 | `KabooInlineCards` | Delegate sub-agent cards at the tool-call position. | Auto-mounted by `KabooProvider`. |
-| `KabooInterruptHandler` | Human-in-the-loop handler. | Auto-mounted by `KabooProvider`. |
-| `KabooAskUser` | `ask_user` questions inline: the live form while waiting, then the answers. | Used by the interrupt handler. |
+| `KabooInterruptHandler` | Approvals and an app's own interrupt kinds, on `useInterrupt`. | Auto-mounted by `KabooProvider`. |
 | `KabooToolRender` | Wildcard tool renderer. | Used by `KabooInlineCards`. |
+| `withSubagentLabel` | Wraps an activity renderer (an A2UI surface) so a sub-agent's surface is labelled with the agent. | Pass to `renderActivityMessages`. |
 
-Most apps only import **`KabooMessageView`** directly — the rest are auto-mounted
-by `KabooProvider`.
+Most apps only render **`KabooChat`** — the rest are auto-mounted by
+`KabooProvider`.
 
 ## Wiring `KabooMessageView`
 
@@ -1482,18 +1574,18 @@ Without it, cards, tabs, and the activity panel have no layout or theme. See
 
 ## The activity tree is empty
 
-Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
+Groups come from `SUBAGENT_*` events on the AG-UI run stream. If
 `useActivity()` returns no groups:
 
-- Confirm the backend actually emits activity — an agent served by
-  [kaboo-workflows](https://gl-pgege.github.io/kaboo-workflows/) does; a stock
-  CopilotKit agent does not.
+- Confirm the agent delegates — a plain agent with no sub-agents has no groups;
+  its work is the chat itself.
+- Confirm the backend emits sub-agent events — an agent served by
+  [kaboo-workflows](https://gl-pgege.github.io/kaboo-workflows/) 0.29 or later
+  does.
 - Confirm `KabooProvider`'s `runtimeUrl` points at that backend and the request
   isn't blocked (check the network tab / dev-proxy). The
   [minimal example](https://github.com/gl-pgege/kaboo-react/tree/main/examples/minimal)
   proxies `/api` to `http://localhost:4000`.
-- A plain-agent entry renders inline in the chat (`inlineChatOwner`), so you may
-  see cards inside the chat rather than a separate panel — that's expected.
 
 ## Approval cards stay "Response submitted"
 
@@ -1507,7 +1599,7 @@ Pair it with kaboo-runtime 0.7.1 or later, which opens such runs with
 
 ## Peer / version errors
 
-kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)
+kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.79.1**)
 as peers. Install/upgrade them if you see missing-module or hook-mismatch
 errors:
 
@@ -1515,7 +1607,7 @@ errors:
 yarn add react react-dom @copilotkit/react-core
 ```
 
-A CopilotKit version below 1.78 can cause `KabooProvider` / `CopilotChat`
+A CopilotKit version below 1.79.1 can cause `KabooProvider` / `CopilotChat`
 mismatches — align to a supported version, or stay on kaboo-react 0.10 for
 CopilotKit 1.62 to 1.71.1.
 
@@ -1544,6 +1636,97 @@ The kaboo libraries can be upgraded in any order: this release reads what older
 agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
+
+## 0.12
+
+0.12 reads AG-UI's own events: sub-agents as `SUBAGENT_*` events, questions as
+tools the browser runs, approvals as native interrupts. Upgrade the three
+libraries together: kaboo-workflows 0.29, kaboo-runtime 0.8 and kaboo-react 0.12.
+It needs CopilotKit 1.79.1 or later:
+
+```diff
+- "@copilotkit/react-core": ">=1.78.0 <2"
++ "@copilotkit/react-core": ">=1.79.1 <2"
+```
+
+### Cards come from sub-agent events
+
+**Who:** everyone, and code that reads `useActivity()`.
+
+The groups are folded from `SUBAGENT_*` events and the events tagged with their
+`subagentRunId`, live and on replay alike. The entry agent has no group any more
+(`inlineChatOwner` is gone): its work is the chat. `StreamGroup.tokens` and the
+embedded `tool` on timeline entries are removed — read the timeline's text
+entries, and resolve tool entries with `resolveTimelineTool`.
+`applyActivityPatch` is removed. `usageByRun` and `traceByRun` now come from
+each run's `RUN_FINISHED`, and a group's `traceId` from its `SUBAGENT_STARTED`.
+
+### Questions and requests are tools the browser runs
+
+**Who:** apps with questions, file or data-source requests, or a custom question
+card.
+
+Register the tools; an agent calls them when its workflow's `client_tools`
+allow it:
+
+```diff
+- <KabooProvider ...>  {/* KabooAskUser answered ask_user interrupts */}
++ function BrowserTools() {
++   useAskUserTool();
++   useRequestTool({ name: "request_files", description, parameters, render: FilesPanel });
++   return null;
++ }
+```
+
+`KabooAskUser` is removed. A custom question card moves from
+`interruptRenderers={{ form: Card }}` to `useAskUserTool({ render: Card })`, and
+receives `args`, `status`, `answer` and `skip` instead of `reason`, `onResolve`
+and `onCancel`. Pre-0.27 question shapes (`type: "checkbox"`, `input_type`) are no
+longer read. See [Human-in-the-loop](hitl.md).
+
+### Approvals render on CopilotKit's `useInterrupt`
+
+**Who:** apps that used the InterruptBridge.
+
+`InterruptBridgeProvider`, `InterruptBridgePublisher`, `useInterruptBridge` and
+`useInterruptFor` are removed. `KabooInterruptHandler` draws approvals and your
+own interrupt kinds from CopilotKit's `useInterrupt`; `interruptRenderers`,
+`approvalScopes` and `onInterruptError` work as before. Continuation pauses are
+no longer resolved, because kaboo-workflows 0.29 no longer sends them.
+
+### `KabooProvider` passes generative UI through
+
+**Who:** apps that set CopilotKit props through `copilotKitProps`.
+
+`properties`, `renderToolCalls`, `renderActivityMessages`, `a2ui` and
+`openGenerativeUI` are props of `KabooProvider` now:
+
+```diff
+- <KabooProvider runtimeUrl="/api/copilotkit" agent="kaboo" copilotKitProps={{ properties }}>
++ <KabooProvider runtimeUrl="/api/copilotkit" agent="kaboo" properties={properties}>
+```
+
+### The turn footer renders for every turn
+
+**Who:** apps with a `turnFooter`.
+
+The footer renders after every turn's last reply, including a turn the agent
+answered without delegating; its `groups` is empty then. `runIds` lists every run
+since the person's message.
+
+### New
+
+- **`KabooChat`** — the chat with kaboo's transcript and drill-down, whose
+  composer sends through **`useKabooSend`**, so a new message skips open requests.
+- **`useAgentState`, `useLiveToolCalls`, `useAgentPresence`** for canvases
+  ([Concepts](concepts.md#shared-state-and-the-canvas)).
+- **`withSubagentLabel`** labels a sub-agent's generative UI surface
+  ([Generative UI](generative-ui.md)).
+- **Tool renderers registered with CopilotKit** draw inside sub-agent cards too
+  ([Custom tool cards](tool-cards.md)).
+- **Tool labels and structured outputs** from kaboo-workflows 0.29 show on
+  sub-agents' cards.
+- The package's CommonJS build has its own type declarations.
 
 ## 0.11.3
 
@@ -1771,13 +1954,14 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 
 - [`ActivityPanel`](api/index/functions/ActivityPanel.md)
 - [`AgentCard`](api/index/functions/AgentCard.md)
-- [`applyActivityPatch`](api/index/functions/applyActivityPatch.md)
 - [`ApprovalActions`](api/index/functions/ApprovalActions.md)
+- [`AskUserPanel`](api/index/functions/AskUserPanel.md)
 - [`attachmentToInputContent`](api/index/functions/attachmentToInputContent.md)
 - [`buildAnswerPayload`](api/index/functions/buildAnswerPayload.md)
 - [`buildAttachmentsConfig`](api/index/functions/buildAttachmentsConfig.md)
 - [`buildUserContent`](api/index/functions/buildUserContent.md)
 - [`cachedShare`](api/index/functions/cachedShare.md)
+- [`checkArguments`](api/index/functions/checkArguments.md)
 - [`directChildren`](api/index/functions/directChildren.md)
 - [`DrillDetailView`](api/index/functions/DrillDetailView.md)
 - [`DrillProvider`](api/index/functions/DrillProvider.md)
@@ -1786,8 +1970,6 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`formatToolInput`](api/index/functions/formatToolInput.md)
 - [`formatToolResult`](api/index/functions/formatToolResult.md)
 - [`GlassTabs`](api/index/functions/GlassTabs.md)
-- [`InterruptBridgeProvider`](api/index/functions/InterruptBridgeProvider.md)
-- [`InterruptBridgePublisher`](api/index/functions/InterruptBridgePublisher.md)
 - [`InterruptRenderer`](api/index/functions/InterruptRenderer.md)
 - [`InterruptRenderersProvider`](api/index/functions/InterruptRenderersProvider.md)
 - [`isUploadProvider`](api/index/functions/isUploadProvider.md)
@@ -1800,6 +1982,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`mintReferenceId`](api/index/functions/mintReferenceId.md)
 - [`normalizeResult`](api/index/functions/normalizeResult.md)
 - [`objectToStateEntry`](api/index/functions/objectToStateEntry.md)
+- [`openRequestCalls`](api/index/functions/openRequestCalls.md)
 - [`PermissionList`](api/index/functions/PermissionList.md)
 - [`referenceMarker`](api/index/functions/referenceMarker.md)
 - [`ReferencesProvider`](api/index/functions/ReferencesProvider.md)
@@ -1812,20 +1995,25 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`toFormQuestion`](api/index/functions/toFormQuestion.md)
 - [`ToolRenderersProvider`](api/index/functions/ToolRenderersProvider.md)
 - [`ToolRow`](api/index/functions/ToolRow.md)
+- [`toolSchema`](api/index/functions/toolSchema.md)
 - [`topLevelGroups`](api/index/functions/topLevelGroups.md)
 - [`TurnFeedback`](api/index/functions/TurnFeedback.md)
 - [`uploadFileToReference`](api/index/functions/uploadFileToReference.md)
 - [`uploadProvider`](api/index/functions/uploadProvider.md)
 - [`useActivity`](api/index/functions/useActivity.md)
+- [`useAgentPresence`](api/index/functions/useAgentPresence.md)
+- [`useAgentState`](api/index/functions/useAgentState.md)
 - [`useApprovalDecision`](api/index/functions/useApprovalDecision.md)
 - [`useApprovalScopes`](api/index/functions/useApprovalScopes.md)
+- [`useAskUserTool`](api/index/functions/useAskUserTool.md)
 - [`useDrill`](api/index/functions/useDrill.md)
-- [`useInterruptBridge`](api/index/functions/useInterruptBridge.md)
-- [`useInterruptFor`](api/index/functions/useInterruptFor.md)
 - [`useInterruptRenderer`](api/index/functions/useInterruptRenderer.md)
+- [`useKabooSend`](api/index/functions/useKabooSend.md)
 - [`useKabooSlots`](api/index/functions/useKabooSlots.md)
+- [`useLiveToolCalls`](api/index/functions/useLiveToolCalls.md)
 - [`useMessageMeta`](api/index/functions/useMessageMeta.md)
 - [`useReferences`](api/index/functions/useReferences.md)
+- [`useRequestTool`](api/index/functions/useRequestTool.md)
 - [`useToolRenderer`](api/index/functions/useToolRenderer.md)
 - [`useTurnFeedback`](api/index/functions/useTurnFeedback.md)
 - [`useTurnGroups`](api/index/functions/useTurnGroups.md)
@@ -1833,20 +2021,27 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 
 ### Variables
 
+- [`ASK_USER_DESCRIPTION`](api/index/variables/ASK_USER_DESCRIPTION.md)
+- [`ASK_USER_TOOL`](api/index/variables/ASK_USER_TOOL.md)
+- [`askUserParameters`](api/index/variables/askUserParameters.md)
 - [`MESSAGE_META_EVENT`](api/index/variables/MESSAGE_META_EVENT.md)
+- [`MOVED_ON_ANSWER`](api/index/variables/MOVED_ON_ANSWER.md)
 - [`REFERENCE_METADATA_KEYS`](api/index/variables/REFERENCE_METADATA_KEYS.md)
 - [`REFERENCES_STATE_KEY`](api/index/variables/REFERENCES_STATE_KEY.md)
+- [`SKIPPED_ANSWER`](api/index/variables/SKIPPED_ANSWER.md)
 - [`StructuredRenderersContext`](api/index/variables/StructuredRenderersContext.md)
 - [`UPLOAD_MARKER`](api/index/variables/UPLOAD_MARKER.md)
 
 ### Interfaces
 
-- [`ActiveInterrupt`](api/index/interfaces/ActiveInterrupt.md)
 - [`ActivityState`](api/index/interfaces/ActivityState.md)
 - [`AgentCardProps`](api/index/interfaces/AgentCardProps.md)
+- [`AgentPresence`](api/index/interfaces/AgentPresence.md)
 - [`ApprovalDecisionControls`](api/index/interfaces/ApprovalDecisionControls.md)
 - [`ApprovalReason`](api/index/interfaces/ApprovalReason.md)
 - [`ApprovalSubject`](api/index/interfaces/ApprovalSubject.md)
+- [`AskUserArgs`](api/index/interfaces/AskUserArgs.md)
+- [`AskUserQuestion`](api/index/interfaces/AskUserQuestion.md)
 - [`CustomRequestReason`](api/index/interfaces/CustomRequestReason.md)
 - [`DrillState`](api/index/interfaces/DrillState.md)
 - [`FeedbackPayload`](api/index/interfaces/FeedbackPayload.md)
@@ -1855,9 +2050,17 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`InterruptData`](api/index/interfaces/InterruptData.md)
 - [`InterruptRendererProps`](api/index/interfaces/InterruptRendererProps.md)
 - [`KabooActivityProviderProps`](api/index/interfaces/KabooActivityProviderProps.md)
+- [`KabooJsonToolSchema`](api/index/interfaces/KabooJsonToolSchema.md)
 - [`KabooProviderProps`](api/index/interfaces/KabooProviderProps.md)
 - [`KabooReferenceInputProps`](api/index/interfaces/KabooReferenceInputProps.md)
+- [`KabooRequestRenderProps`](api/index/interfaces/KabooRequestRenderProps.md)
+- [`KabooRequestToolOptions`](api/index/interfaces/KabooRequestToolOptions.md)
+- [`KabooSchemaIssue`](api/index/interfaces/KabooSchemaIssue.md)
+- [`KabooSendOptions`](api/index/interfaces/KabooSendOptions.md)
 - [`KabooSlots`](api/index/interfaces/KabooSlots.md)
+- [`KabooStandardProps`](api/index/interfaces/KabooStandardProps.md)
+- [`KabooToolSchema`](api/index/interfaces/KabooToolSchema.md)
+- [`LiveToolCall`](api/index/interfaces/LiveToolCall.md)
 - [`MessageMeta`](api/index/interfaces/MessageMeta.md)
 - [`PermissionListProps`](api/index/interfaces/PermissionListProps.md)
 - [`ReferenceItem`](api/index/interfaces/ReferenceItem.md)
@@ -1878,6 +2081,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`TurnFooterContext`](api/index/interfaces/TurnFooterContext.md)
 - [`UploadProviderConfig`](api/index/interfaces/UploadProviderConfig.md)
 - [`UploadReferenceProvider`](api/index/interfaces/UploadReferenceProvider.md)
+- [`UseAskUserToolOptions`](api/index/interfaces/UseAskUserToolOptions.md)
 
 ### Type aliases
 
@@ -1887,6 +2091,9 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`GroupEntry`](api/index/type-aliases/GroupEntry.md)
 - [`InterruptReason`](api/index/type-aliases/InterruptReason.md)
 - [`InterruptRenderers`](api/index/type-aliases/InterruptRenderers.md)
+- [`KabooRequestStatus`](api/index/type-aliases/KabooRequestStatus.md)
+- [`KabooUserContent`](api/index/type-aliases/KabooUserContent.md)
+- [`KabooValidationResult`](api/index/type-aliases/KabooValidationResult.md)
 - [`PendingReference`](api/index/type-aliases/PendingReference.md)
 - [`ReferenceTransport`](api/index/type-aliases/ReferenceTransport.md)
 - [`StructuredRenderers`](api/index/type-aliases/StructuredRenderers.md)
@@ -1897,12 +2104,13 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 
 ### Functions / components / hooks
 
-- [`KabooAskUser`](api/copilotkit/functions/KabooAskUser.md)
 - [`KabooAssistantMessage`](api/copilotkit/functions/KabooAssistantMessage.md)
+- [`KabooChat`](api/copilotkit/functions/KabooChat.md)
 - [`KabooInlineCards`](api/copilotkit/functions/KabooInlineCards.md)
 - [`KabooInterruptHandler`](api/copilotkit/functions/KabooInterruptHandler.md)
 - [`KabooToolRender`](api/copilotkit/functions/KabooToolRender.md)
 - [`KabooUserMessage`](api/copilotkit/functions/KabooUserMessage.md)
+- [`withSubagentLabel`](api/copilotkit/functions/withSubagentLabel.md)
 
 ### Variables
 
@@ -1912,3 +2120,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 
 - [`KabooInterruptHandlerProps`](api/copilotkit/interfaces/KabooInterruptHandlerProps.md)
 - [`KabooMessageViewProps`](api/copilotkit/interfaces/KabooMessageViewProps.md)
+
+### Type aliases
+
+- [`KabooChatProps`](api/copilotkit/type-aliases/KabooChatProps.md)

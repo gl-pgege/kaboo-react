@@ -1,6 +1,6 @@
 {
   "name": "@pgege/kaboo-react",
-  "version": "0.11.3",
+  "version": "0.12.0",
   "description": "React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.",
   "author": "gl-pgege",
   "license": "MIT",
@@ -39,14 +39,24 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./copilotkit": {
-      "types": "./dist/copilotkit.d.ts",
-      "import": "./dist/copilotkit.js",
-      "require": "./dist/copilotkit.cjs"
+      "import": {
+        "types": "./dist/copilotkit.d.ts",
+        "default": "./dist/copilotkit.js"
+      },
+      "require": {
+        "types": "./dist/copilotkit.d.cts",
+        "default": "./dist/copilotkit.cjs"
+      }
     },
     "./styles.css": "./dist/styles.css"
   },
@@ -75,12 +85,12 @@
     "prepack": "yarn build && yarn docs:api && yarn docs:llms && yarn docs:verify && yarn examples:typecheck && yarn test"
   },
   "peerDependencies": {
-    "@copilotkit/react-core": ">=1.78.0 <2",
+    "@copilotkit/react-core": ">=1.79.1 <2",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
-    "@copilotkit/react-core": "1.78.0",
+    "@copilotkit/react-core": "1.79.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

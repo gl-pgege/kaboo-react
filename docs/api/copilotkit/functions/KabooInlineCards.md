@@ -6,7 +6,7 @@
 
 > **KabooInlineCards**(): `Element`
 
-Defined in: [src/integrations/KabooInlineCards.tsx:39](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInlineCards.tsx#L39)
+Defined in: [src/integrations/KabooInlineCards.tsx:37](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooInlineCards.tsx#L37)
 
 Renders [AgentCard](../../index/functions/AgentCard.md)s inline in the chat for **delegate** sub-agents.
 

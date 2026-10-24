@@ -1,16 +1,8 @@
 import type { TimelineEntry, ToolCall } from "../types";
 
-/**
- * The tool-call id of a timeline tool entry, from either shape it may arrive in.
- *
- * The producer emits `toolUseId` and keeps the tool itself once in the group's
- * `tools`. Snapshots written before that change embedded the whole `ToolCall`
- * in the entry instead, and threads persisted then still replay, so both are
- * read.
- */
+/** The tool-call id of a timeline tool entry. */
 export function timelineToolUseId(entry: TimelineEntry): string | undefined {
-  if (entry.type !== "tool") return undefined;
-  return entry.toolUseId ?? entry.tool?.toolUseId;
+  return entry.type === "tool" ? entry.toolUseId : undefined;
 }
 
 /**
@@ -38,6 +30,5 @@ export function resolveTimelineTool(
   tools: ToolCall[],
 ): ToolCall | undefined {
   if (entry.type !== "tool") return undefined;
-  if (entry.tool) return entry.tool;
   return tools.find((t) => t.toolUseId === entry.toolUseId);
 }

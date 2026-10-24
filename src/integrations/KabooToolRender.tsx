@@ -1,10 +1,9 @@
 import { useDefaultRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { ToolRow } from "../components/ToolRow";
-import { useInterruptFor } from "../context/InterruptBridge";
-import { InterruptPrompt } from "../components/InterruptPrompt";
 import { isControlOnlyStatus } from "../formatters/output";
 import type { StreamGroup, ToolCall } from "../types";
+import { SURFACE_TOOLS } from "../utils/surfaces";
 
 function findTool(
   groups: Record<string, StreamGroup>,
@@ -33,19 +32,6 @@ function isDelegateSpawn(
 }
 
 /**
- * The live gate for a wildcard-rendered tool row. A plain agent's tools are
- * rendered by the host chat (this wildcard), not by a kaboo Timeline — yet the
- * chat-level interrupt slot defers to the tool anchor whenever the pending tool
- * exists in the activity groups. Without this, a gated call on a plain agent
- * would have an anchor that nothing renders and the prompt would never appear.
- */
-function InlineToolGate({ toolCallId }: { toolCallId: string }) {
-  const interrupt = useInterruptFor(toolCallId);
-  if (!interrupt) return null;
-  return <InterruptPrompt interrupt={interrupt} />;
-}
-
-/**
  * Wildcard (`"*"`) tool-call renderer: persists any plain tool call inline in
  * the chat transcript. Tools with a dedicated renderer (`ask_user`, delegate
  * sub-agents) take precedence and never reach this fallback — and delegate
@@ -63,7 +49,7 @@ export function KabooToolRender() {
   useDefaultRenderTool(
     {
       render: ({ name, toolCallId, parameters, status, result }) => {
-        if (isDelegateSpawn(groups, name, toolCallId)) return <></>;
+        if (SURFACE_TOOLS.has(name) || isDelegateSpawn(groups, name, toolCallId)) return <></>;
         const fromActivity = findTool(groups, toolCallId);
         // A bare HITL control echo (e.g. {"status":"approved"} or
         // {"status":"cancelled"}) is the interrupt-resolution payload, not real
@@ -83,7 +69,6 @@ export function KabooToolRender() {
         return (
           <div className="kaboo-inline-tool">
             <ToolRow tool={tool} />
-            <InlineToolGate toolCallId={toolCallId} />
           </div>
         );
       },

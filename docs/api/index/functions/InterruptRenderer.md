@@ -6,7 +6,7 @@
 
 > **InterruptRenderer**(`props`): `ReactElement`
 
-Defined in: [src/components/InterruptRenderer.tsx:276](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/InterruptRenderer.tsx#L276)
+Defined in: [src/components/InterruptRenderer.tsx:279](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/InterruptRenderer.tsx#L279)
 
 Default human-in-the-loop interrupt UI: the approval card (Approve, Allow
 for this chat, Always allow, Deny with a reason — see

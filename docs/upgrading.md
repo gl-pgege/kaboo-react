@@ -9,6 +9,97 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.12
+
+0.12 reads AG-UI's own events: sub-agents as `SUBAGENT_*` events, questions as
+tools the browser runs, approvals as native interrupts. Upgrade the three
+libraries together: kaboo-workflows 0.29, kaboo-runtime 0.8 and kaboo-react 0.12.
+It needs CopilotKit 1.79.1 or later:
+
+```diff
+- "@copilotkit/react-core": ">=1.78.0 <2"
++ "@copilotkit/react-core": ">=1.79.1 <2"
+```
+
+### Cards come from sub-agent events
+
+**Who:** everyone, and code that reads `useActivity()`.
+
+The groups are folded from `SUBAGENT_*` events and the events tagged with their
+`subagentRunId`, live and on replay alike. The entry agent has no group any more
+(`inlineChatOwner` is gone): its work is the chat. `StreamGroup.tokens` and the
+embedded `tool` on timeline entries are removed — read the timeline's text
+entries, and resolve tool entries with `resolveTimelineTool`.
+`applyActivityPatch` is removed. `usageByRun` and `traceByRun` now come from
+each run's `RUN_FINISHED`, and a group's `traceId` from its `SUBAGENT_STARTED`.
+
+### Questions and requests are tools the browser runs
+
+**Who:** apps with questions, file or data-source requests, or a custom question
+card.
+
+Register the tools; an agent calls them when its workflow's `client_tools`
+allow it:
+
+```diff
+- <KabooProvider ...>  {/* KabooAskUser answered ask_user interrupts */}
++ function BrowserTools() {
++   useAskUserTool();
++   useRequestTool({ name: "request_files", description, parameters, render: FilesPanel });
++   return null;
++ }
+```
+
+`KabooAskUser` is removed. A custom question card moves from
+`interruptRenderers={{ form: Card }}` to `useAskUserTool({ render: Card })`, and
+receives `args`, `status`, `answer` and `skip` instead of `reason`, `onResolve`
+and `onCancel`. Pre-0.27 question shapes (`type: "checkbox"`, `input_type`) are no
+longer read. See [Human-in-the-loop](hitl.md).
+
+### Approvals render on CopilotKit's `useInterrupt`
+
+**Who:** apps that used the InterruptBridge.
+
+`InterruptBridgeProvider`, `InterruptBridgePublisher`, `useInterruptBridge` and
+`useInterruptFor` are removed. `KabooInterruptHandler` draws approvals and your
+own interrupt kinds from CopilotKit's `useInterrupt`; `interruptRenderers`,
+`approvalScopes` and `onInterruptError` work as before. Continuation pauses are
+no longer resolved, because kaboo-workflows 0.29 no longer sends them.
+
+### `KabooProvider` passes generative UI through
+
+**Who:** apps that set CopilotKit props through `copilotKitProps`.
+
+`properties`, `renderToolCalls`, `renderActivityMessages`, `a2ui` and
+`openGenerativeUI` are props of `KabooProvider` now:
+
+```diff
+- <KabooProvider runtimeUrl="/api/copilotkit" agent="kaboo" copilotKitProps={{ properties }}>
++ <KabooProvider runtimeUrl="/api/copilotkit" agent="kaboo" properties={properties}>
+```
+
+### The turn footer renders for every turn
+
+**Who:** apps with a `turnFooter`.
+
+The footer renders after every turn's last reply, including a turn the agent
+answered without delegating; its `groups` is empty then. `runIds` lists every run
+since the person's message.
+
+### New
+
+- **`KabooChat`** — the chat with kaboo's transcript and drill-down, whose
+  composer sends through **`useKabooSend`**, so a new message skips open requests.
+- **`useAgentState`, `useLiveToolCalls`, `useAgentPresence`** for canvases
+  ([Concepts](concepts.md#shared-state-and-the-canvas)).
+- **`withSubagentLabel`** labels a sub-agent's generative UI surface
+  ([Generative UI](generative-ui.md)).
+- **Tool renderers registered with CopilotKit** draw inside sub-agent cards too
+  ([Custom tool cards](tool-cards.md)).
+- **Tool labels and structured outputs** from kaboo-workflows 0.29 show on
+  sub-agents' cards.
+- The package's CommonJS build has its own type declarations.
+
 ## 0.11.3
 
 **Who:** apps whose agent delegates to sub-agents that ask questions or need

@@ -6,11 +6,10 @@
 
 > **toFormQuestion**(`raw`): [`FormQuestion`](../interfaces/FormQuestion.md)
 
-Defined in: [src/formatters/askUser.ts:32](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/askUser.ts#L32)
+Defined in: [src/formatters/askUser.ts:27](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/askUser.ts#L27)
 
-Read one question in either shape: `multiple` wins, the deprecated `type`
-(`checkbox`) is honoured when it is absent, and missing options become an
-empty list (a pre-0.27 free-text question, answered through Other alone).
+Read one question as the card renders it. Missing options become an empty
+list, a free-text question answered through Other alone.
 
 ## Parameters
 
@@ -28,10 +27,6 @@ empty list (a pre-0.27 free-text question, answered through Other alone).
 
 `string`
 
-#### type?
-
-`"text"` \| `"radio"` \| `"checkbox"`
-
 ## Returns
 
 [`FormQuestion`](../interfaces/FormQuestion.md)
@@ -41,6 +36,6 @@ empty list (a pre-0.27 free-text question, answered through Other alone).
 ```ts
 import { toFormQuestion } from "@pgege/kaboo-react";
 
-toFormQuestion({ question: "Which sectors?", type: "checkbox", options: ["B2B", "B2C"] });
+toFormQuestion({ question: "Which sectors?", options: ["B2B", "B2C"], multiple: true });
 // { question: "Which sectors?", options: ["B2B", "B2C"], multiple: true }
 ```

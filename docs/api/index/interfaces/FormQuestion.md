@@ -4,7 +4,7 @@
 
 # Interface: FormQuestion
 
-Defined in: [src/types.ts:55](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L55)
+Defined in: [src/types.ts:47](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L47)
 
 A single multiple-choice question in a human-in-the-loop form interrupt. The
 person picks one option (or several when `multiple`), and can always choose
@@ -16,7 +16,7 @@ Other to answer in their own words — the card adds that choice.
 
 > `optional` **multiple?**: `boolean`
 
-Defined in: [src/types.ts:61](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L61)
+Defined in: [src/types.ts:53](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L53)
 
 Whether the person may choose several options.
 
@@ -26,7 +26,7 @@ Whether the person may choose several options.
 
 > **options**: `string`[]
 
-Defined in: [src/types.ts:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L59)
+Defined in: [src/types.ts:51](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L51)
 
 The choices, two or more.
 
@@ -36,21 +36,6 @@ The choices, two or more.
 
 > **question**: `string`
 
-Defined in: [src/types.ts:57](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L57)
+Defined in: [src/types.ts:49](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L49)
 
 The prompt text shown to the user.
-
-***
-
-### ~~type?~~
-
-> `optional` **type?**: `"text"` \| `"radio"` \| `"checkbox"`
-
-Defined in: [src/types.ts:68](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L68)
-
-Control type sent by kaboo-workflows before 0.27 (`checkbox` meant
-multi-select). Read only when `multiple` is absent.
-
-#### Deprecated
-
-Use `multiple`.

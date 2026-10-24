@@ -48,15 +48,17 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 ## How a renderer is selected
 
-When an activity group carries both `structuredOutput` (the data) and
-`outputSchemaName` (the key), kaboo-react looks up `renderers[outputSchemaName]`:
+A sub-agent's `SUBAGENT_FINISHED` carries its result and, for a structured
+output, the schema's name (`metadata.outputSchema`, kaboo-workflows 0.29 or
+later). kaboo-react keeps them on the group as `structuredOutput` (the data) and
+`outputSchemaName` (the key), and looks up `renderers[outputSchemaName]`:
 
 - **Match found** → your component renders the data.
-- **No match** → a collapsible "Structured output (`<schemaName>`)" JSON view is
-  shown instead.
+- **No match** → a collapsible "Structured output (`<schemaName>`)" view shows
+  the data as a readable list.
 
-This means you can add renderers incrementally: unrendered schemas degrade
-gracefully to JSON.
+This means you can add renderers incrementally: unrendered schemas still read
+well without one.
 
 To replace how a *tool call* draws rather than how a result object draws, see
 [custom tool cards](tool-cards.md).

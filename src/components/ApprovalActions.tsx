@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactElement } from "react";
-import { useInterruptBridge } from "../context/InterruptBridge";
 import { useApprovalScopes } from "../context/InterruptRenderers";
 import type {
   ApprovalDecision,
@@ -19,8 +18,9 @@ export interface ApprovalDecisionControls {
   /** Whether this card already answered. */
   responded: boolean;
   /**
-   * Approve the call. `thread` or `always` also approves the other waiting
-   * requests the decision covers (same tool and subject).
+   * Approve the call. With `thread` or `always`, `KabooInterruptHandler` also
+   * approves the other waiting requests the decision covers (same tool and
+   * subject).
    */
   approve: (scope?: ApprovalScope, toolInput?: unknown) => void;
   /** Deny the call, with the person's optional reason for the agent. */
@@ -60,10 +60,8 @@ export function useApprovalDecision({
   reason,
   onResolve,
   onCancel,
-  toolCallId,
 }: InterruptRendererProps<ApprovalReason>): ApprovalDecisionControls {
   const allowed = useApprovalScopes();
-  const { active, answered } = useInterruptBridge();
   const [responded, setResponded] = useState(false);
   const deadline = reason.expiresAt ? Date.parse(reason.expiresAt) : NaN;
   const hasDeadline = Number.isFinite(deadline);
@@ -86,18 +84,6 @@ export function useApprovalDecision({
     responded,
     approve: (scope = "once", toolInput) => {
       answer({ status: "approved", scope, ...(toolInput !== undefined ? { tool_input: toolInput } : {}) });
-      if (scope === "once") return;
-      const key = reason.subject?.key ?? reason.tool_name;
-      for (const other of active) {
-        if (answered.has(other.id) || other.reason === reason) continue;
-        if (toolCallId && other.toolCallId === toolCallId) continue;
-        const r = other.reason;
-        if (r.type !== "approval") continue;
-        const approval = r as ApprovalReason;
-        if (approval.tool_name === reason.tool_name && (approval.subject?.key ?? approval.tool_name) === key) {
-          other.onResolve({ status: "approved", scope: "once" } satisfies ApprovalDecision);
-        }
-      }
     },
     deny: (why) => {
       const text = why?.trim();

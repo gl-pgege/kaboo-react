@@ -6,11 +6,12 @@
 
 > **MiniTable**(`__namedParameters`): `Element` \| `null`
 
-Defined in: [src/components/MiniTable.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/MiniTable.tsx#L15)
+Defined in: [src/components/MiniTable.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/MiniTable.tsx#L18)
 
 Compact table for row-shaped tool results. Columns are inferred from the first
-row's keys; underscores in headers become spaces. Renders at most `maxRows`
-rows with a "+N more" footer, and nothing at all for an empty list.
+row's keys; underscores in headers become spaces, and nested values read as
+text. Renders at most `maxRows` rows with a "+N more" footer, and nothing at
+all for an empty list.
 
 ## Parameters
 
@@ -22,7 +23,7 @@ rows with a "+N more" footer, and nothing at all for an empty list.
 
 #### rows
 
-`Record`\<`string`, `string`\>[]
+`Record`\<`string`, `unknown`\>[]
 
 ## Returns
 

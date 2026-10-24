@@ -2,10 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
-import {
-  InterruptBridgeProvider,
-  useInterruptBridge,
-} from "../context/InterruptBridge";
 import type { InterruptRenderers } from "../context/InterruptRenderers";
 import type { ActivityState, CustomRequestReason, InterruptRendererProps, StreamGroup, ToolCall } from "../types";
 
@@ -62,7 +58,6 @@ vi.mock("@copilotkit/react-core/v2", () => ({
   }),
 }));
 
-vi.mock("./KabooAskUser", () => ({ KabooAskUser: () => null }));
 
 import { KabooInterruptHandler } from "./KabooInterruptHandler";
 
@@ -95,19 +90,6 @@ function approvalInterrupt(
   };
 }
 
-function continuationInterrupt(id: string) {
-  return {
-    id,
-    reason: "continuation",
-    metadata: { type: "continuation", message: "Continuing in a new response" },
-  };
-}
-
-function BridgeProbe() {
-  const { active } = useInterruptBridge();
-  return <div data-testid="bridge-count">{active.length}</div>;
-}
-
 function RenderCaptured({ args }: { args: RenderArgs }) {
   return <>{captured.render?.(args)}</>;
 }
@@ -115,24 +97,19 @@ function RenderCaptured({ args }: { args: RenderArgs }) {
 function Harness({
   groups = {},
   args,
-  bridge = true,
   renderers,
   onInterruptError,
 }: {
   groups?: Record<string, StreamGroup>;
   args: RenderArgs;
-  bridge?: boolean;
   renderers?: InterruptRenderers;
   onInterruptError?: (message: string) => void;
 }) {
   const state: ActivityState = { groups };
   return (
     <ActivityContext.Provider value={state}>
-      <InterruptBridgeProvider>
-        <KabooInterruptHandler bridge={bridge} renderers={renderers} onInterruptError={onInterruptError} />
-        <RenderCaptured args={args} />
-        <BridgeProbe />
-      </InterruptBridgeProvider>
+      <KabooInterruptHandler renderers={renderers} onInterruptError={onInterruptError} />
+      <RenderCaptured args={args} />
     </ActivityContext.Provider>
   );
 }
@@ -189,85 +166,16 @@ describe("KabooInterruptHandler", () => {
     expect(resolve).toHaveBeenCalledWith({ status: "approved", scope: "once" }, "i2");
   });
 
-  it("suppresses the chat-slot card when anchored to an on-screen pending tool", () => {
-    const groups = {
-      g1: group({ status: "interrupted", tools: [tool({ toolUseId: "t1" })] }),
-    };
+  it("names the sub-agent a request came from", () => {
+    const groups = { "main.filer": group({ title: "Filing the report" }) };
     const args: RenderArgs = {
-      interrupts: [approvalInterrupt("i1", "t1")],
+      interrupts: [{ ...approvalInterrupt("i1", "c7"), subagentRunId: "main.filer" }],
       resolve: vi.fn(),
       cancel: vi.fn(),
     };
     render(<Harness groups={groups} args={args} />);
-    expect(screen.queryByText("Approve")).toBeNull();
-  });
-
-  it("resumes a continuation at once, without prompting anyone", () => {
-    const resolve = vi.fn();
-    const args: RenderArgs = {
-      interrupts: [continuationInterrupt("c1")],
-      resolve,
-      cancel: vi.fn(),
-    };
-    render(<Harness args={args} />);
-
-    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
-    expect(screen.queryByText("Approve")).toBeNull();
-    expect(screen.getByTestId("bridge-count").textContent).toBe("0");
-  });
-
-  it("resumes a continuation once, however often it re-renders", () => {
-    const resolve = vi.fn();
-    const args: RenderArgs = {
-      interrupts: [continuationInterrupt("c1")],
-      resolve,
-      cancel: vi.fn(),
-    };
-    const { rerender } = render(<Harness args={args} />);
-    rerender(<Harness args={args} />);
-    rerender(<Harness args={args} />);
-
-    expect(resolve).toHaveBeenCalledTimes(1);
-  });
-
-  it("still prompts for a real gate opened alongside a continuation", () => {
-    const resolve = vi.fn();
-    const args: RenderArgs = {
-      interrupts: [continuationInterrupt("c1"), approvalInterrupt("i1")],
-      resolve,
-      cancel: vi.fn(),
-    };
-    render(<Harness args={args} />);
-
-    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
-    expect(screen.getAllByText("Approve")).toHaveLength(1);
-    expect(screen.getByTestId("bridge-count").textContent).toBe("1");
-  });
-
-  it("recognises a continuation by its top-level reason too", () => {
-    const resolve = vi.fn();
-    const args: RenderArgs = {
-      interrupts: [{ id: "c1", reason: "continuation" }],
-      resolve,
-      cancel: vi.fn(),
-    };
-    render(<Harness args={args} />);
-
-    expect(resolve).toHaveBeenCalledWith({ status: "continue" }, "c1");
-  });
-
-  it("publishes to the bridge only when enabled", () => {
-    const args = (): RenderArgs => ({
-      interrupts: [approvalInterrupt("i1"), approvalInterrupt("i2")],
-      resolve: vi.fn(),
-      cancel: vi.fn(),
-    });
-    const { unmount } = render(<Harness args={args()} bridge />);
-    expect(screen.getByTestId("bridge-count").textContent).toBe("2");
-    unmount();
-
-    render(<Harness args={args()} bridge={false} />);
-    expect(screen.getByTestId("bridge-count").textContent).toBe("0");
+    expect(screen.getByText("Filing the report")).toBeTruthy();
+    expect(screen.getByText("Approve")).toBeTruthy();
   });
 
   it("approves every waiting approval at once with Approve all", () => {
@@ -360,52 +268,6 @@ describe("KabooInterruptHandler", () => {
     expect(cancel).toHaveBeenCalledWith("f1");
   });
 
-  it("drops what waits when a message is sent, so the run can start", () => {
-    render(<Harness args={{ interrupts: [], resolve: vi.fn(), cancel: vi.fn() }} />);
-    const sent = { agentId: "a", pendingInterrupts: [{ id: "i1" }], messages: [{ role: "user" }] };
-    const resumed = { agentId: "a", pendingInterrupts: [{ id: "i1" }], messages: [{ role: "tool" }] };
-
-    captured.onAgentRunStarted?.({ agent: sent });
-    captured.onAgentRunStarted?.({ agent: resumed });
-
-    expect(sent.pendingInterrupts).toEqual([]);
-    expect(resumed.pendingInterrupts).toEqual([{ id: "i1" }]);
-  });
-
-  it("drops the tool message CopilotKit adds for an answered approval, so the call waits for its real result", () => {
-    render(<Harness args={{ interrupts: [], resolve: vi.fn(), cancel: vi.fn() }} />);
-    const setMessages = vi.fn();
-    const call = { role: "assistant", toolCalls: [{ id: "c1" }] };
-    const resumed = {
-      agentId: "a",
-      pendingInterrupts: [{ id: "i1", reason: "tool_call", toolCallId: "c1" }],
-      messages: [{ role: "user" }, call, { role: "tool", toolCallId: "c1", content: '{"status":"approved"}' }],
-      setMessages,
-    };
-
-    captured.onAgentRunStarted?.({ agent: resumed });
-
-    expect(setMessages).toHaveBeenCalledWith([{ role: "user" }, call]);
-    expect(resumed.pendingInterrupts).toHaveLength(1);
-  });
-
-  it("drops those answer messages too when a message is sent instead, so the agent never sees them", () => {
-    render(<Harness args={{ interrupts: [], resolve: vi.fn(), cancel: vi.fn() }} />);
-    const setMessages = vi.fn();
-    const call = { role: "assistant", toolCalls: [{ id: "c1" }] };
-    const sent = {
-      agentId: "a",
-      pendingInterrupts: [{ id: "i1", reason: "tool_call", toolCallId: "c1" }],
-      messages: [call, { role: "tool", toolCallId: "c1", content: '{"status":"approved"}' }, { role: "user" }],
-      setMessages,
-    };
-
-    captured.onAgentRunStarted?.({ agent: sent });
-
-    expect(setMessages).toHaveBeenCalledWith([call, { role: "user" }]);
-    expect(sent.pendingInterrupts).toEqual([]);
-  });
-
   it("brings the requests back with the reason when the answers never reach the agent", () => {
     const onInterruptError = vi.fn();
     const args: RenderArgs = {
@@ -482,16 +344,5 @@ describe("KabooInterruptHandler", () => {
 
     expect(connectAgent).not.toHaveBeenCalled();
     expect(onInterruptError).not.toHaveBeenCalled();
-  });
-
-  it("leaves a failed continuation to the host, so it isn't retried in a loop", () => {
-    render(<Harness args={{ interrupts: [], resolve: vi.fn(), cancel: vi.fn() }} />);
-
-    playRun({ resume: [{ interruptId: "c1", status: "resolved", payload: { status: "continue" } }] }, [
-      { type: "RUN_STARTED" },
-      { type: "RUN_ERROR", message: "too large" },
-    ]);
-
-    expect(connectAgent).not.toHaveBeenCalled();
   });
 });

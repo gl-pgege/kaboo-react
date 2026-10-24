@@ -13,18 +13,18 @@ Without it, cards, tabs, and the activity panel have no layout or theme. See
 
 ## The activity tree is empty
 
-Activity comes from `ACTIVITY_SNAPSHOT` events on the AG-UI run stream. If
+Groups come from `SUBAGENT_*` events on the AG-UI run stream. If
 `useActivity()` returns no groups:
 
-- Confirm the backend actually emits activity — an agent served by
-  [kaboo-workflows](https://gl-pgege.github.io/kaboo-workflows/) does; a stock
-  CopilotKit agent does not.
+- Confirm the agent delegates — a plain agent with no sub-agents has no groups;
+  its work is the chat itself.
+- Confirm the backend emits sub-agent events — an agent served by
+  [kaboo-workflows](https://gl-pgege.github.io/kaboo-workflows/) 0.29 or later
+  does.
 - Confirm `KabooProvider`'s `runtimeUrl` points at that backend and the request
   isn't blocked (check the network tab / dev-proxy). The
   [minimal example](https://github.com/gl-pgege/kaboo-react/tree/main/examples/minimal)
   proxies `/api` to `http://localhost:4000`.
-- A plain-agent entry renders inline in the chat (`inlineChatOwner`), so you may
-  see cards inside the chat rather than a separate panel — that's expected.
 
 ## Approval cards stay "Response submitted"
 
@@ -38,7 +38,7 @@ Pair it with kaboo-runtime 0.7.1 or later, which opens such runs with
 
 ## Peer / version errors
 
-kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.78**)
+kaboo-react needs `react`, `react-dom`, and `@copilotkit/react-core` (**>= 1.79.1**)
 as peers. Install/upgrade them if you see missing-module or hook-mismatch
 errors:
 
@@ -46,7 +46,7 @@ errors:
 yarn add react react-dom @copilotkit/react-core
 ```
 
-A CopilotKit version below 1.78 can cause `KabooProvider` / `CopilotChat`
+A CopilotKit version below 1.79.1 can cause `KabooProvider` / `CopilotChat`
 mismatches — align to a supported version, or stay on kaboo-react 0.10 for
 CopilotKit 1.62 to 1.71.1.
 

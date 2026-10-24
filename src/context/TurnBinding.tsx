@@ -29,11 +29,18 @@ export interface TurnBinding {
    * knowing how work was delegated. Empty for turns still streaming.
    */
   turnGroupsByMessageId: Map<string, GroupEntry[]>;
+  /**
+   * Every run of a turn, keyed by the turn's final assistant message id, for
+   * every turn — including one the agent answered without delegating, which
+   * has no groups.
+   */
+  turnRunsByMessageId: Map<string, string[]>;
 }
 
 const EMPTY_BINDING: TurnBinding = {
   rootsByMessageId: new Map(),
   turnGroupsByMessageId: new Map(),
+  turnRunsByMessageId: new Map(),
 };
 
 const TurnBindingContext = createContext<TurnBinding>(EMPTY_BINDING);

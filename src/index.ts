@@ -15,13 +15,6 @@ export { DrillProvider } from "./context/DrillContext";
 export { KabooProvider } from "./context/KabooProvider";
 export type { KabooProviderProps } from "./context/KabooProvider";
 export {
-  InterruptBridgeProvider,
-  InterruptBridgePublisher,
-  useInterruptBridge,
-  useInterruptFor,
-} from "./context/InterruptBridge";
-export type { ActiveInterrupt } from "./context/InterruptBridge";
-export {
   InterruptRenderersProvider,
   useInterruptRenderer,
   useApprovalScopes,
@@ -35,6 +28,29 @@ export type { ToolRenderers, ToolRendererProps } from "./context/ToolRenderers";
 
 export { useActivity } from "./hooks/useActivity";
 export { useDrill } from "./hooks/useDrill";
+export { useKabooSend } from "./hooks/useKabooSend";
+export { useAgentPresence, useAgentState, useLiveToolCalls } from "./hooks/canvas";
+export type { AgentPresence, LiveToolCall } from "./hooks/canvas";
+export type { KabooSendOptions, KabooUserContent } from "./hooks/useKabooSend";
+export { useRequestTool } from "./requests/useRequestTool";
+export type {
+  KabooRequestRenderProps,
+  KabooRequestStatus,
+  KabooRequestToolOptions,
+} from "./requests/useRequestTool";
+export { useAskUserTool, AskUserPanel } from "./requests/useAskUserTool";
+export type { UseAskUserToolOptions } from "./requests/useAskUserTool";
+export { ASK_USER_DESCRIPTION, ASK_USER_TOOL, askUserParameters } from "./requests/askUser";
+export type { AskUserArgs, AskUserQuestion } from "./requests/askUser";
+export { checkArguments, toolSchema } from "./requests/schema";
+export type {
+  KabooJsonToolSchema,
+  KabooSchemaIssue,
+  KabooStandardProps,
+  KabooToolSchema,
+  KabooValidationResult,
+} from "./requests/schema";
+export { MOVED_ON_ANSWER, SKIPPED_ANSWER, openRequestCalls } from "./requests/openRequests";
 
 export { useTurnFeedback, resolveTurnIds } from "./feedback/useTurnFeedback";
 export type {
@@ -80,7 +96,6 @@ export type {
 export { topLevelGroups, directChildren } from "./utils/groups";
 export type { GroupEntry } from "./utils/groups";
 export { resolveTimelineTool, timelineToolUseId } from "./utils/timeline";
-export { applyActivityPatch } from "./utils/activityPatch";
 
 export { ActivityPanel } from "./components/ActivityPanel";
 export { AgentCard } from "./components/AgentCard";

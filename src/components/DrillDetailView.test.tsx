@@ -3,18 +3,11 @@ import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
 import { DrillContext } from "../context/DrillContext";
-import {
-  InterruptBridgeProvider,
-  InterruptBridgePublisher,
-} from "../context/InterruptBridge";
-import { InterruptRenderersProvider } from "../context/InterruptRenderers";
 import type {
   ActivityState,
   DrillState,
-  InterruptRendererProps,
   StreamGroup,
 } from "../types";
-import type { ActiveInterrupt } from "../context/InterruptBridge";
 import { DrillDetailView } from "./DrillDetailView";
 
 function group(overrides: Partial<StreamGroup> = {}): StreamGroup {
@@ -35,7 +28,6 @@ const NOOP = () => {};
 function harness(
   groups: Record<string, StreamGroup>,
   activeDrill: string,
-  interrupts: ActiveInterrupt[],
   node: ReactNode,
 ) {
   const activity: ActivityState = { groups };
@@ -50,10 +42,7 @@ function harness(
   return (
     <ActivityContext.Provider value={activity}>
       <DrillContext.Provider value={drill}>
-        <InterruptBridgeProvider>
-          <InterruptBridgePublisher interrupts={interrupts} />
-          {node}
-        </InterruptBridgeProvider>
+        {node}
       </DrillContext.Provider>
     </ActivityContext.Provider>
   );
@@ -65,7 +54,7 @@ describe("DrillDetailView token usage breakdown", () => {
       status: "completed",
       usage: { inputTokens: 48_200, outputTokens: 3_100, totalTokens: 51_300 },
     });
-    render(harness({ main: g }, "main", [], <DrillDetailView />));
+    render(harness({ main: g }, "main", <DrillDetailView />));
 
     expect(screen.getByText("48.2k")).toBeInTheDocument();
     expect(screen.getByText("3.1k")).toBeInTheDocument();
@@ -75,72 +64,8 @@ describe("DrillDetailView token usage breakdown", () => {
 
   it("renders no breakdown without usage", () => {
     const g = group({ status: "completed" });
-    render(harness({ main: g }, "main", [], <DrillDetailView />));
+    render(harness({ main: g }, "main", <DrillDetailView />));
     expect(screen.queryByText("total tokens")).toBeNull();
   });
 });
 
-describe("DrillDetailView interrupt rendering", () => {
-  const formInterrupt: ActiveInterrupt = {
-    id: "i1",
-    reason: {
-      type: "form",
-      questions: [{ question: "Retry?", type: "radio", options: ["Yes", "No"] }],
-    },
-    toolCallId: "t-unanchored",
-    onResolve: NOOP,
-    onCancel: NOOP,
-  };
-
-  it("uses the registered renderer for unanchored interrupts", () => {
-    const Custom = ({ reason }: InterruptRendererProps) => (
-      <div data-testid="custom-form">{reason.type}</div>
-    );
-    const g = group({ status: "interrupted" });
-    render(
-      harness(
-        { main: g },
-        "main",
-        [formInterrupt],
-        <InterruptRenderersProvider renderers={{ form: Custom }}>
-          <DrillDetailView />
-        </InterruptRenderersProvider>,
-      ),
-    );
-    expect(screen.getByTestId("custom-form")).toHaveTextContent("form");
-  });
-
-  it("shows the request a drilled delegate forwarded to its caller", () => {
-    const parent = group({
-      tools: [{ toolUseId: "tc-del", toolName: "builder", toolLabel: "", toolInput: {}, status: "running" }],
-    });
-    const builder = group({ toolCallId: "tc-del", status: "interrupted" });
-    const forwarded: ActiveInterrupt = { ...formInterrupt, toolCallId: "tc-del" };
-    render(
-      harness(
-        { parent, "parent.builder": builder },
-        "parent.builder",
-        [forwarded],
-        <InterruptRenderersProvider renderers={{}}>
-          <DrillDetailView />
-        </InterruptRenderersProvider>,
-      ),
-    );
-    expect(screen.getByText("Retry?")).toBeInTheDocument();
-  });
-
-  it("falls back to the built-in renderer when none is registered", () => {
-    const g = group({ status: "interrupted" });
-    render(
-      harness(
-        { main: g },
-        "main",
-        [formInterrupt],
-        <InterruptRenderersProvider renderers={{}}>
-          <DrillDetailView />
-        </InterruptRenderersProvider>,
-      ),
-    );
-    expect(screen.getByText("Retry?")).toBeInTheDocument();
-  });
-});

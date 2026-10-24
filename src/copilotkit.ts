@@ -5,5 +5,7 @@ export type { KabooMessageViewProps } from "./integrations/KabooMessageView";
 export { KabooUserMessage } from "./integrations/KabooUserMessage";
 export { KabooInterruptHandler } from "./integrations/KabooInterruptHandler";
 export type { KabooInterruptHandlerProps } from "./integrations/KabooInterruptHandler";
-export { KabooAskUser } from "./integrations/KabooAskUser";
 export { KabooToolRender } from "./integrations/KabooToolRender";
+export { withSubagentLabel } from "./integrations/withSubagentLabel";
+export { KabooChat } from "./integrations/KabooChat";
+export type { KabooChatProps } from "./integrations/KabooChat";

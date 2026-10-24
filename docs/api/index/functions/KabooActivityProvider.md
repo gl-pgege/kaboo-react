@@ -6,11 +6,12 @@
 
 > **KabooActivityProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/ActivityProvider.tsx:87](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L87)
+Defined in: [src/context/ActivityProvider.tsx:88](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L88)
 
-Reads kaboo's hierarchical activity from the AG-UI run stream. The backend
-emits it as `ACTIVITY_SNAPSHOT` events interleaved on `/invocations`, so we
-subscribe to the CopilotKit agent instead of a separate SSE endpoint.
+Builds the sub-agent groups the cards render from the AG-UI run stream: each
+`SUBAGENT_STARTED` opens a group, the events tagged with its `subagentRunId`
+fill its timeline, and `SUBAGENT_FINISHED` or `SUBAGENT_ERROR` settles it.
+The same fold runs live and on replay.
 
 Included automatically by [KabooProvider](KabooProvider.md); mount it yourself only when
 composing providers by hand under an existing `<CopilotKit>`.

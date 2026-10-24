@@ -1,7 +1,10 @@
+import { describeValue } from "../formatters/value";
+
 /**
  * Compact table for row-shaped tool results. Columns are inferred from the first
- * row's keys; underscores in headers become spaces. Renders at most `maxRows`
- * rows with a "+N more" footer, and nothing at all for an empty list.
+ * row's keys; underscores in headers become spaces, and nested values read as
+ * text. Renders at most `maxRows` rows with a "+N more" footer, and nothing at
+ * all for an empty list.
  *
  * @example
  * ```tsx
@@ -12,7 +15,7 @@
  * }
  * ```
  */
-export function MiniTable({ rows, maxRows = 8 }: { rows: Record<string, string>[]; maxRows?: number }) {
+export function MiniTable({ rows, maxRows = 8 }: { rows: Record<string, unknown>[]; maxRows?: number }) {
   if (rows.length === 0) return null;
   const cols = Object.keys(rows[0]);
   const display = rows.slice(0, maxRows);
@@ -32,7 +35,7 @@ export function MiniTable({ rows, maxRows = 8 }: { rows: Record<string, string>[
           {display.map((row, i) => (
             <tr key={i}>
               {cols.map((c) => (
-                <td key={c}>{String(row[c] ?? "")}</td>
+                <td key={c}>{describeValue(row[c])}</td>
               ))}
             </tr>
           ))}

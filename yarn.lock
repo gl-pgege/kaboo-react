@@ -200,9 +200,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@copilotkit/a2ui-renderer@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/a2ui-renderer@npm:1.78.0"
+"@copilotkit/a2ui-renderer@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/a2ui-renderer@npm:1.79.1"
   dependencies:
     "@a2ui/web_core": "npm:0.10.4"
     clsx: "npm:^2.1.1"
@@ -216,26 +216,26 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/0a2dcd435e100d51a94f92e68bc4e242c2520f8b534701358e237e1f864f95f565361296b09ec65a71b09947e2b563c992c9d4ca5c688ffc65b8fc2eee90f996
+  checksum: 10c0/7bb7dfaf3800938c2946e8198d07656c438bb697a5b76bdb316725417064806567ea98a172b4a6a3e7e1b22b04ee5e8483640d37d115f26f196491bf6b81ce37
   languageName: node
   linkType: hard
 
-"@copilotkit/core@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/core@npm:1.78.0"
+"@copilotkit/core@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/core@npm:1.79.1"
   dependencies:
     "@ag-ui/client": "npm:1.0.2"
-    "@copilotkit/learning": "npm:0.0.1"
-    "@copilotkit/shared": "npm:1.78.0"
+    "@copilotkit/learning": "npm:^0.0.1"
+    "@copilotkit/shared": "npm:1.79.1"
     "@tanstack/pacer": "npm:^0.20.1"
     phoenix: "npm:^1.8.4"
     rxjs: "npm:7.8.1"
     zod-to-json-schema: "npm:^3.24.6"
-  checksum: 10c0/6427df4f8e725624ca7c07918f198725bcada9ffc0f2b71d2abeadc6a0f204af936c7a9a555b8a35629d9bd8645fbd45ae60c031a8d640d949f08642407d057c
+  checksum: 10c0/e832d77a15ec6d38ec39a6b450e2e8fe999a4a7901106eb7fa82c07b011f29d86cd7e519a984ac519a6b60428ae0d8fd14faed3f7f4a9d291fc593e56c22cb2e
   languageName: node
   linkType: hard
 
-"@copilotkit/learning@npm:0.0.1":
+"@copilotkit/learning@npm:^0.0.1":
   version: 0.0.1
   resolution: "@copilotkit/learning@npm:0.0.1"
   checksum: 10c0/92b792c8d6abecc404a909636ac444bf4a92049b781f5457b7689e10dc64d5008efe53d9d155ff5c8b753ab9f48cf99efe78caf54f5b8fc4f0be84ffa9994063
@@ -249,33 +249,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@copilotkit/mcp-apps-renderer@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/mcp-apps-renderer@npm:1.78.0"
+"@copilotkit/mcp-apps-renderer@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/mcp-apps-renderer@npm:1.79.1"
   dependencies:
-    "@copilotkit/shared": "npm:1.78.0"
+    "@copilotkit/shared": "npm:1.79.1"
     "@modelcontextprotocol/ext-apps": "npm:^1.7.5"
     "@modelcontextprotocol/sdk": "npm:^1.29.0"
   peerDependencies:
     "@ag-ui/client": ">=0.0.59"
     zod: ">=3.25"
-  checksum: 10c0/f270c65a00f539a9e5287809ecd57e51d4a9bf8a58b64cf0caff1f0c13ed62c61533b6ae223ac9e00810a59fe9efb21c7a4002fa0d7b47cdc45233113ad9dff6
+  checksum: 10c0/92184bee633b9d3c7eadcdaee301dde1328f30bd29148a1cfc5dfba87e226109981cc5d134f22518562a98bb5b793f6efbfca3102441f995f2ec3426d73928b7
   languageName: node
   linkType: hard
 
-"@copilotkit/react-core@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/react-core@npm:1.78.0"
+"@copilotkit/react-core@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/react-core@npm:1.79.1"
   dependencies:
     "@ag-ui/client": "npm:1.0.2"
     "@ag-ui/core": "npm:1.0.2"
-    "@copilotkit/a2ui-renderer": "npm:1.78.0"
-    "@copilotkit/core": "npm:1.78.0"
-    "@copilotkit/mcp-apps-renderer": "npm:1.78.0"
-    "@copilotkit/runtime-client-gql": "npm:1.78.0"
-    "@copilotkit/shared": "npm:1.78.0"
-    "@copilotkit/web-components": "npm:1.78.0"
-    "@copilotkit/web-inspector": "npm:1.78.0"
+    "@copilotkit/a2ui-renderer": "npm:1.79.1"
+    "@copilotkit/core": "npm:1.79.1"
+    "@copilotkit/mcp-apps-renderer": "npm:1.79.1"
+    "@copilotkit/runtime-client-gql": "npm:1.79.1"
+    "@copilotkit/shared": "npm:1.79.1"
+    "@copilotkit/web-components": "npm:1.79.1"
+    "@copilotkit/web-inspector": "npm:1.79.1"
     "@jetbrains/websandbox": "npm:^1.1.3"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.15"
     "@radix-ui/react-slot": "npm:^1.2.3"
@@ -299,27 +299,27 @@ __metadata:
     react: ^18 || ^19 || ^19.0.0-rc
     react-dom: ^18 || ^19 || ^19.0.0-rc
     zod: ">=3.25"
-  checksum: 10c0/87942d6c4bb1b3b7bfe7931da03eb2e5c9693ac0133bd4d461870f49ce04f40bcd02ee8d64aaf1ed063de3eba8ee22fdcd0eb8e6f1e6bbbefc15a1a1cf41aced
+  checksum: 10c0/773dc708c200a0cdb0c4b2df74104839ebe0c5f852abb697612764e4c3ea889d10a479a9fe4319a8c250032cff218c06b25c9e7dce6b0b3995663158ad5515b1
   languageName: node
   linkType: hard
 
-"@copilotkit/runtime-client-gql@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/runtime-client-gql@npm:1.78.0"
+"@copilotkit/runtime-client-gql@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/runtime-client-gql@npm:1.79.1"
   dependencies:
-    "@copilotkit/shared": "npm:1.78.0"
+    "@copilotkit/shared": "npm:1.79.1"
     "@urql/core": "npm:^5.0.3"
     untruncate-json: "npm:^0.0.1"
     urql: "npm:^4.1.0"
   peerDependencies:
     react: ^18 || ^19 || ^19.0.0-rc
-  checksum: 10c0/002f48188e2185b77c35e30f221987d01ac3a711d3f41be1723124bfce2637ab806d3fc890153970e6fedc2bfe7803aa8f7ddc24bc55924c9a08f8de9fb49dfd
+  checksum: 10c0/6c0d49026e1c6548b4484b7a65911da4acb1943d627a02914b69556be374e694bbf1a2cc0c4c4a7bdc735d615a6aed343dfd24f09585c7e1eb16adc5ee7884d6
   languageName: node
   linkType: hard
 
-"@copilotkit/shared@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/shared@npm:1.78.0"
+"@copilotkit/shared@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/shared@npm:1.79.1"
   dependencies:
     "@ag-ui/a2ui-middleware": "npm:0.0.10"
     "@ag-ui/client": "npm:1.0.2"
@@ -336,31 +336,31 @@ __metadata:
     zod-to-json-schema: "npm:^3.23.5"
   peerDependencies:
     "@ag-ui/core": ">=0.0.48"
-  checksum: 10c0/a99cd65a30898d28ba9dfa346cb27ae292dbbd69f445d665f4081f9c0bd339351ca900ab80ce18dc88c0b06e9b3b36b6c35d8e4fbda963a2fa1b0f936c61993d
+  checksum: 10c0/75218a30db8876005697d358028f9b45fd153de7bf7ff96d41d5ff2de1b9ed16aafeabc97e4f93b667b3cf9f501bb9fcfd5d3ca77212bf7e665f86d96ab2544a
   languageName: node
   linkType: hard
 
-"@copilotkit/web-components@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/web-components@npm:1.78.0"
+"@copilotkit/web-components@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/web-components@npm:1.79.1"
   peerDependencies:
     lit: ^3.3.2
-  checksum: 10c0/ed68f57a3b3e1e0ef04c5090295b57d2302aacf7ee25539d989ffe571cde1d0dc38ecebdba8d8cc38a1661d4027fa70e03eab51b386c4873a3174961ec56ec70
+  checksum: 10c0/ad41a0ab3775b78d5bb57524a08df054046af86176cd3bb2ce26149a081c944eadf32e7ee2720290c37ccff6796394c9210ba9e839a48d9d0bffccb33c8d0020
   languageName: node
   linkType: hard
 
-"@copilotkit/web-inspector@npm:1.78.0":
-  version: 1.78.0
-  resolution: "@copilotkit/web-inspector@npm:1.78.0"
+"@copilotkit/web-inspector@npm:1.79.1":
+  version: 1.79.1
+  resolution: "@copilotkit/web-inspector@npm:1.79.1"
   dependencies:
     "@ag-ui/client": "npm:1.0.2"
-    "@copilotkit/core": "npm:1.78.0"
-    "@copilotkit/shared": "npm:1.78.0"
+    "@copilotkit/core": "npm:1.79.1"
+    "@copilotkit/shared": "npm:1.79.1"
     lit: "npm:^3.2.0"
     lucide: "npm:^0.525.0"
     marked: "npm:^12.0.2"
     semver: "npm:^7.8.5"
-  checksum: 10c0/343ef47ef0da6bbe32f915932faf7bfa62b37a02ce5645cc0f8e2fdbb0bdf7788233a3f0ceb1bb831c75b56366de651f5dabe19bbf4cf14e0c787e2341071f19
+  checksum: 10c0/850e1ea3047150870c0ce12b70ea79376354cf2190350b54e56d5674b81e8244b7e7a26296b26316a2fa8a145de8283cd9c7914887ecb70b46dfa32d4e6932d1
   languageName: node
   linkType: hard
 
@@ -862,7 +862,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@pgege/kaboo-react@workspace:."
   dependencies:
-    "@copilotkit/react-core": "npm:1.78.0"
+    "@copilotkit/react-core": "npm:1.79.1"
     "@testing-library/dom": "npm:^10.4.2"
     "@testing-library/jest-dom": "npm:^7.0.1"
     "@testing-library/react": "npm:^16.3.3"
@@ -880,7 +880,7 @@ __metadata:
     vite: "npm:^8.3.4"
     vitest: "npm:^5.0.4"
   peerDependencies:
-    "@copilotkit/react-core": ">=1.78.0 <2"
+    "@copilotkit/react-core": ">=1.79.1 <2"
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
   languageName: unknown

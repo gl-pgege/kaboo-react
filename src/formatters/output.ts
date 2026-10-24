@@ -1,7 +1,10 @@
+import { describeValue, isRecord, parseToolValue, tableRows } from "./value";
+
 /**
  * Parses a raw tool result into a renderable shape: `rows` (for tabular JSON —
- * either `{ rows: [...] }` or a top-level array of objects) or `text` (a
- * `key: value` rendering of an object, or the raw string when it isn't JSON).
+ * `{ rows: [...] }`, a query page `{ columns, rows }`, or a top-level array of
+ * objects) or `text` (a `key: value` rendering of an object that reads as text,
+ * never JSON, or the raw string when it isn't JSON).
  *
  * @example
  * ```ts
@@ -17,24 +20,17 @@ export function formatToolResult(raw: string): {
   /** Text rendering of the result when it is not tabular. */
   text: string;
 } {
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed.rows && Array.isArray(parsed.rows) && parsed.rows.length > 0) {
-      return { rows: parsed.rows as Record<string, string>[], text: "" };
-    }
-    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "object") {
-      return { rows: parsed as Record<string, string>[], text: "" };
-    }
-    if (typeof parsed === "object" && parsed !== null) {
-      const entries = Object.entries(parsed as Record<string, unknown>)
-        .filter(([, v]) => v != null)
-        .map(([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`);
-      return { rows: null, text: entries.join("\n") };
-    }
-    return { rows: null, text: String(parsed) };
-  } catch {
-    return { rows: null, text: raw };
+  const parsed = parseToolValue(raw);
+  if (parsed === undefined) return { rows: null, text: raw };
+  const rows = tableRows(parsed);
+  if (rows) return { rows: rows as Record<string, string>[], text: "" };
+  if (isRecord(parsed)) {
+    const entries = Object.entries(parsed)
+      .filter(([, v]) => v != null)
+      .map(([k, v]) => `${k}: ${describeValue(v)}`);
+    return { rows: null, text: entries.join("\n") };
   }
+  return { rows: null, text: describeValue(parsed) };
 }
 
 function unwrapJson(raw: unknown): unknown {

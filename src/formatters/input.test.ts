@@ -36,4 +36,17 @@ describe("formatToolInput", () => {
   it("precedence: query wins over other recognised keys", () => {
     expect(formatToolInput({ query: "q", table_name: "t", url: "u" }).summary).toBe("q");
   });
+
+  it("prefers the SQL of a query tool", () => {
+    expect(formatToolInput({ sql: " SELECT 1 ", limit: 5 }).summary).toBe("SELECT 1");
+  });
+
+  it("reads lists and records as text, never JSON", () => {
+    const { summary } = formatToolInput({
+      dashboard_id: "d_2",
+      widget_ids: ["w_3", "w_4"],
+      items: [{ title: "Churn" }, { title: "MRR" }],
+    });
+    expect(summary).toBe("dashboard id: d_2, widget ids: w_3, w_4, items: Churn, MRR");
+  });
 });

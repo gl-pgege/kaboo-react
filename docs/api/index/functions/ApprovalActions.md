@@ -6,7 +6,7 @@
 
 > **ApprovalActions**(`props`): `ReactElement`
 
-Defined in: [src/components/ApprovalActions.tsx:141](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L141)
+Defined in: [src/components/ApprovalActions.tsx:127](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ApprovalActions.tsx#L127)
 
 The standard approval buttons: Approve, Allow for this chat and Always allow
 (only the scopes offered, with "Applies to …" naming what they cover), Deny

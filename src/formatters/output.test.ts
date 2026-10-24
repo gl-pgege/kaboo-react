@@ -32,6 +32,19 @@ describe("formatToolResult", () => {
     const { rows } = formatToolResult(JSON.stringify({ rows: [] }));
     expect(rows).toBeNull();
   });
+
+  it("names the columns of a query page", () => {
+    const { rows } = formatToolResult(JSON.stringify({ columns: ["month", "churn"], rows: [["2026-01", 0.02]], row_count: 1 }));
+    expect(rows).toEqual([{ month: "2026-01", churn: 0.02 }]);
+  });
+
+  it("reads nested values as text, never JSON", () => {
+    const { text } = formatToolResult(
+      JSON.stringify({ dashboard: { id: "d_2", title: "Churn" }, widget_ids: ["w_3", "w_4"], results: [{ status: "ok" }] }),
+    );
+    expect(text).toBe("dashboard: Churn\nwidget_ids: w_3, w_4\nresults: 1 item");
+    expect(text).not.toMatch(/[{}[\]"]/);
+  });
 });
 
 describe("isCancelledResult", () => {

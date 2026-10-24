@@ -41,6 +41,7 @@ nav:
   - Custom tool cards: tool-cards.md
   - References & providers: references.md
   - Human-in-the-loop: hitl.md
+  - Generative UI: generative-ui.md
   - Turn feedback: feedback.md
   - Activity panel: activity-panel.md
   - CopilotKit subpath: copilotkit-subpath.md

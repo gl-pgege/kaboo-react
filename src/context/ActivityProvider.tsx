@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, type ReactNode, type ReactElement }
 import { useAgent } from "@copilotkit/react-core/v2";
 import type { ActivityState, MessageMeta, StreamGroup } from "../types";
 import { MessageMetaContext, MESSAGE_META_EVENT } from "./MessageMeta";
-import { applyActivityPatch } from "../utils/activityPatch";
+import { foldSubagentEvent, newFoldMemory, type SubagentEvent } from "./subagentFold";
 
 const EMPTY: ActivityState = { groups: {} };
 
@@ -45,7 +45,7 @@ function settleActiveGroups(state: ActivityState): ActivityState {
  */
 export type StructuredRenderers = Record<string, (data: Record<string, unknown>) => ReactElement>;
 
-/** React context carrying the raw activity snapshot; read it via {@link useActivity}. */
+/** React context carrying the sub-agent groups; read it via {@link useActivity}. */
 export const ActivityContext = createContext<ActivityState>(EMPTY);
 /** React context carrying the {@link StructuredRenderers} map for structured output. */
 export const StructuredRenderersContext = createContext<StructuredRenderers>({});
@@ -53,8 +53,8 @@ export const StructuredRenderersContext = createContext<StructuredRenderers>({})
 /** Props for {@link KabooActivityProvider}. */
 export interface KabooActivityProviderProps {
   /**
-   * CopilotKit agent id whose activity snapshots to consume. Omit to use the
-   * provider's default agent. Agent and thread scoping come from CopilotKit.
+   * CopilotKit agent id whose run stream to read. Omit to use the provider's
+   * default agent. Agent and thread scoping come from CopilotKit.
    */
   agentId?: string;
   /** Renderers for structured agent outputs, keyed by output schema name. */
@@ -64,9 +64,10 @@ export interface KabooActivityProviderProps {
 }
 
 /**
- * Reads kaboo's hierarchical activity from the AG-UI run stream. The backend
- * emits it as `ACTIVITY_SNAPSHOT` events interleaved on `/invocations`, so we
- * subscribe to the CopilotKit agent instead of a separate SSE endpoint.
+ * Builds the sub-agent groups the cards render from the AG-UI run stream: each
+ * `SUBAGENT_STARTED` opens a group, the events tagged with its `subagentRunId`
+ * fill its timeline, and `SUBAGENT_FINISHED` or `SUBAGENT_ERROR` settles it.
+ * The same fold runs live and on replay.
  *
  * Included automatically by {@link KabooProvider}; mount it yourself only when
  * composing providers by hand under an existing `<CopilotKit>`.
@@ -91,11 +92,13 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
 
   useEffect(() => {
     if (!agent) return;
+    setState(EMPTY);
     // The run enclosing the events currently streaming. Tracked from the
     // events themselves (not CopilotKit's request-scoped runId) so message
     // attribution is identical live and on replay, where one connect request
     // carries many historical runs.
     let currentRunId: string | undefined;
+    const memory = newFoldMemory();
     const recordRunId = (messageId: string | undefined) => {
       const runId = currentRunId;
       if (!messageId || !runId) return;
@@ -105,14 +108,17 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
           : { ...prev, [messageId]: { ...prev[messageId], runId } },
       );
     };
+    // Folded here, once per event, rather than in a state updater: the fold
+    // keeps partial tool arguments between events, and an updater can run twice.
+    let groups: ActivityState = EMPTY;
+    const apply = (next: ActivityState) => {
+      if (next === groups) return;
+      groups = next;
+      setState(next);
+    };
     const { unsubscribe } = agent.subscribe({
-      onActivitySnapshotEvent: ({ event }) => {
-        setState(event.content as unknown as ActivityState);
-      },
-      // Each response opens with a snapshot and then patches it, so the tree is
-      // sent once rather than re-sent on every change.
-      onActivityDeltaEvent: ({ event }) => {
-        setState((prev) => applyActivityPatch(prev, (event as { patch?: unknown }).patch));
+      onEvent: ({ event }) => {
+        apply(foldSubagentEvent(groups, event as unknown as SubagentEvent, memory));
       },
       onRunStartedEvent: ({ event }) => {
         currentRunId = (event as { runId?: string }).runId;
@@ -155,10 +161,10 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
       // groups there are genuinely still working.
       onRunFinishedEvent: (params) => {
         if ("outcome" in params && params.outcome === "interrupt") return;
-        setState(settleActiveGroups);
+        apply(settleActiveGroups(groups));
       },
-      onRunErrorEvent: () => setState(settleActiveGroups),
-      onRunFailed: () => setState(settleActiveGroups),
+      onRunErrorEvent: () => apply(settleActiveGroups(groups)),
+      onRunFailed: () => apply(settleActiveGroups(groups)),
     });
     return unsubscribe;
   }, [agent]);

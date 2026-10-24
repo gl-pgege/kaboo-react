@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import { useContext } from "react";
-import type { ActivityState, StreamGroup } from "../types";
+import type { ActivityState } from "../types";
 
 const { fakeAgent } = vi.hoisted(() => {
   type Sub = {
-    onActivitySnapshotEvent?: (p: { event: { content: unknown } }) => void;
-    onActivityDeltaEvent?: (p: { event: { patch: unknown } }) => void;
+    onEvent?: (p: { event: Record<string, unknown> }) => void;
     onCustomEvent?: (p: { event: { name: string; value: unknown } }) => void;
     onRunStartedEvent?: (p: { event: { runId?: string } }) => void;
     onTextMessageStartEvent?: (p: { event: { messageId?: string; timestamp?: number } }) => void;
@@ -28,11 +27,8 @@ const { fakeAgent } = vi.hoisted(() => {
           },
         };
       },
-      emit(content: unknown) {
-        for (const s of [...subscribers]) s.onActivitySnapshotEvent?.({ event: { content } });
-      },
-      emitDelta(patch: unknown) {
-        for (const s of [...subscribers]) s.onActivityDeltaEvent?.({ event: { patch } });
+      emitEvent(event: Record<string, unknown>) {
+        for (const s of [...subscribers]) s.onEvent?.({ event });
       },
       emitCustom(name: string, value: unknown) {
         for (const s of [...subscribers]) s.onCustomEvent?.({ event: { name, value } });
@@ -63,18 +59,6 @@ vi.mock("@copilotkit/react-core/v2", () => ({
 import { ActivityContext, KabooActivityProvider } from "./ActivityProvider";
 import { useMessageMeta, MESSAGE_META_EVENT } from "./MessageMeta";
 
-function group(agentName: string, overrides: Partial<StreamGroup> = {}): StreamGroup {
-  return {
-    title: agentName,
-    agentName,
-    parentGroup: null,
-    status: "active",
-    tools: [],
-    timeline: [],
-    ...overrides,
-  };
-}
-
 function Probe() {
   const { groups } = useContext<ActivityState>(ActivityContext);
   return <div data-testid="keys">{Object.keys(groups).sort().join(",")}</div>;
@@ -84,115 +68,129 @@ beforeEach(() => {
   fakeAgent.subscribers.length = 0;
 });
 
-describe("KabooActivityProvider — agent activity snapshots", () => {
-  it("exposes the snapshot's groups to consumers", () => {
-    render(
-      <KabooActivityProvider>
-        <Probe />
-      </KabooActivityProvider>,
-    );
+const started = (id: string, name: string, extra: Record<string, unknown> = {}) => ({
+  type: "SUBAGENT_STARTED",
+  subagentRunId: id,
+  name,
+  ...extra,
+});
 
-    act(() => {
-      fakeAgent.emit({ groups: { g1: group("researcher"), g2: group("analyst") } });
-    });
-
-    expect(screen.getByTestId("keys").textContent).toBe("g1,g2");
-  });
-
-  it("replaces state with the latest snapshot", () => {
-    render(
-      <KabooActivityProvider>
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
-    act(() => {
-      fakeAgent.emit({ groups: { g1: group("researcher") } });
-    });
-    act(() => {
-      fakeAgent.emit({ groups: { g2: group("analyst") } });
-    });
-
-    expect(screen.getByTestId("keys").textContent).toBe("g2");
-  });
-
-  it("patches the tree from an activity delta", () => {
-    render(
-      <KabooActivityProvider>
-        <Probe />
-      </KabooActivityProvider>,
-    );
-
-    act(() => {
-      fakeAgent.emit({ groups: { g1: group("researcher") } });
-    });
-    act(() => {
-      fakeAgent.emitDelta([{ op: "add", path: "/groups/g2", value: group("analyst") }]);
-    });
-
-    expect(screen.getByTestId("keys").textContent).toBe("g1,g2");
-  });
-
-  it("applies a patch to a nested value without disturbing the rest", () => {
-    function TextProbe() {
+describe("KabooActivityProvider — sub-agent events", () => {
+  it("opens a group per sub-agent invocation, attached to the call that started it", () => {
+    function Calls() {
       const { groups } = useContext<ActivityState>(ActivityContext);
-      const entry = groups.g1?.timeline?.[0];
-      return <div data-testid="text">{entry && "text" in entry ? entry.text : ""}</div>;
+      return (
+        <div data-testid="calls">
+          {Object.entries(groups)
+            .map(([id, g]) => `${id}:${g.agentName}:${g.toolCallId}:${g.parentGroup ?? "-"}`)
+            .join(",")}
+        </div>
+      );
     }
     render(
       <KabooActivityProvider>
-        <TextProbe />
+        <Calls />
       </KabooActivityProvider>,
     );
 
     act(() => {
-      fakeAgent.emit({
-        groups: { g1: group("researcher", { timeline: [{ type: "text", text: "one" }] }) },
-      });
-    });
-    act(() => {
-      fakeAgent.emitDelta([{ op: "replace", path: "/groups/g1/timeline/0/text", value: "one two" }]);
+      fakeAgent.emitEvent(started("o.analyze", "analyze", { parentToolCallId: "c1", metadata: { title: "Analyzing" } }));
+      fakeAgent.emitEvent(started("o.analyze.visualizer", "visualizer", { parentToolCallId: "c2", parentSubagentRunId: "o.analyze" }));
     });
 
-    expect(screen.getByTestId("text").textContent).toBe("one two");
+    expect(screen.getByTestId("calls").textContent).toBe(
+      "o.analyze:analyze:c1:-,o.analyze.visualizer:visualizer:c2:o.analyze",
+    );
   });
 
-  it("keeps the last good tree when a patch cannot be applied", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("streams a sub-agent's text and tool calls into its timeline, arguments included", () => {
+    function Timeline() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      const g = groups.s1;
+      return (
+        <div data-testid="timeline">
+          {JSON.stringify({
+            timeline: g?.timeline,
+            tools: g?.tools.map((t) => [t.toolName, t.status, t.toolInput, t.toolResult]),
+          })}
+        </div>
+      );
+    }
     render(
       <KabooActivityProvider>
-        <Probe />
+        <Timeline />
       </KabooActivityProvider>,
     );
 
     act(() => {
-      fakeAgent.emit({ groups: { g1: group("researcher") } });
+      fakeAgent.emitEvent(started("s1", "analyst"));
+      fakeAgent.emitEvent({ type: "TEXT_MESSAGE_START", messageId: "m1", subagentRunId: "s1" });
+      fakeAgent.emitEvent({ type: "TEXT_MESSAGE_CONTENT", messageId: "m1", delta: "Look", subagentRunId: "s1" });
+      fakeAgent.emitEvent({ type: "TEXT_MESSAGE_CONTENT", messageId: "m1", delta: "ing", subagentRunId: "s1" });
+      fakeAgent.emitEvent({ type: "TOOL_CALL_START", toolCallId: "t1", toolCallName: "run_sql", subagentRunId: "s1" });
+      fakeAgent.emitEvent({ type: "TOOL_CALL_ARGS", toolCallId: "t1", delta: '{"sql": "SELECT', subagentRunId: "s1" });
     });
-    act(() => {
-      // Patching into a group that does not exist.
-      fakeAgent.emitDelta([{ op: "replace", path: "/groups/nope/status", value: "error" }]);
+    expect(JSON.parse(screen.getByTestId("timeline").textContent ?? "{}")).toEqual({
+      timeline: [
+        { type: "text", text: "Looking" },
+        { type: "tool", toolUseId: "t1" },
+      ],
+      tools: [["run_sql", "running", { sql: "SELECT" }, null]],
     });
 
-    expect(screen.getByTestId("keys").textContent).toBe("g1");
-    expect(warn).toHaveBeenCalled();
-    warn.mockRestore();
+    act(() => {
+      fakeAgent.emitEvent({ type: "TOOL_CALL_ARGS", toolCallId: "t1", delta: ' 1"}', subagentRunId: "s1" });
+      fakeAgent.emitEvent({ type: "TOOL_CALL_RESULT", toolCallId: "t1", messageId: "r1", content: "1 row", subagentRunId: "s1" });
+    });
+    expect(JSON.parse(screen.getByTestId("timeline").textContent ?? "{}").tools).toEqual([
+      ["run_sql", "success", { sql: "SELECT 1" }, "1 row"],
+    ]);
   });
 
-  it("ignores an empty patch", () => {
+  it("settles a group from SUBAGENT_FINISHED, suspended or done, with its usage", () => {
+    function Done() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      return (
+        <div data-testid="done">
+          {Object.entries(groups)
+            .map(([id, g]) => `${id}=${g.status}:${g.usage?.totalTokens ?? 0}`)
+            .join(",")}
+        </div>
+      );
+    }
     render(
       <KabooActivityProvider>
-        <Probe />
+        <Done />
       </KabooActivityProvider>,
     );
 
     act(() => {
-      fakeAgent.emit({ groups: { g1: group("researcher") } });
+      fakeAgent.emitEvent(started("a", "analyst"));
+      fakeAgent.emitEvent(started("b", "visualizer"));
+      fakeAgent.emitEvent({ type: "SUBAGENT_FINISHED", subagentRunId: "a", outcome: { type: "success" }, metadata: { usage: { totalTokens: 7 } } });
+      fakeAgent.emitEvent({ type: "SUBAGENT_FINISHED", subagentRunId: "b", outcome: { type: "suspended" } });
     });
-    act(() => {
-      fakeAgent.emitDelta([]);
-    });
+    expect(screen.getByTestId("done").textContent).toBe("a=completed:7,b=interrupted:0");
+  });
 
-    expect(screen.getByTestId("keys").textContent).toBe("g1");
+  it("reopens a suspended invocation when a later run resumes it", () => {
+    function Runs() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      return <div data-testid="runs">{`${groups.a?.status}:${groups.a?.runIds?.join("+")}`}</div>;
+    }
+    render(
+      <KabooActivityProvider>
+        <Runs />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitEvent({ type: "RUN_STARTED", runId: "r1" });
+      fakeAgent.emitEvent(started("a", "analyst"));
+      fakeAgent.emitEvent({ type: "SUBAGENT_FINISHED", subagentRunId: "a", outcome: { type: "suspended" } });
+      fakeAgent.emitEvent({ type: "RUN_STARTED", runId: "r2" });
+      fakeAgent.emitEvent(started("a", "analyst"));
+    });
+    expect(screen.getByTestId("runs").textContent).toBe("active:r1+r2");
   });
 
   it("unsubscribes from the agent on unmount", () => {
@@ -227,7 +225,9 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
       </KabooActivityProvider>,
     );
     act(() => {
-      fakeAgent.emit({ groups: { g1: group("a"), g2: group("b", { status: "completed" }) } });
+      fakeAgent.emitEvent(started("g1", "a"));
+      fakeAgent.emitEvent(started("g2", "b"));
+      fakeAgent.emitEvent({ type: "SUBAGENT_FINISHED", subagentRunId: "g2" });
     });
     act(() => {
       fakeAgent.emitRunError();
@@ -246,16 +246,10 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
       </KabooActivityProvider>,
     );
     act(() => {
-      fakeAgent.emit({
-        groups: {
-          g1: group("a", {
-            tools: [
-              { toolUseId: "t1", toolName: "run_sql", status: "running" },
-              { toolUseId: "t2", toolName: "run_sql", status: "success" },
-            ],
-          }),
-        },
-      });
+      fakeAgent.emitEvent(started("g1", "a"));
+      fakeAgent.emitEvent({ type: "TOOL_CALL_START", toolCallId: "t1", toolCallName: "run_sql", subagentRunId: "g1" });
+      fakeAgent.emitEvent({ type: "TOOL_CALL_START", toolCallId: "t2", toolCallName: "run_sql", subagentRunId: "g1" });
+      fakeAgent.emitEvent({ type: "TOOL_CALL_RESULT", toolCallId: "t2", messageId: "x", content: "ok", subagentRunId: "g1" });
     });
     act(() => {
       fakeAgent.emitRunError();
@@ -270,7 +264,7 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
       </KabooActivityProvider>,
     );
     act(() => {
-      fakeAgent.emit({ groups: { g1: group("a") } });
+      fakeAgent.emitEvent(started("g1", "a"));
     });
     act(() => {
       fakeAgent.emitRunFinished("success");
@@ -285,7 +279,7 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
       </KabooActivityProvider>,
     );
     act(() => {
-      fakeAgent.emit({ groups: { g1: group("a") } });
+      fakeAgent.emitEvent(started("g1", "a"));
     });
     act(() => {
       fakeAgent.emitRunFinished("interrupt");

@@ -1,35 +1,60 @@
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
+import { useRenderToolCall } from "@copilotkit/react-core/v2";
+import { CopilotKitContext } from "@copilotkit/react-core/v2/context";
 import type { TimelineEntry, ToolCall } from "../types";
 import { ToolRow } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
 import { AskUserRow } from "./AskUserRow";
-import { useInterruptFor } from "../context/InterruptBridge";
-import { InterruptPrompt } from "./InterruptPrompt";
 import { useToolRenderer } from "../context/ToolRenderers";
+import { useActivity } from "../hooks/useActivity";
 import { resolveTimelineTool } from "../utils/timeline";
+import { SURFACE_TOOLS } from "../utils/surfaces";
+
+type RenderToolCallInput = Parameters<ReturnType<typeof useRenderToolCall>>[0];
+
+const NO_RENDERERS: readonly { name: string }[] = [];
+
+function useRegisteredRenderer(tool: ToolCall): boolean {
+  const copilotkit = useContext(CopilotKitContext)?.copilotkit;
+  const { groups } = useActivity();
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!copilotkit) return () => {};
+      const subscription = copilotkit.subscribe({ onRenderToolCallsChanged: onChange });
+      return () => subscription.unsubscribe();
+    },
+    [copilotkit],
+  );
+  const renderers = useSyncExternalStore(subscribe, () => copilotkit?.renderToolCalls ?? NO_RENDERERS);
+  const startsAgent = Object.values(groups).some((group) => group.toolCallId === tool.toolUseId);
+  return !startsAgent && renderers.some((renderer) => renderer.name === tool.toolName);
+}
+
+function RegisteredToolCall({ tool }: { tool: ToolCall }) {
+  const renderToolCall = useRenderToolCall();
+  const input: RenderToolCallInput = {
+    toolCall: {
+      id: tool.toolUseId,
+      type: "function",
+      function: { name: tool.toolName, arguments: JSON.stringify(tool.toolInput ?? {}) },
+    },
+    ...(tool.toolResult === undefined
+      ? {}
+      : { toolMessage: { id: `${tool.toolUseId}:result`, role: "tool", toolCallId: tool.toolUseId, content: tool.toolResult } }),
+  };
+  return renderToolCall(input);
+}
 
 /**
- * A regular tool row that also surfaces its own approval gate inline. When a
- * gated tool is awaiting approval it has an open interrupt anchored to this
- * tool-call id; the approval prompt (or the app's own request kind raised by
- * the tool) renders directly under the row so it
- * sits at the request it governs. With N tools gated in parallel each row owns
- * its own card and resolves independently.
- *
- * A `toolRenderers` registration for this tool's name replaces the built-in
- * row with the app's custom card (the inline gate still renders under it), so
- * per-tool interactive cards apply inside activity timelines exactly as they
- * do in the chat transcript.
+ * A tool call drawn by the renderer the app registered with CopilotKit for its
+ * name (`useRenderTool`), so a tool looks the same in the chat and inside agent
+ * cards; otherwise the app's `toolRenderers` card, or the built-in tool row.
  */
 function ToolTimelineRow({ tool }: { tool: ToolCall }) {
-  const interrupt = useInterruptFor(tool.toolUseId);
+  const registered = useRegisteredRenderer(tool);
   const CustomTool = useToolRenderer(tool.toolName);
-  return (
-    <>
-      {CustomTool ? <CustomTool tool={tool} /> : <ToolRow tool={tool} />}
-      {interrupt && <InterruptPrompt interrupt={interrupt} />}
-    </>
-  );
+  if (registered) return <RegisteredToolCall tool={tool} />;
+  return CustomTool ? <CustomTool tool={tool} /> : <ToolRow tool={tool} />;
 }
 
 /** Props for {@link Timeline}. */
@@ -74,7 +99,7 @@ export function Timeline({
       {timeline.map((entry, i) => {
         if (entry.type === "tool") {
           const tool = resolveTimelineTool(entry, tools);
-          if (!tool) return null;
+          if (!tool || SURFACE_TOOLS.has(tool.toolName)) return null;
           const key = tool.toolUseId || i;
           const card = renderToolCard?.(tool.toolUseId);
           if (card) return <Fragment key={key}>{card}</Fragment>;

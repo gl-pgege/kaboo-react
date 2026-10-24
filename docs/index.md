@@ -6,8 +6,8 @@
 
 kaboo-react renders a live, hierarchical view of what your agents are doing —
 sub-agent cards, tool calls, streamed tokens, structured outputs, drill-down
-navigation, and human-in-the-loop interrupts. Activity rides the **same AG-UI run
-stream** as the chat (as `ACTIVITY_SNAPSHOT` events), so there is no separate
+navigation, questions and approvals. Sub-agents ride the **same AG-UI run
+stream** as the chat, as AG-UI's own `SUBAGENT_*` events, so there is no separate
 endpoint to wire up.
 
 ## Install
@@ -20,7 +20,7 @@ npm install @pgege/kaboo-react
 pnpm add @pgege/kaboo-react
 ```
 
-Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.78).
+Peer dependencies: `react`, `react-dom`, `@copilotkit/react-core` (>= 1.79.1).
 
 Import the stylesheet once, near your app root:
 
@@ -51,10 +51,11 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 ## Next steps
 
 - [Getting started](getting-started.md) — a step-by-step walkthrough.
-- [Concepts](concepts.md) — the data model (`ACTIVITY_SNAPSHOT` → `StreamGroup`).
+- [Concepts](concepts.md) — the data model (sub-agent events → `StreamGroup`) and the canvas hooks.
 - [Theming](theming.md) — CSS variables and `--kaboo-*` tokens.
 - [Structured renderers](structured-renderers.md) — custom UI for schema output.
-- [Human-in-the-loop](hitl.md) — approvals, forms, and parallel gates.
+- [Human-in-the-loop](hitl.md) — questions, requests, approvals, and parallel gates.
+- [Generative UI](generative-ui.md) — A2UI, Open Generative UI and MCP Apps.
 - [Activity panel & drill-down](activity-panel.md) — the activity tree.
 - [CopilotKit subpath](copilotkit-subpath.md) — the `kaboo-react/copilotkit` barrel.
 - [Troubleshooting](troubleshooting.md) — styles, empty tree, peer versions.

@@ -2,12 +2,14 @@ import { useState } from "react";
 import type { ToolCall } from "../types";
 import { formatToolInput } from "../formatters/input";
 import { formatToolResult, isCancelledResult } from "../formatters/output";
-import { MiniTable } from "./MiniTable";
+import { parseToolValue, toolTitle } from "../formatters/value";
+import { ValueView } from "./ValueView";
 
 /**
- * Renders a single {@link ToolCall} as a collapsible row: status icon, label, an
- * input summary, and — when expanded — the formatted result (a {@link MiniTable}
- * for tabular JSON, otherwise text). Used inside the {@link Timeline}.
+ * Renders a single {@link ToolCall} as a collapsible row: status icon, label (the
+ * tool's name read as words when it has no label), an input summary, and — when
+ * expanded — the input and result laid out as fields and tables, never JSON.
+ * Used inside the {@link Timeline}.
  *
  * @example
  * ```tsx
@@ -30,8 +32,9 @@ export function ToolRow({ tool }: { tool: ToolCall }) {
   const [open, setOpen] = useState(false);
   const cancelled = tool.status === "cancelled" || isCancelledResult(tool.toolResult);
   const isDone = tool.status !== "running";
-  const label = tool.toolLabel || tool.toolName;
+  const label = tool.toolLabel || toolTitle(tool.toolName);
   const { summary: inputSummary } = formatToolInput(tool.toolInput);
+  const hasInput = Boolean(inputSummary);
 
   return (
     <div className="kaboo-tool-row">
@@ -85,8 +88,10 @@ export function ToolRow({ tool }: { tool: ToolCall }) {
 
       {open && (
         <div className="kaboo-tool-row-detail">
-          {inputSummary && (
-            <div className="kaboo-tool-input">{inputSummary}</div>
+          {hasInput && (
+            <div className="kaboo-tool-input">
+              <ValueView value={tool.toolInput} />
+            </div>
           )}
           {tool.toolResult && <ToolResultBlock raw={tool.toolResult} cancelled={cancelled} />}
         </div>
@@ -101,13 +106,13 @@ function ToolResultBlock({ raw, cancelled }: { raw: string; cancelled?: boolean 
     const message = /user (rejected|declined)/i.test(text) ? text : "Declined by user.";
     return <div className="kaboo-tool-result kaboo-tool-result-cancelled">{message}</div>;
   }
-  const { rows, text } = formatToolResult(raw);
-  if (rows) {
-    return (
-      <div className="kaboo-tool-result kaboo-tool-result-table">
-        <MiniTable rows={rows} />
-      </div>
-    );
+  const value = parseToolValue(raw);
+  if (value === undefined || typeof value === "string") {
+    return <div className="kaboo-tool-result">{value ?? raw}</div>;
   }
-  return <div className="kaboo-tool-result">{text}</div>;
+  return (
+    <div className="kaboo-tool-result kaboo-tool-result-value">
+      <ValueView value={value} />
+    </div>
+  );
 }

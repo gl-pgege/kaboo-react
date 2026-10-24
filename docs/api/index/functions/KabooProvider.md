@@ -6,10 +6,10 @@
 
 > **KabooProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/KabooProvider.tsx:94](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L94)
+Defined in: [src/context/KabooProvider.tsx:103](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L103)
 
 Batteries-included CopilotKit plugin. Renders `<CopilotKit>` and nests every
-kaboo context (activity -> drill -> interrupt bridge) plus the built-in HITL
+kaboo context (activity -> drill -> renderers) plus the built-in request
 and inline-card handlers, so integrators drop this once near the root and use
 only kaboo-react. Activity rides the AG-UI run stream, so there is no separate
 activity endpoint to configure.

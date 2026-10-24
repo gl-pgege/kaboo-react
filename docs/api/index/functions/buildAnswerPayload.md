@@ -6,7 +6,7 @@
 
 > **buildAnswerPayload**(`questions`, `answers`): `Record`\<`string`, `string` \| `string`[]\>
 
-Defined in: [src/formatters/askUser.ts:91](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/askUser.ts#L91)
+Defined in: [src/formatters/askUser.ts:74](https://github.com/gl-pgege/kaboo-react/blob/main/src/formatters/askUser.ts#L74)
 
 Build the answer a question card sends back: a `{question: answer}` map,
 with a list for a multi-select question and the person's own words for
