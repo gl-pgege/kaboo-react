@@ -1698,6 +1698,14 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.13.1
+
+**Who:** no one needs to change anything.
+
+An agent card that mounts already finished, such as on a replayed thread,
+starts collapsed, as a card that finishes while you watch already did. Click
+its header to open it.
+
 ## 0.13
 
 0.13 reads what kaboo-workflows 0.32 adds to tool results (an error status, the

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.1]
+
+### Fixed
+
+- **An agent card that mounts already finished starts collapsed**, as a card
+  that finishes while you watch already did: a replayed thread, or a card
+  inside a section the app keeps closed, no longer opens every finished agent
+  with its whole task. A card that captured an `ask_user` answer, or whose
+  agent failed, still opens.
+
 ## [0.13.0]
 
 ### Added

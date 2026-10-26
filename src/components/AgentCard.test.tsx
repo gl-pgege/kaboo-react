@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
 import { ToolRenderersProvider } from "../context/ToolRenderers";
@@ -23,6 +23,26 @@ function withActivity(groups: Record<string, StreamGroup>, node: ReactNode) {
   const state: ActivityState = { groups };
   return <ActivityContext.Provider value={state}>{node}</ActivityContext.Provider>;
 }
+
+const open = (title: string) => fireEvent.click(screen.getByText(title));
+
+describe("AgentCard expansion", () => {
+  it("starts a card that mounts already finished collapsed, and opens it from the header", () => {
+    const g = group({ agentName: "researcher", title: "Researcher", status: "completed", task: "Find the churn drivers" });
+    render(withActivity({ r: g }, <AgentCard groupId="r" group={g} result="Churn rose in APAC." />));
+
+    expect(screen.queryByText("Churn rose in APAC.")).toBeNull();
+    open("Researcher");
+    expect(screen.getByText("Churn rose in APAC.")).toBeInTheDocument();
+  });
+
+  it("keeps a running card open", () => {
+    const g = group({ agentName: "researcher", title: "Researcher", status: "active", timeline: [{ type: "text", text: "Looking at churn" }] });
+    render(withActivity({ r: g }, <AgentCard groupId="r" group={g} />));
+
+    expect(screen.getByText("Looking at churn")).toBeInTheDocument();
+  });
+});
 
 describe("AgentCard cancellation echo", () => {
   it("does not render a bare {\"status\":\"cancelled\"} delegate result", () => {
@@ -60,6 +80,7 @@ describe("AgentCard cancellation echo", () => {
       ),
     );
 
+    open("Researcher");
     expect(screen.getByText("Here is the answer.")).toBeInTheDocument();
   });
 
@@ -85,6 +106,7 @@ describe("AgentCard cancellation echo", () => {
       ),
     );
 
+    open("Researcher");
     expect(screen.getAllByText("Here is the answer.")).toHaveLength(1);
   });
 });
@@ -329,6 +351,7 @@ describe("AgentCard app overrides", () => {
       </ToolRenderersProvider>,
     );
 
+    open("Visualizer");
     expect(screen.getByTestId("app-result").textContent).toBe("d_2");
     expect(screen.queryByText("Dashboard d_2 is ready.")).toBeNull();
     expect(screen.queryByText(/Structured output/)).toBeNull();
@@ -341,6 +364,7 @@ describe("AgentCard app overrides", () => {
       </ToolRenderersProvider>,
     );
 
+    open("Visualizer");
     expect(screen.getByText("Dashboard d_2 is ready.")).toBeInTheDocument();
     expect(screen.getByText(/Structured output/)).toBeInTheDocument();
   });
@@ -351,6 +375,8 @@ describe("AgentCard app overrides", () => {
         {withActivity({ v: finished }, <AgentCard groupId="v" group={finished} result="Dashboard d_2 is ready." />)}
       </ToolRenderersProvider>,
     );
+
+    open("Visualizer");
 
     expect(screen.getAllByTestId("app-markdown").map((node) => node.textContent)).toEqual([
       "Build the dashboard",

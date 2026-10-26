@@ -73,14 +73,15 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   const isStopped = group.status === "stopped";
   // Anything not actively running: stops timeline animation and auto-scroll.
   const isSettled = isDone || isStopped || isError;
-  const [expanded, setExpanded] = useState(true);
+  // Keep cards that captured a human-in-the-loop `ask_user` expanded on
+  // completion so the answered Q&A stays visible, matching the top-level path.
+  // Cards with no interaction still auto-collapse to keep deep trees tidy, and
+  // a card that mounts already finished (a replayed thread) starts collapsed.
+  const hasInteraction = group.tools.some((t) => t.toolName === "ask_user");
+  const [expanded, setExpanded] = useState(() => hasInteraction || !(isDone || isStopped));
   const prevDone = useRef(isDone);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  // Keep cards that captured a human-in-the-loop `ask_user` expanded on
-  // completion so the answered Q&A stays visible, matching the top-level path.
-  // Cards with no interaction still auto-collapse to keep deep trees tidy.
-  const hasInteraction = group.tools.some((t) => t.toolName === "ask_user");
   useEffect(() => {
     if (!prevDone.current && isDone && !hasInteraction) setExpanded(false);
     prevDone.current = isDone;
