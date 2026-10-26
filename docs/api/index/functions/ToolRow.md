@@ -6,7 +6,7 @@
 
 > **ToolRow**(`__namedParameters`): `Element`
 
-Defined in: [src/components/ToolRow.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ToolRow.tsx#L31)
+Defined in: [src/components/ToolRow.tsx:89](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/ToolRow.tsx#L89)
 
 Renders a single [ToolCall](../interfaces/ToolCall.md) as a collapsible row: status icon, label (the
 tool's name read as words when it has no label), an input summary, and — when
@@ -16,6 +16,10 @@ Used inside the [Timeline](Timeline.md).
 ## Parameters
 
 ### \_\_namedParameters
+
+#### icon?
+
+`ReactNode`
 
 #### tool
 

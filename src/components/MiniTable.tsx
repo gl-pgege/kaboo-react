@@ -1,4 +1,4 @@
-import { describeValue } from "../formatters/value";
+import { describeValue, TRUNCATED_KEY } from "../formatters/value";
 
 /**
  * Compact table for row-shaped tool results. Columns are inferred from the first
@@ -15,11 +15,19 @@ import { describeValue } from "../formatters/value";
  * }
  * ```
  */
-export function MiniTable({ rows, maxRows = 8 }: { rows: Record<string, unknown>[]; maxRows?: number }) {
+export function MiniTable({
+  rows,
+  maxRows = 8,
+  truncated = 0,
+}: {
+  rows: Record<string, unknown>[];
+  maxRows?: number;
+  truncated?: number;
+}) {
   if (rows.length === 0) return null;
-  const cols = Object.keys(rows[0]);
+  const cols = Object.keys(rows[0]).filter((c) => c !== TRUNCATED_KEY);
   const display = rows.slice(0, maxRows);
-  const remaining = rows.length - maxRows;
+  const remaining = Math.max(rows.length - maxRows, 0) + truncated;
 
   return (
     <div style={{ overflowX: "auto" }}>

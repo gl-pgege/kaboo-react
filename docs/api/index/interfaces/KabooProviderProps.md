@@ -14,7 +14,7 @@ Props for [KabooProvider](../functions/KabooProvider.md).
 
 > `optional` **a2ui?**: `object`
 
-Defined in: [src/context/KabooProvider.tsx:69](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L69)
+Defined in: [src/context/KabooProvider.tsx:73](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L73)
 
 The A2UI catalog, theme and action handler.
 
@@ -84,7 +84,7 @@ all three (`once`, `thread`, `always`).
 
 > **children**: `ReactNode`
 
-Defined in: [src/context/KabooProvider.tsx:75](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L75)
+Defined in: [src/context/KabooProvider.tsx:79](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L79)
 
 Your app subtree, rendered inside all kaboo contexts.
 
@@ -92,9 +92,9 @@ Your app subtree, rendered inside all kaboo contexts.
 
 ### copilotKitProps?
 
-> `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"agentId"` \| `"children"` \| `"agent"` \| `"threadId"` \| `"runtimeUrl"`\>\>
+> `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"agentId"` \| `"children"` \| `"agent"` \| `"runtimeUrl"` \| `"threadId"`\>\>
 
-Defined in: [src/context/KabooProvider.tsx:73](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L73)
+Defined in: [src/context/KabooProvider.tsx:77](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L77)
 
 Any other props for the underlying `<CopilotKit>`.
 
@@ -104,7 +104,7 @@ Any other props for the underlying `<CopilotKit>`.
 
 > `optional` **disableInlineCards?**: `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:50](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L50)
+Defined in: [src/context/KabooProvider.tsx:54](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L54)
 
 Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/KabooInlineCards.md).
 
@@ -114,9 +114,17 @@ Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/Ka
 
 > `optional` **disableInterruptHandler?**: `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:42](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L42)
+Defined in: [src/context/KabooProvider.tsx:46](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L46)
 
 Skip auto-mounting the built-in [KabooInterruptHandler](../../copilotkit/functions/KabooInterruptHandler.md).
+
+***
+
+### fallbackToolRenderer?
+
+> `optional` **fallbackToolRenderer?**: `ComponentType`\<[`ToolRendererProps`](ToolRendererProps.md)\>
+
+Defined in: [src/context/KabooProvider.tsx:41](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L41)
 
 ***
 
@@ -131,11 +139,47 @@ Renderer overrides for the built-in HITL handler, keyed by request kind:
 
 ***
 
+### isReadOnlyTool?
+
+> `optional` **isReadOnlyTool?**: (`toolName`) => `boolean`
+
+Defined in: [src/context/KabooProvider.tsx:44](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L44)
+
+#### Parameters
+
+##### toolName
+
+`string`
+
+#### Returns
+
+`boolean`
+
+***
+
+### markdownRenderer?
+
+> `optional` **markdownRenderer?**: (`text`) => `ReactNode`
+
+Defined in: [src/context/KabooProvider.tsx:42](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L42)
+
+#### Parameters
+
+##### text
+
+`string`
+
+#### Returns
+
+`ReactNode`
+
+***
+
 ### onInterruptError?
 
 > `optional` **onInterruptError?**: (`message`) => `void`
 
-Defined in: [src/context/KabooProvider.tsx:48](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L48)
+Defined in: [src/context/KabooProvider.tsx:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L52)
 
 Called with the reason when a person's answer never reached the agent;
 the requests come back to be answered again. See
@@ -157,7 +201,7 @@ the requests come back to be answered again. See
 
 > `optional` **openGenerativeUI?**: `object`
 
-Defined in: [src/context/KabooProvider.tsx:71](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L71)
+Defined in: [src/context/KabooProvider.tsx:75](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L75)
 
 Open Generative UI: the sandbox functions and the design skill.
 
@@ -189,7 +233,7 @@ await Websandbox.connection.remote.<functionName>(args)
 
 > `optional` **properties?**: `Record`\<`string`, `any`\>
 
-Defined in: [src/context/KabooProvider.tsx:63](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L63)
+Defined in: [src/context/KabooProvider.tsx:67](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L67)
 
 Sent to the agent as `forwardedProps` with every run.
 
@@ -199,7 +243,7 @@ Sent to the agent as `forwardedProps` with every run.
 
 > `optional` **references?**: [`ReferenceProvider`](ReferenceProvider.md)\<`unknown`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:55](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L55)
+Defined in: [src/context/KabooProvider.tsx:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L59)
 
 `@` reference providers made available to the composer / `useReferences`.
 File upload is not implicit — include `uploadProvider()` to offer uploads.
@@ -210,9 +254,27 @@ File upload is not implicit — include `uploadProvider()` to offer uploads.
 
 > `optional` **renderActivityMessages?**: `ReactActivityMessageRenderer`\<`any`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:67](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L67)
+Defined in: [src/context/KabooProvider.tsx:71](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L71)
 
 Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps.
+
+***
+
+### renderAgentResult?
+
+> `optional` **renderAgentResult?**: (`group`) => `ReactNode`
+
+Defined in: [src/context/KabooProvider.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L43)
+
+#### Parameters
+
+##### group
+
+[`StreamGroup`](StreamGroup.md)
+
+#### Returns
+
+`ReactNode`
 
 ***
 
@@ -220,7 +282,7 @@ Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps.
 
 > `optional` **renderToolCalls?**: `ReactToolCallRenderer`\<`any`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:65](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L65)
+Defined in: [src/context/KabooProvider.tsx:69](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L69)
 
 Renderers for tool calls: the controlled tier of generative UI.
 
@@ -240,7 +302,7 @@ URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
 > `optional` **slots?**: [`KabooSlots`](KabooSlots.md)
 
-Defined in: [src/context/KabooProvider.tsx:61](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L61)
+Defined in: [src/context/KabooProvider.tsx:65](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L65)
 
 App-supplied render slots for the chat surfaces (end-of-turn footer,
 per-message footers, run-start indicator). All optional; nothing is

@@ -872,6 +872,7 @@ __metadata:
     jsdom: "npm:^30.1.2"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
+    streamdown: "npm:^1.3.0"
     tsup: "npm:^9.0.0"
     typedoc: "npm:^0.28.20"
     typedoc-plugin-markdown: "npm:^4.14.0"

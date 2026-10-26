@@ -25,6 +25,8 @@ export {
   useToolRenderer,
 } from "./context/ToolRenderers";
 export type { ToolRenderers, ToolRendererProps } from "./context/ToolRenderers";
+export { useToolCallMeta } from "./context/ToolCallMeta";
+export type { ToolCallMeta } from "./context/ToolCallMeta";
 
 export { useActivity } from "./hooks/useActivity";
 export { useDrill } from "./hooks/useDrill";

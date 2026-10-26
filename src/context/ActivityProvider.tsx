@@ -12,13 +12,13 @@ const EMPTY: ActivityState = { groups: {} };
  * cards or tool rows spinning forever. Identity is preserved when nothing was
  * active, avoiding a render.
  */
-function settleActiveGroups(state: ActivityState): ActivityState {
+function settleActiveGroups(state: ActivityState, endedAt = Date.now()): ActivityState {
   let changed = false;
   const groups: Record<string, StreamGroup> = {};
   for (const [id, g] of Object.entries(state.groups)) {
     if (g.status === "active") {
       const tools = g.tools?.some((t) => t.status === "running")
-        ? g.tools.map((t) => (t.status === "running" ? { ...t, status: "cancelled" as const } : t))
+        ? g.tools.map((t) => (t.status === "running" ? { ...t, status: "cancelled" as const, endedAt } : t))
         : g.tools;
       groups[id] = { ...g, status: "stopped", tools };
       changed = true;
@@ -161,9 +161,9 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
       // groups there are genuinely still working.
       onRunFinishedEvent: (params) => {
         if ("outcome" in params && params.outcome === "interrupt") return;
-        apply(settleActiveGroups(groups));
+        apply(settleActiveGroups(groups, params.event?.timestamp));
       },
-      onRunErrorEvent: () => apply(settleActiveGroups(groups)),
+      onRunErrorEvent: ({ event }) => apply(settleActiveGroups(groups, event?.timestamp)),
       onRunFailed: () => apply(settleActiveGroups(groups)),
     });
     return unsubscribe;

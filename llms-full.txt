@@ -776,6 +776,67 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 An approval on a gated tool still renders with your card, so a custom renderer
 never hides a pending question.
 
+## Status, errors and timing
+
+Inside an agent's timeline, every renderer (CopilotKit's, `toolRenderers` and
+the fallback) can read its call's state with `useToolCallMeta()`: `status`
+(`running`, `success`, `error` or `cancelled`), the `label` the agent gave it,
+`error` and `fix` when it failed, `startedAt` and `endedAt`, `toolCallId` and
+`agentName`. It returns `null` outside a timeline.
+
+```tsx
+import { useToolCallMeta } from "@pgege/kaboo-react";
+
+export function CallStatus() {
+  const meta = useToolCallMeta();
+  if (!meta) return null;
+  if (meta.status === "error") return <p role="alert">{meta.error}{meta.fix ? ` ${meta.fix}` : ""}</p>;
+  const took = meta.startedAt !== undefined && meta.endedAt !== undefined ? meta.endedAt - meta.startedAt : undefined;
+  return <span>{meta.label ?? meta.status}{took !== undefined ? ` · ${took} ms` : ""}</span>;
+}
+```
+
+A registered renderer gets a failed or cancelled call with CopilotKit's
+`complete` status, so it stops spinning; this hook says which it was.
+
+## Every other tool: `fallbackToolRenderer`
+
+`fallbackToolRenderer` replaces the built-in `ToolRow` for any tool with no
+renderer of its own, in agent timelines and in the chat, so an app can give
+every call the same frame. `isReadOnlyTool` tells the timeline which tools only
+read, and folds two or more consecutive reads into one row ("Read 3 items")
+that expands to the calls:
+
+```tsx
+import { KabooProvider, useToolCallMeta } from "@pgege/kaboo-react";
+import type { ToolRendererProps } from "@pgege/kaboo-react";
+
+function AnyTool({ tool }: ToolRendererProps) {
+  const meta = useToolCallMeta();
+  return (
+    <div>
+      {tool.toolLabel ?? tool.toolName} · {meta?.status ?? tool.status}
+    </div>
+  );
+}
+
+const READS = /___(get|list|read|search)_/;
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      fallbackToolRenderer={AnyTool}
+      isReadOnlyTool={(name) => READS.test(name)}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
 ## Making a card interactive
 
 The card is ordinary React inside your app's tree, so a click handler may open a
@@ -1637,6 +1698,77 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.13
+
+0.13 reads what kaboo-workflows 0.32 adds to tool results (an error status, the
+error and its fix, a label, and JSON previews that record what they cut), and
+still reads older agents: their calls simply never fail. It needs no
+CopilotKit change.
+
+### Registered renderers get failed and cancelled calls as complete
+
+**Who:** apps that register tool renderers with CopilotKit (`useRenderTool`,
+`renderToolCalls`).
+
+A call that failed, or that its run abandoned, used to stay `executing`, so the
+card spun forever. It now reaches your renderer as `complete`, and
+`useToolCallMeta()` says what really happened:
+
+```diff
+  render: ({ status, result }) =>
+-   status === "complete" ? <Done result={result} /> : <Spinner />
++   status === "complete" ? <Finished result={result} /> : <Spinner />
+
++ function Finished({ result }: { result?: string }) {
++   const meta = useToolCallMeta();
++   if (meta?.status === "error") return <Failed message={meta.error} fix={meta.fix} />;
++   if (meta?.status === "cancelled") return <Stopped />;
++   return <Done result={result} />;
++ }
+```
+
+`useToolCallMeta()` returns `null` outside an agent's timeline. See
+[Custom tool cards](tool-cards.md#status-errors-and-timing).
+
+### Tool rows and status dots
+
+**Who:** apps that restyle `.kaboo-tool-dot-*`.
+
+The row is one line (icon, label, target, status icon and duration) and a
+finished call shows a check instead of the word "done". The status icons are
+drawn with `currentColor`, so their classes set `color`:
+
+```diff
+- .kaboo-tool-dot-success { fill: green; }
++ .kaboo-tool-dot-success { color: green; }
+```
+
+A failed sub-agent's card has the new `--kaboo-error-bg` token behind its
+error.
+
+### Markdown
+
+**Who:** apps that restyle `.kaboo-md-li` or `.kaboo-md-spacer`.
+
+Agent text renders as GitHub-flavored markdown with Streamdown, which keeps
+text that is still streaming from showing an unclosed `**`. Lists are real
+`ul` and `ol` elements, so `.kaboo-md-li` is a list item inside them and
+`.kaboo-md-spacer` is gone. To draw agent text with your own renderer instead:
+
+```diff
+- <KabooProvider runtimeUrl={url} agent={agent}>
++ <KabooProvider runtimeUrl={url} agent={agent} markdownRenderer={(text) => <MyMarkdown text={text} />}>
+```
+
+### New, optional
+
+- **`fallbackToolRenderer`** draws every tool with no renderer of its own, in
+  agent timelines and in the chat.
+- **`isReadOnlyTool`** folds two or more consecutive reads in an agent's
+  timeline into one row ("Read 3 items").
+- **`renderAgentResult`** replaces the result area of an agent's card and its
+  drill-in view.
+
 ## 0.12.1
 
 **Who:** no one needs to change anything.
@@ -2022,6 +2154,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`useMessageMeta`](api/index/functions/useMessageMeta.md)
 - [`useReferences`](api/index/functions/useReferences.md)
 - [`useRequestTool`](api/index/functions/useRequestTool.md)
+- [`useToolCallMeta`](api/index/functions/useToolCallMeta.md)
 - [`useToolRenderer`](api/index/functions/useToolRenderer.md)
 - [`useTurnFeedback`](api/index/functions/useTurnFeedback.md)
 - [`useTurnGroups`](api/index/functions/useTurnGroups.md)
@@ -2083,6 +2216,7 @@ Generated by `yarn docs:api` from the TypeDoc output. Every public export of bot
 - [`TimelineProps`](api/index/interfaces/TimelineProps.md)
 - [`TokenUsage`](api/index/interfaces/TokenUsage.md)
 - [`ToolCall`](api/index/interfaces/ToolCall.md)
+- [`ToolCallMeta`](api/index/interfaces/ToolCallMeta.md)
 - [`ToolRendererProps`](api/index/interfaces/ToolRendererProps.md)
 - [`TurnFeedbackProps`](api/index/interfaces/TurnFeedbackProps.md)
 - [`TurnFeedbackState`](api/index/interfaces/TurnFeedbackState.md)

@@ -29,6 +29,8 @@ vi.mock("../integrations/KabooInlineCards", () => ({
 }));
 
 import { KabooProvider } from "./KabooProvider";
+import { useRenderOptions } from "./ToolRenderers";
+import { MarkdownContent } from "../components/MarkdownContent";
 
 beforeEach(() => {
   capturedProps.current = {};
@@ -97,5 +99,33 @@ describe("KabooProvider", () => {
     expect(capturedProps.current.agent).toBe("entry");
     expect(capturedProps.current.agentId).toBe("entry");
     expect(capturedProps.current["data-forwarded"]).toBe("yes");
+  });
+
+  it("hands its rendering overrides to the cards below", () => {
+    const fallbackToolRenderer = () => <div />;
+    const renderAgentResult = () => null;
+    const isReadOnlyTool = (name: string) => name.startsWith("get_");
+    const seen: Record<string, unknown> = {};
+    function Probe() {
+      Object.assign(seen, useRenderOptions());
+      return null;
+    }
+    render(
+      <KabooProvider
+        runtimeUrl="/api/copilotkit"
+        agent="entry"
+        markdownRenderer={(text) => <span data-testid="app-markdown">{text}</span>}
+        fallbackToolRenderer={fallbackToolRenderer}
+        renderAgentResult={renderAgentResult}
+        isReadOnlyTool={isReadOnlyTool}
+      >
+        <Probe />
+        <MarkdownContent text="**hi**" />
+      </KabooProvider>,
+    );
+    expect(screen.getByTestId("app-markdown").textContent).toBe("**hi**");
+    expect(seen.fallbackToolRenderer).toBe(fallbackToolRenderer);
+    expect(seen.renderAgentResult).toBe(renderAgentResult);
+    expect(seen.isReadOnlyTool).toBe(isReadOnlyTool);
   });
 });

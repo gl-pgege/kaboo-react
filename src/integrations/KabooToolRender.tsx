@@ -1,6 +1,7 @@
 import { useDefaultRenderTool } from "@copilotkit/react-core/v2";
 import { useActivity } from "../hooks/useActivity";
 import { ToolRow } from "../components/ToolRow";
+import { useRenderOptions } from "../context/ToolRenderers";
 import { isControlOnlyStatus } from "../formatters/output";
 import type { StreamGroup, ToolCall } from "../types";
 import { SURFACE_TOOLS } from "../utils/surfaces";
@@ -45,6 +46,7 @@ function isDelegateSpawn(
  */
 export function KabooToolRender() {
   const { groups } = useActivity();
+  const { fallbackToolRenderer: Fallback } = useRenderOptions();
 
   useDefaultRenderTool(
     {
@@ -66,6 +68,7 @@ export function KabooToolRender() {
               controlEcho || typeof result !== "string" ? undefined : result,
             status: status === "complete" ? "success" : "running",
           };
+        if (Fallback) return <Fallback tool={tool} />;
         return (
           <div className="kaboo-inline-tool">
             <ToolRow tool={tool} />
@@ -73,7 +76,7 @@ export function KabooToolRender() {
         );
       },
     },
-    [groups],
+    [groups, Fallback],
   );
 
   return null;

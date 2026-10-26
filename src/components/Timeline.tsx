@@ -1,11 +1,12 @@
-import { Fragment, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useRenderToolCall } from "@copilotkit/react-core/v2";
 import { CopilotKitContext } from "@copilotkit/react-core/v2/context";
 import type { TimelineEntry, ToolCall } from "../types";
-import { ToolRow } from "./ToolRow";
+import { Chevron, ToolRow, ToolStatusIcon } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
 import { AskUserRow } from "./AskUserRow";
-import { useToolRenderer } from "../context/ToolRenderers";
+import { useRenderOptions, useToolRenderer } from "../context/ToolRenderers";
+import { ToolCallMetaContext, toolCallMeta, toolCallStatus } from "../context/ToolCallMeta";
 import { useActivity } from "../hooks/useActivity";
 import { resolveTimelineTool } from "../utils/timeline";
 import { SURFACE_TOOLS } from "../utils/surfaces";
@@ -38,9 +39,16 @@ function RegisteredToolCall({ tool }: { tool: ToolCall }) {
       type: "function",
       function: { name: tool.toolName, arguments: JSON.stringify(tool.toolInput ?? {}) },
     },
-    ...(tool.toolResult === undefined
+    ...(tool.status === "running"
       ? {}
-      : { toolMessage: { id: `${tool.toolUseId}:result`, role: "tool", toolCallId: tool.toolUseId, content: tool.toolResult } }),
+      : {
+          toolMessage: {
+            id: `${tool.toolUseId}:result`,
+            role: "tool",
+            toolCallId: tool.toolUseId,
+            content: tool.toolResult ?? tool.error ?? "",
+          },
+        }),
   };
   return renderToolCall(input);
 }
@@ -50,11 +58,52 @@ function RegisteredToolCall({ tool }: { tool: ToolCall }) {
  * name (`useRenderTool`), so a tool looks the same in the chat and inside agent
  * cards; otherwise the app's `toolRenderers` card, or the built-in tool row.
  */
-function ToolTimelineRow({ tool }: { tool: ToolCall }) {
+function ToolTimelineRow({ tool, agentName }: { tool: ToolCall; agentName?: string }) {
   const registered = useRegisteredRenderer(tool);
   const CustomTool = useToolRenderer(tool.toolName);
-  if (registered) return <RegisteredToolCall tool={tool} />;
-  return CustomTool ? <CustomTool tool={tool} /> : <ToolRow tool={tool} />;
+  const Fallback = useRenderOptions().fallbackToolRenderer ?? ToolRow;
+  const meta = useMemo(() => toolCallMeta(tool, agentName), [tool, agentName]);
+  return (
+    <ToolCallMetaContext.Provider value={meta}>
+      {registered ? <RegisteredToolCall tool={tool} /> : CustomTool ? <CustomTool tool={tool} /> : <Fallback tool={tool} />}
+    </ToolCallMetaContext.Provider>
+  );
+}
+
+function ReadGroup({ tools, agentName }: { tools: ToolCall[]; agentName?: string }) {
+  const [open, setOpen] = useState(false);
+  const statuses = tools.map(toolCallStatus);
+  const running = statuses.includes("running");
+  const failed = statuses.filter((status) => status === "error").length;
+  const label = running
+    ? `Reading ${tools.length} items`
+    : `Read ${tools.length} items${failed > 0 ? `, ${failed} failed` : ""}`;
+  return (
+    <div className="kaboo-tool-row kaboo-tool-group">
+      <button type="button" className="kaboo-tool-row-header" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span className="kaboo-tool-row-icon">
+          <svg width={12} height={12} viewBox="0 0 16 16">
+            <path d="M3 4h10M3 8h10M3 12h6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </span>
+        <span className="kaboo-tool-row-label">{label}</span>
+        <span className="kaboo-tool-row-summary" />
+        <ToolStatusIcon
+          status={
+            running ? "running" : failed > 0 ? "error" : statuses.every((status) => status === "cancelled") ? "cancelled" : "success"
+          }
+        />
+        <Chevron open={open} />
+      </button>
+      {open && (
+        <div className="kaboo-tool-group-items">
+          {tools.map((tool) => (
+            <ToolTimelineRow key={tool.toolUseId} tool={tool} agentName={agentName} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** Props for {@link Timeline}. */
@@ -78,6 +127,7 @@ export interface TimelineProps {
    * a delegated agent's work in order relative to the parent's surrounding text.
    */
   renderToolCard?: (toolUseId: string) => ReactNode | null | undefined;
+  agentName?: string;
 }
 
 /**
@@ -90,32 +140,48 @@ export function Timeline({
   active,
   variant = "card",
   renderToolCard,
+  agentName,
 }: TimelineProps) {
+  const { isReadOnlyTool } = useRenderOptions();
   const textClass =
     variant === "drill" ? "kaboo-drill-tokens-content" : "kaboo-agent-card-tokens";
 
-  return (
-    <>
-      {timeline.map((entry, i) => {
-        if (entry.type === "tool") {
-          const tool = resolveTimelineTool(entry, tools);
-          if (!tool || SURFACE_TOOLS.has(tool.toolName)) return null;
-          const key = tool.toolUseId || i;
-          const card = renderToolCard?.(tool.toolUseId);
-          if (card) return <Fragment key={key}>{card}</Fragment>;
-          if (tool.toolName === "ask_user") {
-            return <AskUserRow key={key} tool={tool} />;
-          }
-          return <ToolTimelineRow key={key} tool={tool} />;
-        }
-        const isLast = i === timeline.length - 1;
-        return (
-          <div key={`text-${i}`} className={textClass}>
-            <MarkdownContent text={entry.text} />
-            {active && isLast && <span className="kaboo-blink-cursor" />}
-          </div>
-        );
-      })}
-    </>
-  );
+  const items: ReactNode[] = [];
+  let reads: ToolCall[] = [];
+  const flushReads = () => {
+    if (reads.length > 1) {
+      items.push(<ReadGroup key={`reads-${reads[0].toolUseId}`} tools={reads} agentName={agentName} />);
+    } else if (reads.length === 1) {
+      items.push(<ToolTimelineRow key={reads[0].toolUseId} tool={reads[0]} agentName={agentName} />);
+    }
+    reads = [];
+  };
+
+  timeline.forEach((entry, i) => {
+    if (entry.type === "text") {
+      flushReads();
+      items.push(
+        <div key={`text-${i}`} className={textClass}>
+          <MarkdownContent text={entry.text} />
+          {active && i === timeline.length - 1 && <span className="kaboo-blink-cursor" />}
+        </div>,
+      );
+      return;
+    }
+    const tool = resolveTimelineTool(entry, tools);
+    if (!tool || SURFACE_TOOLS.has(tool.toolName)) return;
+    const card = renderToolCard?.(tool.toolUseId);
+    if (!card && tool.toolName !== "ask_user" && isReadOnlyTool?.(tool.toolName)) {
+      reads.push(tool);
+      return;
+    }
+    flushReads();
+    const key = tool.toolUseId || i;
+    if (card) items.push(<Fragment key={key}>{card}</Fragment>);
+    else if (tool.toolName === "ask_user") items.push(<AskUserRow key={key} tool={tool} />);
+    else items.push(<ToolTimelineRow key={key} tool={tool} agentName={agentName} />);
+  });
+  flushReads();
+
+  return <>{items}</>;
 }

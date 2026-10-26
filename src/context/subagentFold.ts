@@ -19,6 +19,7 @@ export interface SubagentEvent {
   message?: string;
   code?: string;
   usage?: Array<Record<string, unknown>>;
+  timestamp?: number;
 }
 
 /**
@@ -211,9 +212,10 @@ export function foldSubagentEvent(
       memory.args.set(toolUseId, "");
       memory.owners.set(toolUseId, id);
       const label = event.metadata?.label;
+      const startedAt = event.timestamp ?? Date.now();
       return withGroup(state, id, (group) =>
         group.tools.some((tool) => tool.toolUseId === toolUseId)
-          ? withTool(group, toolUseId, (tool) => ({ ...tool, status: "running" }))
+          ? withTool(group, toolUseId, (tool) => ({ ...tool, status: "running", startedAt: tool.startedAt ?? startedAt }))
           : {
               ...group,
               tools: [
@@ -223,6 +225,7 @@ export function foldSubagentEvent(
                   toolName: event.toolCallName ?? "",
                   ...(typeof label === "string" ? { toolLabel: label } : {}),
                   status: "running",
+                  startedAt,
                 },
               ],
               timeline: [...group.timeline, { type: "tool", toolUseId }],
@@ -242,8 +245,18 @@ export function foldSubagentEvent(
       const toolUseId = event.toolCallId;
       if (!toolUseId) return state;
       const toolResult = typeof event.content === "string" ? event.content : JSON.stringify(event.content);
+      const { status, error, fix, label } = event.metadata ?? {};
+      const endedAt = event.timestamp ?? Date.now();
       return withGroup(state, id, (group) =>
-        withTool(group, toolUseId, (tool) => ({ ...tool, toolResult, status: "success" })),
+        withTool(group, toolUseId, (tool) => ({
+          ...tool,
+          toolResult,
+          status: status === "error" ? "error" : "success",
+          endedAt,
+          ...(typeof label === "string" ? { toolLabel: label } : {}),
+          ...(typeof error === "string" ? { error } : {}),
+          ...(typeof fix === "string" ? { fix } : {}),
+        })),
       );
     }
     case "SUBAGENT_FINISHED": {
@@ -261,10 +274,11 @@ export function foldSubagentEvent(
       }));
     }
     case "SUBAGENT_ERROR":
-      return withGroup(state, id, (group) => ({
-        ...group,
-        status: event.code === "CANCELLED" ? "stopped" : "error",
-      }));
+      return withGroup(state, id, (group) =>
+        event.code === "CANCELLED"
+          ? { ...group, status: "stopped" }
+          : { ...group, status: "error", ...(event.message ? { error: event.message } : {}) },
+      );
     default:
       return state;
   }

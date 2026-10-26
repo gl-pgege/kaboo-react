@@ -257,6 +257,30 @@ describe("KabooActivityProvider — settling groups when a run ends", () => {
     expect(screen.getByTestId("tools").textContent).toBe("t1=cancelled,t2=success");
   });
 
+  it("records when a cancelled tool stopped, from the event that ended the run", () => {
+    function TimingProbe() {
+      const { groups } = useContext<ActivityState>(ActivityContext);
+      return (
+        <div data-testid="timing">
+          {(groups.g1?.tools ?? []).map((t) => `${t.toolUseId}=${t.status}:${t.startedAt}-${t.endedAt}`).join(",")}
+        </div>
+      );
+    }
+    render(
+      <KabooActivityProvider>
+        <TimingProbe />
+      </KabooActivityProvider>,
+    );
+    act(() => {
+      fakeAgent.emitEvent(started("g1", "a"));
+      fakeAgent.emitEvent({ type: "TOOL_CALL_START", toolCallId: "t1", toolCallName: "run_sql", subagentRunId: "g1", timestamp: 1000 });
+    });
+    act(() => {
+      for (const s of [...fakeAgent.subscribers]) s.onRunErrorEvent?.({ event: { type: "RUN_ERROR", timestamp: 4000 } });
+    });
+    expect(screen.getByTestId("timing").textContent).toBe("t1=cancelled:1000-4000");
+  });
+
   it("marks still-active groups stopped on a successful RUN_FINISHED", () => {
     render(
       <KabooActivityProvider>

@@ -1,6 +1,6 @@
 {
   "name": "@pgege/kaboo-react",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "React components + hooks for rendering kaboo multi-agent activity in a CopilotKit app, with batteries-included CopilotKit integrations.",
   "author": "gl-pgege",
   "license": "MIT",
@@ -80,6 +80,9 @@
     "docs": "yarn docs:api && yarn docs:llms",
     "examples:typecheck": "node scripts/typecheck-examples.mjs",
     "prepack": "yarn build && yarn docs:api && yarn docs:llms && yarn docs:verify && yarn examples:typecheck && yarn test"
+  },
+  "dependencies": {
+    "streamdown": "^1.3.0"
   },
   "peerDependencies": {
     "@copilotkit/react-core": ">=1.79.1 <2",

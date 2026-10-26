@@ -6,7 +6,7 @@
 
 > **TimelineEntry** = \{ `text`: `string`; `type`: `"text"`; \} \| \{ `toolUseId`: `string`; `type`: `"tool"`; \}
 
-Defined in: [src/types.ts:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L25)
+Defined in: [src/types.ts:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L29)
 
 One chronological entry in an agent's timeline: either a streamed text segment
 or a tool call, interleaved in the order they occurred.

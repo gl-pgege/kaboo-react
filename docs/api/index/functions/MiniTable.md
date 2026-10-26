@@ -25,6 +25,10 @@ all for an empty list.
 
 `Record`\<`string`, `unknown`\>[]
 
+#### truncated?
+
+`number` = `0`
+
 ## Returns
 
 `Element` \| `null`

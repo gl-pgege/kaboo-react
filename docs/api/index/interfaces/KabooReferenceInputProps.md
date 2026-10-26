@@ -83,7 +83,7 @@ Indicates whether assistive technologies will present all, or only parts of, the
 
 ### aria-autocomplete?
 
-> `optional` **aria-autocomplete?**: `"none"` \| `"inline"` \| `"list"` \| `"both"`
+> `optional` **aria-autocomplete?**: `"none"` \| `"list"` \| `"inline"` \| `"both"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2592
 
@@ -257,7 +257,7 @@ aria-owns.
 
 ### aria-current?
 
-> `optional` **aria-current?**: `boolean` \| `"true"` \| `"false"` \| `"step"` \| `"date"` \| `"time"` \| `"page"` \| `"location"`
+> `optional` **aria-current?**: `boolean` \| `"step"` \| `"true"` \| `"false"` \| `"date"` \| `"time"` \| `"page"` \| `"location"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2636
 
@@ -1301,7 +1301,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2917
 
 ### inputMode?
 
-> `optional` **inputMode?**: `"text"` \| `"search"` \| `"none"` \| `"url"` \| `"email"` \| `"tel"` \| `"numeric"` \| `"decimal"`
+> `optional` **inputMode?**: `"text"` \| `"search"` \| `"none"` \| `"email"` \| `"tel"` \| `"url"` \| `"numeric"` \| `"decimal"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2953
 

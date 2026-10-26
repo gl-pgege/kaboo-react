@@ -4,7 +4,7 @@
 
 # Interface: TokenUsage
 
-Defined in: [src/types.ts:194](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L194)
+Defined in: [src/types.ts:198](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L198)
 
 LLM token usage totals, as accumulated by kaboo-workflows from each agent
 completion. Appears on a [StreamGroup](StreamGroup.md) (per-agent totals) and in
@@ -17,7 +17,7 @@ repeat completions (interrupt resumes, delegate re-entry).
 
 > `optional` **cacheReadInputTokens?**: `number`
 
-Defined in: [src/types.ts:206](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L206)
+Defined in: [src/types.ts:210](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L210)
 
 Input tokens served from the provider's prompt cache (billed at a steep
 discount), counted apart from [TokenUsage.inputTokens](#inputtokens). Absent on
@@ -29,7 +29,7 @@ streams from services that predate cache accounting.
 
 > `optional` **cacheWriteInputTokens?**: `number`
 
-Defined in: [src/types.ts:208](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L208)
+Defined in: [src/types.ts:212](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L212)
 
 Input tokens written to the provider's prompt cache. Absent on older streams.
 
@@ -39,7 +39,7 @@ Input tokens written to the provider's prompt cache. Absent on older streams.
 
 > `optional` **cost?**: `number`
 
-Defined in: [src/types.ts:214](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L214)
+Defined in: [src/types.ts:218](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L218)
 
 Accumulated dollar cost of the LLM calls, as reported by the provider's
 usage accounting. Absent on older streams or providers without per-call
@@ -51,7 +51,7 @@ cost reporting.
 
 > **inputTokens**: `number`
 
-Defined in: [src/types.ts:196](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L196)
+Defined in: [src/types.ts:200](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L200)
 
 Prompt/input tokens consumed, not counting cache reads or writes.
 
@@ -61,7 +61,7 @@ Prompt/input tokens consumed, not counting cache reads or writes.
 
 > **outputTokens**: `number`
 
-Defined in: [src/types.ts:198](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L198)
+Defined in: [src/types.ts:202](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L202)
 
 Completion/output tokens produced.
 
@@ -71,6 +71,6 @@ Completion/output tokens produced.
 
 > **totalTokens**: `number`
 
-Defined in: [src/types.ts:200](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L200)
+Defined in: [src/types.ts:204](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L204)
 
 Total tokens (as reported by the model provider).

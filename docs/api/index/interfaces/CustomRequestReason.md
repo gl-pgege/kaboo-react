@@ -4,7 +4,7 @@
 
 # Interface: CustomRequestReason
 
-Defined in: [src/types.ts:123](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L123)
+Defined in: [src/types.ts:127](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L127)
 
 An app's own request kind (`files`, `datasources`, …), raised by the app's
 tool and rendered by the renderer the app registers for its `type` in
@@ -23,7 +23,7 @@ The app's own fields.
 
 > `optional` **message?**: `string`
 
-Defined in: [src/types.ts:127](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L127)
+Defined in: [src/types.ts:131](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L131)
 
 What the request is for, shown by the fallback card.
 
@@ -33,6 +33,6 @@ What the request is for, shown by the fallback card.
 
 > **type**: `string`
 
-Defined in: [src/types.ts:125](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L125)
+Defined in: [src/types.ts:129](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L129)
 
 The kind, matched against `interruptRenderers`.

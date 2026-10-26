@@ -16,6 +16,10 @@ export interface ToolCall {
   toolResult?: string;
   /** Lifecycle state of the call, driving the row's icon and status text. */
   status: "running" | "done" | "success" | "error" | "cancelled";
+  error?: string;
+  fix?: string;
+  startedAt?: number;
+  endedAt?: number;
 }
 
 /**
@@ -277,6 +281,7 @@ export interface StreamGroup {
    * an abort — workflows themselves never emit it.
    */
   status: "active" | "completed" | "error" | "interrupted" | "stopped";
+  error?: string;
   /** Every tool call made in this group, in call order. */
   tools: ToolCall[];
   /** Interleaved text/tool entries in chronological order. */

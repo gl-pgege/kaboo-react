@@ -25,6 +25,7 @@ vi.mock("@copilotkit/react-core/v2", () => ({
 }));
 
 import { KabooToolRender } from "./KabooToolRender";
+import { ToolRenderersProvider } from "../context/ToolRenderers";
 
 function RenderCaptured({ props }: { props: ToolRenderProps }) {
   return <>{captured.render?.(props)}</>;
@@ -78,5 +79,17 @@ describe("KabooToolRender", () => {
     };
     const { container } = render(<Harness groups={groups} toolProps={pendingCall} />);
     expect(container.querySelector(".kaboo-inline-tool")).toBeNull();
+  });
+
+  it("draws an unknown tool with the app's fallback renderer instead of the built-in row", () => {
+    const { container } = render(
+      <ToolRenderersProvider
+        fallbackToolRenderer={({ tool }) => <div data-testid="app-fallback">{`${tool.toolName}:${tool.status}`}</div>}
+      >
+        <Harness toolProps={{ ...pendingCall, status: "complete", result: "created" }} />
+      </ToolRenderersProvider>,
+    );
+    expect(screen.getByTestId("app-fallback").textContent).toBe("create_work_item:success");
+    expect(container.querySelector(".kaboo-tool-row")).toBeNull();
   });
 });

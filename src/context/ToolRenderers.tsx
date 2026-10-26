@@ -1,5 +1,6 @@
-import { createContext, useContext, type ComponentType, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ComponentType, type ReactNode } from "react";
 import type { ToolCall } from "../types";
+import type { KabooProviderProps } from "./KabooProvider";
 
 /**
  * Props for a custom per-tool-name renderer supplied via `toolRenderers`.
@@ -21,7 +22,12 @@ export interface ToolRendererProps {
  */
 export type ToolRenderers = Record<string, ComponentType<ToolRendererProps>>;
 
-const ToolRenderersContext = createContext<ToolRenderers>({});
+type RenderOptions = Pick<
+  KabooProviderProps,
+  "fallbackToolRenderer" | "markdownRenderer" | "renderAgentResult" | "isReadOnlyTool"
+>;
+
+const ToolRenderersContext = createContext<RenderOptions & { renderers: ToolRenderers }>({ renderers: {} });
 
 /**
  * Makes the app's `toolRenderers` overrides available to every Timeline
@@ -30,13 +36,21 @@ const ToolRenderersContext = createContext<ToolRenderers>({});
  */
 export function ToolRenderersProvider({
   renderers,
+  fallbackToolRenderer,
+  markdownRenderer,
+  renderAgentResult,
+  isReadOnlyTool,
   children,
-}: {
+}: Pick<KabooProviderProps, "fallbackToolRenderer" | "markdownRenderer" | "renderAgentResult" | "isReadOnlyTool"> & {
   renderers?: ToolRenderers;
   children: ReactNode;
 }) {
+  const value = useMemo(
+    () => ({ renderers: renderers ?? {}, fallbackToolRenderer, markdownRenderer, renderAgentResult, isReadOnlyTool }),
+    [renderers, fallbackToolRenderer, markdownRenderer, renderAgentResult, isReadOnlyTool],
+  );
   return (
-    <ToolRenderersContext.Provider value={renderers ?? {}}>
+    <ToolRenderersContext.Provider value={value}>
       {children}
     </ToolRenderersContext.Provider>
   );
@@ -49,6 +63,9 @@ export function ToolRenderersProvider({
 export function useToolRenderer(
   toolName: string,
 ): ComponentType<ToolRendererProps> | null {
-  const renderers = useContext(ToolRenderersContext);
-  return renderers[toolName] ?? null;
+  return useContext(ToolRenderersContext).renderers[toolName] ?? null;
+}
+
+export function useRenderOptions(): RenderOptions {
+  return useContext(ToolRenderersContext);
 }

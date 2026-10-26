@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
+import { ToolRenderersProvider } from "../context/ToolRenderers";
 import type { ActivityState, StreamGroup, ToolCall } from "../types";
 import { AgentCard } from "./AgentCard";
 
@@ -247,5 +248,114 @@ describe("AgentCard recursion", () => {
     // Stays expanded: the answered Q&A remains visible after completion.
     expect(screen.getByText("Which segment?")).toBeInTheDocument();
     expect(screen.getByText("GPUs")).toBeInTheDocument();
+  });
+});
+
+describe("AgentCard task summary", () => {
+  const handoff = JSON.stringify({
+    input: "Plot **churn** by region",
+    narrative: "Churn rose in APAC",
+    dashboard_title: "Churn",
+  });
+
+  it("reads a JSON handoff as the text it carries, rendered as markdown", () => {
+    const g = group({ title: "Visualizer", task: handoff });
+    const { container } = render(withActivity({ v: g }, <AgentCard groupId="v" group={g} />));
+
+    const task = container.querySelector(".kaboo-agent-card-task .kaboo-agent-card-task-text");
+    expect(task?.textContent?.trim()).toBe("Plot churn by region");
+    expect(task?.querySelector("strong")?.textContent).toBe("churn");
+    expect(container.textContent).not.toContain("narrative");
+  });
+
+  it("joins a handoff's short fields when it has none of the usual keys", () => {
+    const g = group({ title: "Visualizer", task: JSON.stringify({ dashboard_title: "Churn", region: "APAC", ids: [1, 2] }) });
+    const { container } = render(withActivity({ v: g }, <AgentCard groupId="v" group={g} />));
+
+    expect(container.querySelector(".kaboo-agent-card-task-text")?.textContent?.trim()).toBe(
+      "dashboard title: Churn · region: APAC",
+    );
+  });
+
+  it("clamps the collapsed task line, still normalized", () => {
+    const active = group({ title: "Visualizer", task: handoff, timeline: [{ type: "text", text: "Working on it" }] });
+    const { container, rerender } = render(withActivity({ v: active }, <AgentCard groupId="v" group={active} />));
+    const done = { ...active, status: "completed" as const };
+    rerender(withActivity({ v: done }, <AgentCard groupId="v" group={done} />));
+
+    const collapsed = container.querySelector(".kaboo-agent-card-collapsed .kaboo-agent-card-task-text");
+    expect(collapsed?.textContent?.trim()).toBe("Plot churn by region");
+    expect(screen.queryByText("Working on it")).toBeNull();
+  });
+
+  it("keeps a plain-text task as it is", () => {
+    const g = group({ title: "Researcher", task: "Gather {GPU} pricing data" });
+    const { container } = render(withActivity({ r: g }, <AgentCard groupId="r" group={g} />));
+
+    expect(container.querySelector(".kaboo-agent-card-task-text")?.textContent?.trim()).toBe("Gather {GPU} pricing data");
+  });
+});
+
+describe("AgentCard error state", () => {
+  it("shows a failed agent's error under its header, in the error style", () => {
+    const g = group({ title: "Analyst", status: "error", error: "Model quota exceeded" });
+    const { container } = render(withActivity({ a: g }, <AgentCard groupId="a" group={g} actionStatus="complete" />));
+
+    expect(container.querySelector(".kaboo-agent-card")).toHaveClass("kaboo-agent-card-error");
+    expect(screen.getByText("Model quota exceeded")).toHaveClass("kaboo-agent-card-error-text");
+    expect(screen.getByText("error")).toBeInTheDocument();
+    expect(screen.queryByText("done")).toBeNull();
+    expect(screen.queryByText("Working...")).toBeNull();
+  });
+});
+
+describe("AgentCard app overrides", () => {
+  const finished = group({
+    agentName: "visualizer",
+    title: "Visualizer",
+    status: "completed",
+    task: "Build the dashboard",
+    timeline: [{ type: "text", text: "Building it" }],
+    structuredOutput: { dashboard_id: "d_2" },
+    outputSchemaName: "Dashboard",
+  });
+
+  it("draws renderAgentResult's node in place of the result and structured output", () => {
+    render(
+      <ToolRenderersProvider
+        renderAgentResult={(g) => (g.agentName === "visualizer" ? <div data-testid="app-result">{String(g.structuredOutput?.dashboard_id)}</div> : null)}
+      >
+        {withActivity({ v: finished }, <AgentCard groupId="v" group={finished} result="Dashboard d_2 is ready." />)}
+      </ToolRenderersProvider>,
+    );
+
+    expect(screen.getByTestId("app-result").textContent).toBe("d_2");
+    expect(screen.queryByText("Dashboard d_2 is ready.")).toBeNull();
+    expect(screen.queryByText(/Structured output/)).toBeNull();
+  });
+
+  it("keeps the default result when renderAgentResult returns null", () => {
+    render(
+      <ToolRenderersProvider renderAgentResult={() => null}>
+        {withActivity({ v: finished }, <AgentCard groupId="v" group={finished} result="Dashboard d_2 is ready." />)}
+      </ToolRenderersProvider>,
+    );
+
+    expect(screen.getByText("Dashboard d_2 is ready.")).toBeInTheDocument();
+    expect(screen.getByText(/Structured output/)).toBeInTheDocument();
+  });
+
+  it("renders the task, streamed text and result with the app's markdownRenderer", () => {
+    render(
+      <ToolRenderersProvider markdownRenderer={(text) => <span data-testid="app-markdown">{text}</span>}>
+        {withActivity({ v: finished }, <AgentCard groupId="v" group={finished} result="Dashboard d_2 is ready." />)}
+      </ToolRenderersProvider>,
+    );
+
+    expect(screen.getAllByTestId("app-markdown").map((node) => node.textContent)).toEqual([
+      "Build the dashboard",
+      "Building it",
+      "Dashboard d_2 is ready.",
+    ]);
   });
 });

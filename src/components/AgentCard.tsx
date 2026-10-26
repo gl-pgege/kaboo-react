@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import type { StreamGroup, TokenUsage } from "../types";
 import { isControlOnlyStatus, normalizeResult } from "../formatters/output";
+import { taskSummary } from "../formatters/task";
 import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
 import { MarkdownContent } from "./MarkdownContent";
 import { Timeline } from "./Timeline";
@@ -8,6 +9,7 @@ import { ValueView } from "./ValueView";
 import { useDrill } from "../hooks/useDrill";
 import { useActivity } from "../hooks/useActivity";
 import { StructuredRenderersContext } from "../context/ActivityProvider";
+import { useRenderOptions } from "../context/ToolRenderers";
 import { directChildren, partitionChildrenByToolCall } from "../utils/groups";
 
 /** Props for {@link AgentCard}. */
@@ -63,11 +65,12 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   const { drillIn } = useDrill();
   const { groups } = useActivity();
   const structuredRenderers = useContext(StructuredRenderersContext);
+  const { renderAgentResult } = useRenderOptions();
   const childEntries = showChildren ? directChildren(groups, groupId) : [];
-  const isDone = group.status === "completed" || actionStatus === "complete";
+  const isError = group.status === "error";
+  const isDone = !isError && (group.status === "completed" || actionStatus === "complete");
   const isInterrupted = group.status === "interrupted";
   const isStopped = group.status === "stopped";
-  const isError = group.status === "error";
   // Anything not actively running: stops timeline animation and auto-scroll.
   const isSettled = isDone || isStopped || isError;
   const [expanded, setExpanded] = useState(true);
@@ -88,7 +91,9 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   // agent's answer — the gated action is already shown in the timeline and the
   // reply streams separately — so never render the raw echo as the card's result.
   const resultText = isControlOnlyStatus(result) ? null : normalizeResult(result);
-  const displayTask = input ?? group.task ?? undefined;
+  const rawTask = input ?? group.task;
+  const displayTask = rawTask ? taskSummary(rawTask) : undefined;
+  const customResult = renderAgentResult?.(group);
   // Only the chat-reply agent's text is already shown in the chat bubble, so we
   // strip text from just that card to avoid duplicating the answer (R4). Every
   // other member keeps its findings text. The drill views keep the full
@@ -119,9 +124,9 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
   };
 
   const hasContent =
-    timeline.length > 0 || resultText || childEntries.length > 0 || !!displayTask;
+    timeline.length > 0 || resultText || childEntries.length > 0 || !!displayTask || customResult != null;
 
-  const cardClass = `kaboo-agent-card${isDone ? " kaboo-agent-card-done" : ""}`;
+  const cardClass = `kaboo-agent-card${isDone ? " kaboo-agent-card-done" : ""}${isError ? " kaboo-agent-card-error" : ""}`;
 
   return (
     <div className={cardClass}>
@@ -182,9 +187,16 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
         </svg>
       </div>
 
+      {isError && (
+        <div className="kaboo-agent-card-error-text">{group.error || "This agent stopped with an error."}</div>
+      )}
+
       {!expanded && displayTask && (
         <div className="kaboo-agent-card-collapsed">
-          <strong>Task:</strong> {displayTask}
+          <strong>Task:</strong>
+          <div className="kaboo-agent-card-task-text">
+            <MarkdownContent text={displayTask} />
+          </div>
         </div>
       )}
 
@@ -192,23 +204,33 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
         <div ref={bodyRef} className="kaboo-agent-card-body">
           {displayTask && (
             <div className="kaboo-agent-card-task">
-              <strong>Task:</strong> {displayTask}
+              <strong>Task:</strong>
+              <div className="kaboo-agent-card-task-text">
+                <MarkdownContent text={displayTask} />
+              </div>
             </div>
           )}
 
           {timeline.length > 0 && (
             <div className="kaboo-agent-card-timeline">
-              <Timeline timeline={timeline} tools={group.tools} active={!isSettled} variant="card" renderToolCard={renderToolCard} />
+              <Timeline
+                timeline={timeline}
+                tools={group.tools}
+                active={!isSettled}
+                variant="card"
+                renderToolCard={renderToolCard}
+                agentName={group.agentName}
+              />
             </div>
           )}
 
-          {shownResult && (
+          {customResult != null ? customResult : shownResult && (
             <div className="kaboo-agent-card-result">
               <MarkdownContent text={shownResult} />
             </div>
           )}
 
-          {group.structuredOutput && group.outputSchemaName && (() => {
+          {customResult == null && group.structuredOutput && group.outputSchemaName && (() => {
             const Renderer = structuredRenderers[group.outputSchemaName!];
             if (Renderer) {
               return <Renderer {...group.structuredOutput!} />;
@@ -238,7 +260,7 @@ export function AgentCard({ groupId, group, input, result, actionStatus, showChi
             </div>
           )}
 
-          {!displayTask && !hasContent && (
+          {!displayTask && !hasContent && !isError && (
             <div className="kaboo-agent-card-empty">Working...</div>
           )}
         </div>

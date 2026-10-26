@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useActivity } from "../hooks/useActivity";
 import { useDrill } from "../hooks/useDrill";
+import { useRenderOptions } from "../context/ToolRenderers";
 import { directChildren, partitionChildrenByToolCall } from "../utils/groups";
 import { AgentCard } from "./AgentCard";
+import { MarkdownContent } from "./MarkdownContent";
 import { Timeline } from "./Timeline";
 import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../formatters/tokens";
+import { taskSummary } from "../formatters/task";
 
 /**
  * Detail pane for the currently drilled-in group: its task, full timeline
@@ -28,6 +31,7 @@ import { cachedShare, formatCost, formatTokenCount, promptTokens } from "../form
 export function DrillDetailView() {
   const { activeDrill } = useDrill();
   const { groups } = useActivity();
+  const { renderAgentResult } = useRenderOptions();
   const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +46,7 @@ export function DrillDetailView() {
 
   const group = groups[activeDrill];
   const timeline = group?.timeline ?? [];
+  const customResult = group ? renderAgentResult?.(group) : null;
   const childEntries = directChildren(groups, activeDrill);
   // Interleave delegated children at their delegating tool-call position so a
   // sub-agent's card sits where it was delegated (before the parent's summary
@@ -60,7 +65,10 @@ export function DrillDetailView() {
       <div className="kaboo-drill-detail-inner">
         {group?.task && (
           <div className="kaboo-agent-card-task kaboo-drill-task">
-            <strong>Task:</strong> {group.task}
+            <strong>Task:</strong>
+            <div className="kaboo-agent-card-task-text">
+              <MarkdownContent text={taskSummary(group.task)} />
+            </div>
           </div>
         )}
 
@@ -96,9 +104,12 @@ export function DrillDetailView() {
               active={group.status === "active"}
               variant="drill"
               renderToolCard={renderToolCard}
+              agentName={group.agentName}
             />
           </div>
         )}
+
+        {customResult != null && <div className="kaboo-drill-result">{customResult}</div>}
 
         {leftoverChildren.length > 0 && (
           <div className="kaboo-drill-children">
@@ -109,7 +120,7 @@ export function DrillDetailView() {
           </div>
         )}
 
-        {group && timeline.length === 0 && childEntries.length === 0 && (
+        {group && timeline.length === 0 && childEntries.length === 0 && customResult == null && (
           <div className="kaboo-agent-card-empty">
             Working...
           </div>

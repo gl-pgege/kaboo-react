@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
 import { DrillContext } from "../context/DrillContext";
+import { ToolRenderersProvider } from "../context/ToolRenderers";
 import type {
   ActivityState,
   DrillState,
@@ -66,6 +67,28 @@ describe("DrillDetailView token usage breakdown", () => {
     const g = group({ status: "completed" });
     render(harness({ main: g }, "main", <DrillDetailView />));
     expect(screen.queryByText("total tokens")).toBeNull();
+  });
+});
+
+describe("DrillDetailView task and result", () => {
+  it("shows a JSON handoff's text as markdown, and the app's result after the timeline", () => {
+    const g = group({
+      status: "completed",
+      task: JSON.stringify({ request: "Find **churn** drivers", dashboard_title: "Churn" }),
+      timeline: [{ type: "text", text: "Looked at churn" }],
+    });
+    const { container } = render(
+      <ToolRenderersProvider renderAgentResult={(grp) => <div data-testid="app-result">{grp.status}</div>}>
+        {harness({ main: g }, "main", <DrillDetailView />)}
+      </ToolRenderersProvider>,
+    );
+
+    expect(container.querySelector(".kaboo-drill-task .kaboo-agent-card-task-text")?.textContent?.trim()).toBe(
+      "Find churn drivers",
+    );
+    expect(screen.getByTestId("app-result").textContent).toBe("completed");
+    const text = container.textContent ?? "";
+    expect(text.indexOf("Looked at churn")).toBeLessThan(text.indexOf("completed"));
   });
 });
 

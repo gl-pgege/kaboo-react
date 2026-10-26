@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0]
+
+### Added
+
+- **`useToolCallMeta()`** gives a tool renderer drawn inside an agent's
+  timeline its call's `status` (`running`, `success`, `error` or `cancelled`),
+  `label`, `error`, `fix`, `startedAt`, `endedAt`, `toolCallId` and
+  `agentName`, and `null` outside a timeline. It wraps every renderer the
+  timeline draws: CopilotKit's registered renderers, `toolRenderers` and the
+  fallback. A renderer registered with CopilotKit now gets an errored or
+  cancelled call as complete, so it stops spinning, and reads the real status
+  from the hook.
+- **Tool errors from kaboo-workflows 0.32.** A `TOOL_CALL_RESULT` whose
+  `metadata.status` is `error` marks the call failed and keeps
+  `metadata.error` and `metadata.fix` on `ToolCall.error` and `ToolCall.fix`;
+  `metadata.label` relabels the call. Calls record `startedAt` and `endedAt`
+  from the events' timestamps, and a failed sub-agent keeps its message on
+  `StreamGroup.error`.
+- **`KabooProvider` takes `markdownRenderer`**, which replaces the markdown
+  renderer wherever agent text is drawn; **`renderAgentResult`**, which
+  replaces a card's result area and also draws in the drill-in view;
+  **`fallbackToolRenderer`**, which replaces the built-in tool row for tools
+  without a renderer, in agent timelines and in the chat; and
+  **`isReadOnlyTool`**, which folds two or more consecutive reads in an agent's
+  timeline into one row ("Reading 3 items", "Read 3 items, 1 failed") that
+  expands to the calls. `ToolRenderersProvider` takes the same four.
+- **`ToolRow` takes an `icon`**, `MiniTable` a `truncated` count, and
+  `Timeline` an `agentName`.
+
+### Changed
+
+- **Agent text renders as GitHub-flavored markdown** with Streamdown, the
+  renderer CopilotKit's chat uses, so tables, numbered lists, code and links
+  render, and text that is still streaming never shows an unclosed `**`.
+  `streamdown` is now a dependency, on the `^1.3.0` range CopilotKit itself
+  installs. Its output is styled by `styles.css` with the `--kaboo-*` tokens.
+- **A card's task reads as text.** A JSON handoff shows the first of its
+  `input`, `task`, `question`, `narrative`, `brief`, `request` or `message`
+  (or else its short fields), rendered as markdown and clamped to three lines
+  while the card is collapsed.
+- **A failed agent shows its error** under the card's header in the error
+  colour, and its badge says error instead of done. `--kaboo-error-bg` is a new
+  token for that background.
+- **The tool row is one compact line**: icon, label, target, a status icon
+  (spinner, check, cross or cancelled) and how long the call took, expanding to
+  the error and its fix, the input and the result. Its header is a button, the
+  status icon classes (`.kaboo-tool-dot-*`) now set `color` instead of `fill`,
+  and a finished call shows a check instead of the word "done".
+- **Tables find rows under `untrusted_content.rows`**, with `columns` from
+  either level, never show `_truncated` keys, and count `_truncated` rows in
+  their "+N more". A list kaboo-workflows 0.32 cut
+  (`{"items": [...], "_truncated": {"items": N}}`) draws as its table.
+
 ## [0.12.1]
 
 ### Fixed

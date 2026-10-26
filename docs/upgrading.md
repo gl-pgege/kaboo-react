@@ -9,6 +9,77 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.13
+
+0.13 reads what kaboo-workflows 0.32 adds to tool results (an error status, the
+error and its fix, a label, and JSON previews that record what they cut), and
+still reads older agents: their calls simply never fail. It needs no
+CopilotKit change.
+
+### Registered renderers get failed and cancelled calls as complete
+
+**Who:** apps that register tool renderers with CopilotKit (`useRenderTool`,
+`renderToolCalls`).
+
+A call that failed, or that its run abandoned, used to stay `executing`, so the
+card spun forever. It now reaches your renderer as `complete`, and
+`useToolCallMeta()` says what really happened:
+
+```diff
+  render: ({ status, result }) =>
+-   status === "complete" ? <Done result={result} /> : <Spinner />
++   status === "complete" ? <Finished result={result} /> : <Spinner />
+
++ function Finished({ result }: { result?: string }) {
++   const meta = useToolCallMeta();
++   if (meta?.status === "error") return <Failed message={meta.error} fix={meta.fix} />;
++   if (meta?.status === "cancelled") return <Stopped />;
++   return <Done result={result} />;
++ }
+```
+
+`useToolCallMeta()` returns `null` outside an agent's timeline. See
+[Custom tool cards](tool-cards.md#status-errors-and-timing).
+
+### Tool rows and status dots
+
+**Who:** apps that restyle `.kaboo-tool-dot-*`.
+
+The row is one line (icon, label, target, status icon and duration) and a
+finished call shows a check instead of the word "done". The status icons are
+drawn with `currentColor`, so their classes set `color`:
+
+```diff
+- .kaboo-tool-dot-success { fill: green; }
++ .kaboo-tool-dot-success { color: green; }
+```
+
+A failed sub-agent's card has the new `--kaboo-error-bg` token behind its
+error.
+
+### Markdown
+
+**Who:** apps that restyle `.kaboo-md-li` or `.kaboo-md-spacer`.
+
+Agent text renders as GitHub-flavored markdown with Streamdown, which keeps
+text that is still streaming from showing an unclosed `**`. Lists are real
+`ul` and `ol` elements, so `.kaboo-md-li` is a list item inside them and
+`.kaboo-md-spacer` is gone. To draw agent text with your own renderer instead:
+
+```diff
+- <KabooProvider runtimeUrl={url} agent={agent}>
++ <KabooProvider runtimeUrl={url} agent={agent} markdownRenderer={(text) => <MyMarkdown text={text} />}>
+```
+
+### New, optional
+
+- **`fallbackToolRenderer`** draws every tool with no renderer of its own, in
+  agent timelines and in the chat.
+- **`isReadOnlyTool`** folds two or more consecutive reads in an agent's
+  timeline into one row ("Read 3 items").
+- **`renderAgentResult`** replaces the result area of an agent's card and its
+  drill-in view.
+
 ## 0.12.1
 
 **Who:** no one needs to change anything.

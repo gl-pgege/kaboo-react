@@ -82,6 +82,67 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 An approval on a gated tool still renders with your card, so a custom renderer
 never hides a pending question.
 
+## Status, errors and timing
+
+Inside an agent's timeline, every renderer (CopilotKit's, `toolRenderers` and
+the fallback) can read its call's state with `useToolCallMeta()`: `status`
+(`running`, `success`, `error` or `cancelled`), the `label` the agent gave it,
+`error` and `fix` when it failed, `startedAt` and `endedAt`, `toolCallId` and
+`agentName`. It returns `null` outside a timeline.
+
+```tsx
+import { useToolCallMeta } from "@pgege/kaboo-react";
+
+export function CallStatus() {
+  const meta = useToolCallMeta();
+  if (!meta) return null;
+  if (meta.status === "error") return <p role="alert">{meta.error}{meta.fix ? ` ${meta.fix}` : ""}</p>;
+  const took = meta.startedAt !== undefined && meta.endedAt !== undefined ? meta.endedAt - meta.startedAt : undefined;
+  return <span>{meta.label ?? meta.status}{took !== undefined ? ` · ${took} ms` : ""}</span>;
+}
+```
+
+A registered renderer gets a failed or cancelled call with CopilotKit's
+`complete` status, so it stops spinning; this hook says which it was.
+
+## Every other tool: `fallbackToolRenderer`
+
+`fallbackToolRenderer` replaces the built-in `ToolRow` for any tool with no
+renderer of its own, in agent timelines and in the chat, so an app can give
+every call the same frame. `isReadOnlyTool` tells the timeline which tools only
+read, and folds two or more consecutive reads into one row ("Read 3 items")
+that expands to the calls:
+
+```tsx
+import { KabooProvider, useToolCallMeta } from "@pgege/kaboo-react";
+import type { ToolRendererProps } from "@pgege/kaboo-react";
+
+function AnyTool({ tool }: ToolRendererProps) {
+  const meta = useToolCallMeta();
+  return (
+    <div>
+      {tool.toolLabel ?? tool.toolName} · {meta?.status ?? tool.status}
+    </div>
+  );
+}
+
+const READS = /___(get|list|read|search)_/;
+
+export function App({ agent, threadId }: { agent: string; threadId: string }) {
+  return (
+    <KabooProvider
+      runtimeUrl="/api/copilotkit"
+      agent={agent}
+      threadId={threadId}
+      fallbackToolRenderer={AnyTool}
+      isReadOnlyTool={(name) => READS.test(name)}
+    >
+      <div />
+    </KabooProvider>
+  );
+}
+```
+
 ## Making a card interactive
 
 The card is ordinary React inside your app's tree, so a click handler may open a

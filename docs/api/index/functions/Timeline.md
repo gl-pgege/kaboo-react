@@ -6,7 +6,7 @@
 
 > **Timeline**(`__namedParameters`): `Element`
 
-Defined in: [src/components/Timeline.tsx:87](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L87)
+Defined in: [src/components/Timeline.tsx:137](https://github.com/gl-pgege/kaboo-react/blob/main/src/components/Timeline.tsx#L137)
 
 Chronological render of interleaved text segments and tool calls. Shared by
 [AgentCard](AgentCard.md) and [DrillDetailView](DrillDetailView.md) so the two stay in sync.

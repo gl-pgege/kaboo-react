@@ -4,7 +4,7 @@
 
 # Interface: FormReason
 
-Defined in: [src/types.ts:136](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L136)
+Defined in: [src/types.ts:140](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L140)
 
 A form interrupt: the agent is asking the user one or more questions and
 waiting for the answers before it continues.
@@ -15,7 +15,7 @@ waiting for the answers before it continues.
 
 > **questions**: [`FormQuestion`](FormQuestion.md)[]
 
-Defined in: [src/types.ts:140](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L140)
+Defined in: [src/types.ts:144](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L144)
 
 The questions to present, rendered in order.
 
@@ -25,6 +25,6 @@ The questions to present, rendered in order.
 
 > **type**: `"form"`
 
-Defined in: [src/types.ts:138](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L138)
+Defined in: [src/types.ts:142](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L142)
 
 Discriminator marking this as a form prompt.

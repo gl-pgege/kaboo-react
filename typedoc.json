@@ -13,6 +13,28 @@
     "invalidLink": true,
     "notDocumented": true
   },
+  "intentionallyNotDocumented": [
+    "index.ToolCall.error",
+    "index.ToolCall.fix",
+    "index.ToolCall.startedAt",
+    "index.ToolCall.endedAt",
+    "index.StreamGroup.error",
+    "index.KabooProviderProps.fallbackToolRenderer",
+    "index.KabooProviderProps.markdownRenderer",
+    "index.KabooProviderProps.renderAgentResult",
+    "index.KabooProviderProps.isReadOnlyTool",
+    "index.useToolCallMeta",
+    "index.ToolCallMeta",
+    "index.ToolCallMeta.status",
+    "index.ToolCallMeta.label",
+    "index.ToolCallMeta.error",
+    "index.ToolCallMeta.fix",
+    "index.ToolCallMeta.startedAt",
+    "index.ToolCallMeta.endedAt",
+    "index.ToolCallMeta.toolCallId",
+    "index.ToolCallMeta.agentName",
+    "index.TimelineProps.agentName"
+  ],
   "externalSymbolLinkMappings": {
     "@copilotkit/react-core": {
       "IntelligenceIndicator": "#"

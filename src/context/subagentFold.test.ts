@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { from, lastValueFrom, toArray } from "rxjs";
 import { compactEvents, verifyEvents, type BaseEvent } from "@ag-ui/client";
 import type { ActivityState } from "../types";
@@ -63,6 +63,76 @@ describe("foldSubagentEvent tool labels", () => {
       },
     ]);
     expect(groups["main.researcher"].tools[0]).toMatchObject({ toolName: "web-research___search", toolLabel: "Searching the web" });
+  });
+});
+
+describe("foldSubagentEvent tool results", () => {
+  const started = { type: "SUBAGENT_STARTED", subagentRunId: "main.analyst", name: "analyst", parentToolCallId: "c1" };
+
+  it("reads an errored result's status, error and fix from its metadata, with the call's timing", () => {
+    const { groups } = fold([
+      started,
+      { type: "TOOL_CALL_START", subagentRunId: "main.analyst", toolCallId: "t1", toolCallName: "run_sql", timestamp: 1000 },
+      {
+        type: "TOOL_CALL_RESULT",
+        subagentRunId: "main.analyst",
+        toolCallId: "t1",
+        messageId: "r1",
+        content: 'relation "orders" does not exist',
+        timestamp: 1250,
+        metadata: { status: "error", error: "Table orders not found", fix: "List the tables first", label: "Running SQL" },
+      },
+      { type: "TOOL_CALL_START", subagentRunId: "main.analyst", toolCallId: "t2", toolCallName: "run_sql", timestamp: 2000 },
+      {
+        type: "TOOL_CALL_RESULT",
+        subagentRunId: "main.analyst",
+        toolCallId: "t2",
+        messageId: "r2",
+        content: "1 row",
+        timestamp: 2100,
+        metadata: { status: "success" },
+      },
+    ]);
+
+    expect(groups["main.analyst"].tools).toEqual([
+      {
+        toolUseId: "t1",
+        toolName: "run_sql",
+        toolLabel: "Running SQL",
+        status: "error",
+        toolResult: 'relation "orders" does not exist',
+        error: "Table orders not found",
+        fix: "List the tables first",
+        startedAt: 1000,
+        endedAt: 1250,
+      },
+      { toolUseId: "t2", toolName: "run_sql", status: "success", toolResult: "1 row", startedAt: 2000, endedAt: 2100 },
+    ]);
+  });
+
+  it("times a call by when its events were folded when they carry no timestamp", () => {
+    const now = vi.spyOn(Date, "now").mockReturnValueOnce(5000).mockReturnValueOnce(5300);
+    const { groups } = fold([
+      started,
+      { type: "TOOL_CALL_START", subagentRunId: "main.analyst", toolCallId: "t1", toolCallName: "run_sql" },
+      { type: "TOOL_CALL_RESULT", subagentRunId: "main.analyst", toolCallId: "t1", messageId: "r1", content: "ok" },
+    ]);
+    now.mockRestore();
+
+    expect(groups["main.analyst"].tools[0]).toMatchObject({ status: "success", startedAt: 5000, endedAt: 5300 });
+  });
+
+  it("keeps why a sub-agent failed, and stops a cancelled one without an error", () => {
+    const { groups } = fold([
+      started,
+      { type: "SUBAGENT_STARTED", subagentRunId: "main.writer", name: "writer", parentToolCallId: "c2" },
+      { type: "SUBAGENT_ERROR", subagentRunId: "main.analyst", message: "Model quota exceeded", code: "MODEL_ERROR" },
+      { type: "SUBAGENT_ERROR", subagentRunId: "main.writer", message: "Cancelled", code: "CANCELLED" },
+    ]);
+
+    expect(groups["main.analyst"]).toMatchObject({ status: "error", error: "Model quota exceeded" });
+    expect(groups["main.writer"].status).toBe("stopped");
+    expect(groups["main.writer"].error).toBeUndefined();
   });
 });
 

@@ -12,6 +12,38 @@ live tool row, its input summary, and its result (or cancellation).
 
 ## Properties
 
+### endedAt?
+
+> `optional` **endedAt?**: `number`
+
+Defined in: [src/types.ts:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L22)
+
+***
+
+### error?
+
+> `optional` **error?**: `string`
+
+Defined in: [src/types.ts:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L19)
+
+***
+
+### fix?
+
+> `optional` **fix?**: `string`
+
+Defined in: [src/types.ts:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L20)
+
+***
+
+### startedAt?
+
+> `optional` **startedAt?**: `number`
+
+Defined in: [src/types.ts:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L21)
+
+***
+
 ### status
 
 > **status**: `"running"` \| `"done"` \| `"success"` \| `"error"` \| `"cancelled"`

@@ -1,15 +1,15 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { CopilotKit, type CopilotKitProps } from "@copilotkit/react-core/v2";
 import { KabooActivityProvider, type StructuredRenderers } from "./ActivityProvider";
 import { DrillProvider } from "./DrillContext";
 import { InterruptRenderersProvider } from "./InterruptRenderers";
-import { ToolRenderersProvider, type ToolRenderers } from "./ToolRenderers";
+import { ToolRenderersProvider, type ToolRendererProps, type ToolRenderers } from "./ToolRenderers";
 import { KabooInterruptHandler, type KabooInterruptHandlerProps } from "../integrations/KabooInterruptHandler";
 import { KabooInlineCards } from "../integrations/KabooInlineCards";
 import { ReferencesProvider } from "../references/ReferencesProvider";
 import type { ReferenceProvider } from "../references/types";
 import { KabooSlotsProvider, type KabooSlots } from "./KabooSlots";
-import type { ApprovalScope } from "../types";
+import type { ApprovalScope, StreamGroup } from "../types";
 
 /** Props for {@link KabooProvider}. */
 export interface KabooProviderProps {
@@ -38,6 +38,10 @@ export interface KabooProviderProps {
    * replaces the built-in tool row with the app's custom card.
    */
   toolRenderers?: ToolRenderers;
+  fallbackToolRenderer?: ComponentType<ToolRendererProps>;
+  markdownRenderer?: (text: string) => ReactNode;
+  renderAgentResult?: (group: StreamGroup) => ReactNode | null;
+  isReadOnlyTool?: (toolName: string) => boolean;
   /** Skip auto-mounting the built-in {@link KabooInterruptHandler}. */
   disableInterruptHandler?: boolean;
   /**
@@ -108,6 +112,10 @@ export function KabooProvider({
   interruptRenderers,
   approvalScopes,
   toolRenderers,
+  fallbackToolRenderer,
+  markdownRenderer,
+  renderAgentResult,
+  isReadOnlyTool,
   disableInterruptHandler = false,
   onInterruptError,
   disableInlineCards = false,
@@ -138,7 +146,13 @@ export function KabooProvider({
       <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
         <DrillProvider>
           <InterruptRenderersProvider renderers={interruptRenderers} approvalScopes={approvalScopes}>
-              <ToolRenderersProvider renderers={toolRenderers}>
+              <ToolRenderersProvider
+                renderers={toolRenderers}
+                fallbackToolRenderer={fallbackToolRenderer}
+                markdownRenderer={markdownRenderer}
+                renderAgentResult={renderAgentResult}
+                isReadOnlyTool={isReadOnlyTool}
+              >
                 <ReferencesProvider providers={references} syncObjectStateTo={agent}>
                   <KabooSlotsProvider value={slots ?? {}}>
                     {!disableInterruptHandler && (

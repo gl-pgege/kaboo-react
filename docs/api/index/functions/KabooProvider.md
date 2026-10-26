@@ -6,7 +6,7 @@
 
 > **KabooProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/KabooProvider.tsx:103](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L103)
+Defined in: [src/context/KabooProvider.tsx:107](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L107)
 
 Batteries-included CopilotKit plugin. Renders `<CopilotKit>` and nests every
 kaboo context (activity -> drill -> renderers) plus the built-in request
