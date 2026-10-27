@@ -68,7 +68,8 @@ export function App({ agent, threadId }: { agent: string; threadId: string }) {
 
 Pass `KabooMessageView` to `CopilotChat`'s `messageView` slot. It renders the
 normal message list **and** live agent activity cards inside the transcript, from
-the moment the first agent starts:
+the moment the first agent starts, and a notice where a run failed. The list
+stays CopilotKit's own, so a long thread is virtualized:
 
 ```tsx
 import { CopilotChat } from "@copilotkit/react-core/v2";

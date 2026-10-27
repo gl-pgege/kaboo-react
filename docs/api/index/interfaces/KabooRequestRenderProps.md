@@ -4,7 +4,7 @@
 
 # Interface: KabooRequestRenderProps\<T\>
 
-Defined in: [src/requests/useRequestTool.tsx:13](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L13)
+Defined in: [src/requests/useRequestTool.tsx:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L19)
 
 What a request panel receives.
 
@@ -20,7 +20,7 @@ What a request panel receives.
 
 > **answer**: (`value`) => `void`
 
-Defined in: [src/requests/useRequestTool.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L23)
+Defined in: [src/requests/useRequestTool.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L29)
 
 Answer the request. Objects are sent as JSON.
 
@@ -40,7 +40,7 @@ Answer the request. Objects are sent as JSON.
 
 > **args**: `T`
 
-Defined in: [src/requests/useRequestTool.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L17)
+Defined in: [src/requests/useRequestTool.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L23)
 
 The call's arguments, checked against the tool's schema.
 
@@ -50,7 +50,7 @@ The call's arguments, checked against the tool's schema.
 
 > `optional` **result?**: `string`
 
-Defined in: [src/requests/useRequestTool.tsx:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L21)
+Defined in: [src/requests/useRequestTool.tsx:27](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L27)
 
 The answer sent, once there is one.
 
@@ -60,7 +60,7 @@ The answer sent, once there is one.
 
 > **skip**: () => `void`
 
-Defined in: [src/requests/useRequestTool.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L25)
+Defined in: [src/requests/useRequestTool.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L31)
 
 Decline to answer.
 
@@ -74,7 +74,7 @@ Decline to answer.
 
 > **status**: [`KabooRequestStatus`](../type-aliases/KabooRequestStatus.md)
 
-Defined in: [src/requests/useRequestTool.tsx:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L19)
+Defined in: [src/requests/useRequestTool.tsx:25](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L25)
 
 `waiting` for the person, `sent` once answered, `complete` once the agent has the answer.
 
@@ -84,6 +84,6 @@ Defined in: [src/requests/useRequestTool.tsx:19](https://github.com/gl-pgege/kab
 
 > **toolCallId**: `string`
 
-Defined in: [src/requests/useRequestTool.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L15)
+Defined in: [src/requests/useRequestTool.tsx:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L21)
 
 The call's id.

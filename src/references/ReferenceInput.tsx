@@ -157,7 +157,7 @@ export function KabooReferenceInput({ trigger = "@", ...inputProps }: KabooRefer
   } = useReferences();
   const config = useCopilotChatConfiguration();
   const configAgentId = (config as { agentId?: string } | null)?.agentId;
-  const { agent } = useAgent(configAgentId ? { agentId: configAgentId } : undefined);
+  const { agent } = useAgent({ ...(configAgentId ? { agentId: configAgentId } : {}), updates: [] });
   const send = useKabooSend(configAgentId);
   const placeholder =
     (config as { labels?: { chatInputPlaceholder?: string } } | null)?.labels

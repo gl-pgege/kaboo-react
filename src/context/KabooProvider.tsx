@@ -1,5 +1,6 @@
-import type { ComponentType, ReactNode } from "react";
+import { useMemo, type ComponentType, type ReactNode } from "react";
 import { CopilotKit, type CopilotKitProps } from "@copilotkit/react-core/v2";
+import { runErrorRenderer } from "../integrations/runErrors";
 import { KabooActivityProvider, type StructuredRenderers } from "./ActivityProvider";
 import { DrillProvider } from "./DrillContext";
 import { InterruptRenderersProvider } from "./InterruptRenderers";
@@ -10,6 +11,8 @@ import { ReferencesProvider } from "../references/ReferencesProvider";
 import type { ReferenceProvider } from "../references/types";
 import { KabooSlotsProvider, type KabooSlots } from "./KabooSlots";
 import type { ApprovalScope, StreamGroup } from "../types";
+
+const DEFAULT_THROTTLE_MS = 50;
 
 /** Props for {@link KabooProvider}. */
 export interface KabooProviderProps {
@@ -67,8 +70,17 @@ export interface KabooProviderProps {
   properties?: CopilotKitProps["properties"];
   /** Renderers for tool calls: the controlled tier of generative UI. */
   renderToolCalls?: CopilotKitProps["renderToolCalls"];
-  /** Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps. */
+  /**
+   * Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP
+   * Apps. kaboo-react adds its own for the notice it shows where a run failed.
+   */
   renderActivityMessages?: CopilotKitProps["renderActivityMessages"];
+  /**
+   * The shortest interval, in milliseconds, between two re-renders while a run
+   * streams: CopilotKit's `defaultThrottleMs` and the activity cards' own.
+   * Defaults to 50; `0` re-renders on every event.
+   */
+  throttleMs?: number;
   /** The A2UI catalog, theme and action handler. */
   a2ui?: CopilotKitProps["a2ui"];
   /** Open Generative UI: the sandbox functions and the design skill. */
@@ -124,11 +136,16 @@ export function KabooProvider({
   properties,
   renderToolCalls,
   renderActivityMessages,
+  throttleMs = DEFAULT_THROTTLE_MS,
   a2ui,
   openGenerativeUI,
   copilotKitProps,
   children,
 }: KabooProviderProps) {
+  const activityRenderers = useMemo(
+    () => [...(renderActivityMessages ?? []), runErrorRenderer],
+    [renderActivityMessages],
+  );
   return (
     <CopilotKit
       runtimeUrl={runtimeUrl}
@@ -138,12 +155,13 @@ export function KabooProvider({
       useSingleEndpoint={false}
       properties={properties}
       renderToolCalls={renderToolCalls}
-      renderActivityMessages={renderActivityMessages}
+      renderActivityMessages={activityRenderers}
       a2ui={a2ui}
       openGenerativeUI={openGenerativeUI}
+      defaultThrottleMs={throttleMs}
       {...copilotKitProps}
     >
-      <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers}>
+      <KabooActivityProvider agentId={agent} structuredRenderers={structuredRenderers} throttleMs={throttleMs}>
         <DrillProvider>
           <InterruptRenderersProvider renderers={interruptRenderers} approvalScopes={approvalScopes}>
               <ToolRenderersProvider

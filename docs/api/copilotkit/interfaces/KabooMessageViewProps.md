@@ -4,7 +4,7 @@
 
 # Interface: KabooMessageViewProps
 
-Defined in: [src/integrations/KabooMessageView.tsx:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L21)
+Defined in: [src/integrations/KabooMessageView.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L23)
 
 Props for [KabooMessageView](../variables/KabooMessageView.md): CopilotKit's message-view props plus per-view slot overrides.
 
@@ -413,7 +413,7 @@ in ARIA 1.1
 
 ### aria-haspopup?
 
-> `optional` **aria-haspopup?**: `boolean` \| `"true"` \| `"false"` \| `"dialog"` \| `"grid"` \| `"listbox"` \| `"menu"` \| `"tree"`
+> `optional` **aria-haspopup?**: `boolean` \| `"dialog"` \| `"grid"` \| `"listbox"` \| `"menu"` \| `"tree"` \| `"true"` \| `"false"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2680
 
@@ -3640,7 +3640,7 @@ Defined in: node\_modules/@types/react/index.d.ts:2900
 
 > `optional` **slots?**: [`KabooSlots`](../../index/interfaces/KabooSlots.md)
 
-Defined in: [src/integrations/KabooMessageView.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L26)
+Defined in: [src/integrations/KabooMessageView.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L28)
 
 Per-view [KabooSlots](../../index/interfaces/KabooSlots.md) overrides. Merged over the slots provided on
 `KabooProvider`; individual keys win over the provider's.

@@ -6,6 +6,10 @@ import { isControlOnlyStatus } from "../formatters/output";
 import type { StreamGroup, ToolCall } from "../types";
 import { SURFACE_TOOLS } from "../utils/surfaces";
 
+type DefaultRenderProps = Parameters<
+  NonNullable<NonNullable<Parameters<typeof useDefaultRenderTool>[0]>["render"]>
+>[0];
+
 function findTool(
   groups: Record<string, StreamGroup>,
   toolCallId: string,
@@ -32,6 +36,38 @@ function isDelegateSpawn(
   return false;
 }
 
+function DefaultToolCall({ name, toolCallId, parameters, status, result }: DefaultRenderProps) {
+  const { groups, toolOutcomes } = useActivity();
+  const { fallbackToolRenderer: Fallback } = useRenderOptions();
+  if (SURFACE_TOOLS.has(name) || isDelegateSpawn(groups, name, toolCallId)) return <></>;
+  const fromActivity = findTool(groups, toolCallId);
+  // A bare HITL control echo (e.g. {"status":"approved"} or
+  // {"status":"cancelled"}) is the interrupt-resolution payload, not real
+  // tool output. Keep the tool row (a real gated call must never vanish),
+  // but drop the echo as the result so we don't dump raw JSON — the real
+  // output arrives via the activity store once the resumed tool finishes.
+  const controlEcho = !fromActivity && isControlOnlyStatus(result);
+  const outcome = status === "complete" ? toolOutcomes?.[toolCallId] : undefined;
+  const tool: ToolCall =
+    fromActivity ?? {
+      toolUseId: toolCallId,
+      toolName: name,
+      toolInput: parameters,
+      toolResult: controlEcho || typeof result !== "string" ? undefined : result,
+      status: status === "complete" ? (outcome?.status ?? "success") : "running",
+      ...(outcome?.error ? { error: outcome.error } : {}),
+      ...(outcome?.fix ? { fix: outcome.fix } : {}),
+    };
+  if (Fallback) return <Fallback tool={tool} />;
+  return (
+    <div className="kaboo-inline-tool">
+      <ToolRow tool={tool} />
+    </div>
+  );
+}
+
+const renderDefault = (props: DefaultRenderProps) => <DefaultToolCall {...props} />;
+
 /**
  * Wildcard (`"*"`) tool-call renderer: persists any plain tool call inline in
  * the chat transcript. Tools with a dedicated renderer (`ask_user`, delegate
@@ -40,44 +76,12 @@ function isDelegateSpawn(
  * registers.
  *
  * The rich record (label, formatted result, error status) is sourced from the
- * activity store by tool-call id; a minimal record built from the raw render
- * props is used while the group is still catching up, so the card never
- * disappears once the tool resolves.
+ * activity store by tool-call id; a top-level call is built from the raw render
+ * props and the status, error and fix its result reported, so the card never
+ * disappears once the tool resolves. It registers once and reads activity as
+ * it renders.
  */
 export function KabooToolRender() {
-  const { groups } = useActivity();
-  const { fallbackToolRenderer: Fallback } = useRenderOptions();
-
-  useDefaultRenderTool(
-    {
-      render: ({ name, toolCallId, parameters, status, result }) => {
-        if (SURFACE_TOOLS.has(name) || isDelegateSpawn(groups, name, toolCallId)) return <></>;
-        const fromActivity = findTool(groups, toolCallId);
-        // A bare HITL control echo (e.g. {"status":"approved"} or
-        // {"status":"cancelled"}) is the interrupt-resolution payload, not real
-        // tool output. Keep the tool row (a real gated call must never vanish),
-        // but drop the echo as the result so we don't dump raw JSON — the real
-        // output arrives via the activity store once the resumed tool finishes.
-        const controlEcho = !fromActivity && isControlOnlyStatus(result);
-        const tool: ToolCall =
-          fromActivity ?? {
-            toolUseId: toolCallId,
-            toolName: name,
-            toolInput: parameters,
-            toolResult:
-              controlEcho || typeof result !== "string" ? undefined : result,
-            status: status === "complete" ? "success" : "running",
-          };
-        if (Fallback) return <Fallback tool={tool} />;
-        return (
-          <div className="kaboo-inline-tool">
-            <ToolRow tool={tool} />
-          </div>
-        );
-      },
-    },
-    [groups, Fallback],
-  );
-
+  useDefaultRenderTool({ render: renderDefault }, []);
   return null;
 }

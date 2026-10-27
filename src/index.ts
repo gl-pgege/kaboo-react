@@ -3,6 +3,7 @@ export type {
   FormQuestion, ApprovalReason, FormReason, InterruptReason,
   InterruptData, InterruptRendererProps, MessageMeta, TokenUsage,
   ApprovalScope, ApprovalSubject, ApprovalDecision, CustomRequestReason,
+  ToolOutcome, RunError,
 } from "./types";
 
 export { KabooActivityProvider, StructuredRenderersContext } from "./context/ActivityProvider";
@@ -28,7 +29,8 @@ export type { ToolRenderers, ToolRendererProps } from "./context/ToolRenderers";
 export { useToolCallMeta } from "./context/ToolCallMeta";
 export type { ToolCallMeta } from "./context/ToolCallMeta";
 
-export { useActivity } from "./hooks/useActivity";
+export { useActivity, useToolOutcome } from "./hooks/useActivity";
+export { RUN_ERROR_EVENT } from "./context/subagentFold";
 export { useDrill } from "./hooks/useDrill";
 export { useKabooSend } from "./hooks/useKabooSend";
 export { useAgentPresence, useAgentState, useLiveToolCalls } from "./hooks/canvas";

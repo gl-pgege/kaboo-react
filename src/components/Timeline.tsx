@@ -5,6 +5,7 @@ import type { TimelineEntry, ToolCall } from "../types";
 import { Chevron, ToolRow, ToolStatusIcon } from "./ToolRow";
 import { MarkdownContent } from "./MarkdownContent";
 import { AskUserRow } from "./AskUserRow";
+import { AgentCard } from "./AgentCard";
 import { useRenderOptions, useToolRenderer } from "../context/ToolRenderers";
 import { ToolCallMetaContext, toolCallMeta, toolCallStatus } from "../context/ToolCallMeta";
 import { useActivity } from "../hooks/useActivity";
@@ -56,16 +57,27 @@ function RegisteredToolCall({ tool }: { tool: ToolCall }) {
 /**
  * A tool call drawn by the renderer the app registered with CopilotKit for its
  * name (`useRenderTool`), so a tool looks the same in the chat and inside agent
- * cards; otherwise the app's `toolRenderers` card, or the built-in tool row.
+ * cards; otherwise the app's `toolRenderers` card, the card of the sub-agent
+ * the call started, or the fallback tool row.
  */
 function ToolTimelineRow({ tool, agentName }: { tool: ToolCall; agentName?: string }) {
   const registered = useRegisteredRenderer(tool);
   const CustomTool = useToolRenderer(tool.toolName);
   const Fallback = useRenderOptions().fallbackToolRenderer ?? ToolRow;
+  const { groups } = useActivity();
   const meta = useMemo(() => toolCallMeta(tool, agentName), [tool, agentName]);
+  const started = Object.entries(groups).find(([, group]) => group.toolCallId === tool.toolUseId);
   return (
     <ToolCallMetaContext.Provider value={meta}>
-      {registered ? <RegisteredToolCall tool={tool} /> : CustomTool ? <CustomTool tool={tool} /> : <Fallback tool={tool} />}
+      {registered ? (
+        <RegisteredToolCall tool={tool} />
+      ) : CustomTool ? (
+        <CustomTool tool={tool} />
+      ) : started ? (
+        <AgentCard groupId={started[0]} group={started[1]} />
+      ) : (
+        <Fallback tool={tool} />
+      )}
     </ToolCallMetaContext.Provider>
   );
 }

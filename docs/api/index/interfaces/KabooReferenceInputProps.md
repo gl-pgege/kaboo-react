@@ -428,7 +428,7 @@ in ARIA 1.1
 
 ### aria-haspopup?
 
-> `optional` **aria-haspopup?**: `boolean` \| `"true"` \| `"false"` \| `"dialog"` \| `"grid"` \| `"listbox"` \| `"menu"` \| `"tree"`
+> `optional` **aria-haspopup?**: `boolean` \| `"dialog"` \| `"grid"` \| `"listbox"` \| `"menu"` \| `"tree"` \| `"true"` \| `"false"`
 
 Defined in: node\_modules/@types/react/index.d.ts:2680
 

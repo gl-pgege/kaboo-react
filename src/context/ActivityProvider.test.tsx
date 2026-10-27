@@ -217,6 +217,39 @@ function StatusProbe() {
   );
 }
 
+describe("KabooActivityProvider — throttled updates", () => {
+  it("shows the first event at once and coalesces the rest of the window into one update", () => {
+    vi.useFakeTimers();
+    try {
+      let renders = 0;
+      function Counting() {
+        renders += 1;
+        const { groups } = useContext<ActivityState>(ActivityContext);
+        return <div data-testid="keys">{Object.keys(groups).sort().join(",")}</div>;
+      }
+      render(
+        <KabooActivityProvider throttleMs={50}>
+          <Counting />
+        </KabooActivityProvider>,
+      );
+      const before = renders;
+      act(() => {
+        fakeAgent.emitEvent(started("main.a", "a"));
+        fakeAgent.emitEvent(started("main.b", "b"));
+        fakeAgent.emitEvent(started("main.c", "c"));
+      });
+      expect(screen.getByTestId("keys").textContent).toBe("main.a");
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
+      expect(screen.getByTestId("keys").textContent).toBe("main.a,main.b,main.c");
+      expect(renders - before).toBe(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe("KabooActivityProvider — settling groups when a run ends", () => {
   it("marks still-active groups stopped on RUN_ERROR", () => {
     render(

@@ -33,12 +33,14 @@ function RenderCaptured({ props }: { props: ToolRenderProps }) {
 
 function Harness({
   groups = {},
+  toolOutcomes,
   toolProps,
 }: {
   groups?: Record<string, StreamGroup>;
+  toolOutcomes?: ActivityState["toolOutcomes"];
   toolProps: ToolRenderProps;
 }) {
-  const state: ActivityState = { groups };
+  const state: ActivityState = { groups, toolOutcomes };
   return (
     <ActivityContext.Provider value={state}>
       <KabooToolRender />
@@ -91,5 +93,21 @@ describe("KabooToolRender", () => {
     );
     expect(screen.getByTestId("app-fallback").textContent).toBe("create_work_item:success");
     expect(container.querySelector(".kaboo-tool-row")).toBeNull();
+  });
+
+  it("gives a top-level call the status, error and fix its result reported", () => {
+    render(
+      <ToolRenderersProvider
+        fallbackToolRenderer={({ tool }) => (
+          <div data-testid="app-fallback">{`${tool.status}|${tool.error ?? ""}|${tool.fix ?? ""}`}</div>
+        )}
+      >
+        <Harness
+          toolOutcomes={{ "call-1": { status: "error", error: "Title taken", fix: "Pick another title." } }}
+          toolProps={{ ...pendingCall, status: "complete", result: "HTTP error 409" }}
+        />
+      </ToolRenderersProvider>,
+    );
+    expect(screen.getByTestId("app-fallback").textContent).toBe("error|Title taken|Pick another title.");
   });
 });

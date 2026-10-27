@@ -6,7 +6,7 @@
 
 > **KabooActivityProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/context/ActivityProvider.tsx:88](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L88)
+Defined in: [src/context/ActivityProvider.tsx:94](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/ActivityProvider.tsx#L94)
 
 Builds the sub-agent groups the cards render from the AG-UI run stream: each
 `SUBAGENT_STARTED` opens a group, the events tagged with its `subagentRunId`

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   CopilotChatMessageView,
   CopilotChatAssistantMessage,
@@ -16,6 +16,8 @@ import { useKabooSlots, type KabooSlots } from "../context/KabooSlots";
 import { KabooAssistantMessage } from "./KabooAssistantMessage";
 import { KabooUserMessage } from "./KabooUserMessage";
 import { requestToolTest } from "../requests/openRequests";
+import { runErrorMessage } from "./runErrors";
+import type { RunError, StreamGroup } from "../types";
 
 /** Props for {@link KabooMessageView}: CopilotKit's message-view props plus per-view slot overrides. */
 export interface KabooMessageViewProps extends CopilotChatMessageViewProps {
@@ -55,8 +57,112 @@ function visibleMessages(messages: ChatMessage[], isRequestTool: (name: string) 
   return out;
 }
 
+function withRunErrors(
+  messages: ChatMessage[],
+  errors: Record<string, RunError> | undefined,
+  runOf: (messageId: string) => string | undefined,
+): ChatMessage[] {
+  if (!errors) return messages;
+  const lastOfRun = new Map<string, number>();
+  messages.forEach((m, index) => {
+    const runId = m.id ? runOf(m.id) : undefined;
+    if (runId && errors[runId]) lastOfRun.set(runId, index);
+  });
+  if (lastOfRun.size === 0) return messages;
+  const notices = new Map<number, ChatMessage[]>();
+  for (const [runId, index] of lastOfRun) {
+    notices.set(index, [...(notices.get(index) ?? []), runErrorMessage(runId, errors[runId]) as ChatMessage]);
+  }
+  return messages.flatMap((m, index) => [m, ...(notices.get(index) ?? [])]);
+}
+
+function bindTurns(
+  messages: ChatMessage[],
+  groups: Record<string, StreamGroup>,
+  runOf: (messageId: string) => string | undefined,
+  streamRunOf: (messageId: string) => string | undefined,
+) {
+  const roots = chatRootGroups(groups);
+
+  // Bucket this turn's member cards by their stable turn key, and map each
+  // AG-UI run to its turn key so a reply (whose run may be the post-resume
+  // one) resolves to the whole turn — not just its chat_output member.
+  const rootsByTurn = new Map<string, GroupEntry[]>();
+  for (const entry of roots) {
+    const key = groupTurnKey(entry[1]);
+    if (!key) continue;
+    const bucket = rootsByTurn.get(key);
+    if (bucket) bucket.push(entry);
+    else rootsByTurn.set(key, [entry]);
+  }
+  const runToTurn = new Map<string, string>();
+  for (const g of Object.values(groups)) {
+    const key = groupTurnKey(g);
+    if (!key) continue;
+    for (const run of groupRuns(g)) runToTurn.set(run, key);
+  }
+
+  // Resolve each assistant reply → its run → its turn's roots. A turn
+  // whose reply hasn't streamed yet stays unbound and renders live below.
+  const rootsByMessageId = new Map<string, GroupEntry[]>();
+  const boundTurns = new Set<string>();
+  // The LAST assistant message of each turn, in transcript order — the
+  // anchor for the turn footer slot and `useTurnGroups`.
+  const lastMessageOfTurn = new Map<string, string>();
+  const runsOfTurn = new Map<string, Set<string>>();
+  let userTurn: string | undefined;
+  for (const m of messages) {
+    if (m.role === "user") userTurn = undefined;
+    if (m.role !== "assistant" || !m.id) continue;
+    const runId = runOf(m.id);
+    if (!runId) continue;
+    const key = userTurn ?? runToTurn.get(runId) ?? runId;
+    userTurn = key;
+    lastMessageOfTurn.set(key, m.id);
+    runsOfTurn.set(key, (runsOfTurn.get(key) ?? new Set()).add(runId));
+    const turnRoots = rootsByTurn.get(key);
+    if (turnRoots) {
+      rootsByMessageId.set(m.id, turnRoots);
+      boundTurns.add(key);
+    }
+  }
+
+  // Every group of the turn (roots AND nested members), keyed by the
+  // turn's final assistant message, so end-of-turn surfaces can see
+  // structured outputs regardless of how deep the producing agent sat.
+  const turnGroupsByMessageId = new Map<string, GroupEntry[]>();
+  const turnRunsByMessageId = new Map<string, string[]>();
+  for (const [key, messageId] of lastMessageOfTurn) {
+    const entries = Object.entries(groups).filter(([, g]) => groupTurnKey(g) === key) as GroupEntry[];
+    if (entries.length > 0) turnGroupsByMessageId.set(messageId, entries);
+    const runs = new Set([...entries.flatMap(([, g]) => groupRuns(g)), ...(runsOfTurn.get(key) ?? [])]);
+    turnRunsByMessageId.set(messageId, [...runs]);
+  }
+
+  const pending = roots.filter(([, g]) => {
+    const key = groupTurnKey(g);
+    return !key || !boundTurns.has(key);
+  });
+
+  const lastUser = messages.filter((m) => m.role === "user").pop();
+  const currentRunId = lastUser?.id ? streamRunOf(lastUser.id) : undefined;
+  const currentTurn = currentRunId ? (runToTurn.get(currentRunId) ?? currentRunId) : undefined;
+  const visibleGroups = Object.values(groups).filter((g) => !g.inlineChatOwner);
+  const runStarted = currentTurn
+    ? visibleGroups.some((g) => groupTurnKey(g) === currentTurn)
+    : visibleGroups.some((g) => g.status === "active");
+
+  return {
+    binding: { rootsByMessageId, turnGroupsByMessageId, turnRunsByMessageId },
+    pending,
+    runStarted,
+  };
+}
+
+const NoCursor = () => null;
+
 function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageViewProps) {
-  const { groups } = useActivity();
+  const { groups, errorByRun } = useActivity();
   const { copilotkit } = useCopilotKit();
   const messageMeta = useMessageMeta();
   const config = useCopilotChatConfiguration();
@@ -64,121 +170,46 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
   const slots = { ...contextSlots, ...slotOverrides };
   const agentId = config?.agentId;
   const threadId = config?.threadId;
-  const shown = useMemo(
-    () => visibleMessages(props.messages ?? [], requestToolTest(copilotkit, agentId)),
-    [props.messages, copilotkit, agentId],
+  const streamRunOf = useCallback((messageId: string) => messageMeta[messageId]?.runId, [messageMeta]);
+  // Prefer the run id recovered from the event stream: it is correct on
+  // replay too, where CopilotKit's registry attributes every replayed message
+  // to the synthetic connect run and the turn binding (inline cards, turn
+  // footer) would silently come apart.
+  const runOf = useCallback(
+    (messageId: string) =>
+      messageMeta[messageId]?.runId ??
+      (agentId && threadId ? copilotkit.getRunIdForMessage(agentId, threadId, messageId) : undefined),
+    [messageMeta, copilotkit, agentId, threadId],
   );
+  const shown = useMemo(
+    () => withRunErrors(visibleMessages(props.messages ?? [], requestToolTest(copilotkit, agentId)), errorByRun, runOf),
+    [props.messages, copilotkit, agentId, errorByRun, runOf],
+  );
+  const { binding, pending, runStarted } = useMemo(
+    () => bindTurns(shown, groups, runOf, streamRunOf),
+    [shown, groups, runOf, streamRunOf],
+  );
+  const showStartIndicator = Boolean(props.isRunning) && !runStarted;
+  const StartIndicator = slots.runStartIndicator;
 
   return (
-    <CopilotChatMessageView
-      {...props}
-      messages={shown}
-      assistantMessage={
-        KabooAssistantMessage as unknown as typeof CopilotChatAssistantMessage
-      }
-      userMessage={KabooUserMessage as unknown as typeof CopilotChatUserMessage}
-    >
-      {({ messages, messageElements, interruptElement, isRunning }) => {
-        const roots = chatRootGroups(groups);
-
-        // Bucket this turn's member cards by their stable turn key, and map each
-        // AG-UI run to its turn key so a reply (whose run may be the post-resume
-        // one) resolves to the whole turn — not just its chat_output member.
-        const rootsByTurn = new Map<string, GroupEntry[]>();
-        for (const entry of roots) {
-          const key = groupTurnKey(entry[1]);
-          if (!key) continue;
-          const bucket = rootsByTurn.get(key);
-          if (bucket) bucket.push(entry);
-          else rootsByTurn.set(key, [entry]);
-        }
-        const runToTurn = new Map<string, string>();
-        for (const g of Object.values(groups)) {
-          const key = groupTurnKey(g);
-          if (!key) continue;
-          for (const run of groupRuns(g)) runToTurn.set(run, key);
-        }
-
-        // Resolve each assistant reply → its run → its turn's roots. A turn
-        // whose reply hasn't streamed yet stays unbound and renders live below.
-        const rootsByMessageId = new Map<string, GroupEntry[]>();
-        const boundTurns = new Set<string>();
-        // The LAST assistant message of each turn, in transcript order — the
-        // anchor for the turn footer slot and `useTurnGroups`.
-        const lastMessageOfTurn = new Map<string, string>();
-        const runsOfTurn = new Map<string, Set<string>>();
-        const list = messages as Array<{ id?: string; role?: string }>;
-        let userTurn: string | undefined;
-        for (const m of list) {
-          if (m?.role === "user") userTurn = undefined;
-          if (m?.role !== "assistant" || !m.id) continue;
-          // Prefer the run id recovered from the event stream: it is correct
-          // on replay too, where CopilotKit's registry attributes every
-          // replayed message to the synthetic connect run and the turn
-          // binding (inline cards, turn footer) would silently come apart.
-          const runId =
-            messageMeta[m.id]?.runId ??
-            (agentId && threadId
-              ? copilotkit.getRunIdForMessage(agentId, threadId, m.id)
-              : undefined);
-          if (!runId) continue;
-          const key = userTurn ?? runToTurn.get(runId) ?? runId;
-          userTurn = key;
-          lastMessageOfTurn.set(key, m.id);
-          runsOfTurn.set(key, (runsOfTurn.get(key) ?? new Set()).add(runId));
-          const turnRoots = rootsByTurn.get(key);
-          if (turnRoots) {
-            rootsByMessageId.set(m.id, turnRoots);
-            boundTurns.add(key);
-          }
-        }
-
-        // Every group of the turn (roots AND nested members), keyed by the
-        // turn's final assistant message, so end-of-turn surfaces can see
-        // structured outputs regardless of how deep the producing agent sat.
-        const turnGroupsByMessageId = new Map<string, GroupEntry[]>();
-        const turnRunsByMessageId = new Map<string, string[]>();
-        for (const [key, messageId] of lastMessageOfTurn) {
-          const entries = Object.entries(groups).filter(
-            ([, g]) => groupTurnKey(g) === key,
-          ) as GroupEntry[];
-          if (entries.length > 0) turnGroupsByMessageId.set(messageId, entries);
-          const runs = new Set([...entries.flatMap(([, g]) => groupRuns(g)), ...(runsOfTurn.get(key) ?? [])]);
-          turnRunsByMessageId.set(messageId, [...runs]);
-        }
-
-        const pending = roots.filter(([, g]) => {
-          const key = groupTurnKey(g);
-          return !key || !boundTurns.has(key);
-        });
-
-        const lastUser = list.filter((m) => m?.role === "user").pop();
-        const currentRunId = lastUser?.id ? messageMeta[lastUser.id]?.runId : undefined;
-        const currentTurn = currentRunId ? runToTurn.get(currentRunId) ?? currentRunId : undefined;
-        const visibleGroups = Object.values(groups).filter((g) => !g.inlineChatOwner);
-        const runStarted = currentTurn
-          ? visibleGroups.some((g) => groupTurnKey(g) === currentTurn)
-          : visibleGroups.some((g) => g.status === "active");
-        const showStartIndicator = isRunning && !runStarted;
-        const StartIndicator = slots.runStartIndicator;
-
-        return (
-          <TurnBindingProvider value={{ rootsByMessageId, turnGroupsByMessageId, turnRunsByMessageId }}>
-            {messageElements}
-            {pending.length > 0 && (
-              <div className="kaboo-inline-cards">
-                {pending.map(([groupId, group]) => (
-                  <AgentCard key={groupId} groupId={groupId} group={group} showChildren />
-                ))}
-              </div>
-            )}
-            {interruptElement}
-            {showStartIndicator &&
-              (StartIndicator ? <StartIndicator /> : <CopilotChatMessageView.Cursor />)}
-          </TurnBindingProvider>
-        );
-      }}
-    </CopilotChatMessageView>
+    <TurnBindingProvider value={binding}>
+      <CopilotChatMessageView
+        {...props}
+        messages={shown}
+        assistantMessage={KabooAssistantMessage as unknown as typeof CopilotChatAssistantMessage}
+        userMessage={KabooUserMessage as unknown as typeof CopilotChatUserMessage}
+        cursor={NoCursor as unknown as typeof CopilotChatMessageView.Cursor}
+      />
+      {pending.length > 0 && (
+        <div className="kaboo-inline-cards">
+          {pending.map(([groupId, group]) => (
+            <AgentCard key={groupId} groupId={groupId} group={group} showChildren />
+          ))}
+        </div>
+      )}
+      {showStartIndicator && (StartIndicator ? <StartIndicator /> : <CopilotChatMessageView.Cursor />)}
+    </TurnBindingProvider>
   );
 }
 
@@ -204,7 +235,11 @@ function KabooMessageViewImpl({ slots: slotOverrides, ...props }: KabooMessageVi
  * Reasoning messages with no text (thinking the model only signed or
  * encrypted) are dropped, and adjacent ones are merged into one, so a turn
  * shows one thought block per stretch of thinking instead of a row of empty
- * "Thought for a few seconds" headers.
+ * "Thought for a few seconds" headers. A run that failed gets a notice after
+ * its last message, with the run's error, so a failed turn is never blank.
+ *
+ * The list stays CopilotKit's own, so long threads are virtualized; pass
+ * `groupMessages` or `transformMessages` to reshape it.
  *
  * App-supplied {@link KabooSlots} (from `KabooProvider` or the `slots` prop)
  * plug in here: `runStartIndicator` replaces the bare cursor shown between

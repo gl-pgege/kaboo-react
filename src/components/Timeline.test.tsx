@@ -307,7 +307,7 @@ describe("Timeline with renderers registered in CopilotKit", () => {
     expect((await screen.findByTestId("sql-card")).textContent).toBe("inProgress|sel|");
   });
 
-  it("keeps a call that started a sub-agent as a row", async () => {
+  it("draws a call that started a sub-agent as that agent's card", async () => {
     const delegating: ToolCall = { ...sql, toolUseId: "d1" };
     const spawned: StreamGroup = {
       title: "Analyst",
@@ -327,8 +327,9 @@ describe("Timeline with renderers registered in CopilotKit", () => {
     );
     await screen.findByTestId("sql-card");
     expect(screen.getAllByTestId("sql-card")).toHaveLength(1);
-    expect(container.querySelectorAll(".kaboo-tool-row")).toHaveLength(1);
-    expect(screen.getByText("Run sql")).toBeInTheDocument();
+    expect(container.querySelectorAll(".kaboo-tool-row")).toHaveLength(0);
+    expect(container.querySelectorAll(".kaboo-agent-card")).toHaveLength(1);
+    expect(screen.getByText("Analyst")).toBeInTheDocument();
   });
 
   it("draws an errored or cancelled call as complete, leaving the real status to useToolCallMeta", async () => {

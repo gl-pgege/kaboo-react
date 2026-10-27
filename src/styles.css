@@ -347,6 +347,27 @@
   word-break: break-word;
 }
 
+.kaboo-run-error {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid var(--kaboo-error);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--kaboo-error);
+  background: var(--kaboo-error-bg);
+}
+
+.kaboo-run-error-title { font-weight: 600; }
+
+.kaboo-run-error-message {
+  max-height: 12em;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .kaboo-tool-fix { margin-top: 4px; color: var(--kaboo-fg); }
 
 .kaboo-tool-group-items {

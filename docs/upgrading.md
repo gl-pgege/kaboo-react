@@ -9,6 +9,45 @@ agents send, and nothing it sends can be mistaken for an approval by an older
 agent. Features that span the stack light up once every piece is upgraded — see
 [Upgrading the stack](https://gl-pgege.github.io/kaboo-docs/start-here/#upgrading-the-stack).
 
+## 0.14
+
+0.14 reads the status kaboo-workflows 0.34 puts on every tool result and the
+`kaboo.run_error` event kaboo-runtime replays where a run failed; with older
+services, top-level calls carry no outcome and only live failures show.
+
+### Delegate tools need no renderer of their own
+
+**Who:** apps that map their delegate tools to a card that draws the
+sub-agent's `AgentCard`.
+
+A call that started a sub-agent now draws that agent's card inside a timeline
+by itself. Drop the mapping:
+
+```diff
+- const toolRenderers: ToolRenderers = { analyze_sql: DelegateCard, sql_visualizer: DelegateCard };
+- <KabooProvider toolRenderers={toolRenderers} … />
++ <KabooProvider … />
+```
+
+### Top-level failures come from the result, not its text
+
+**Who:** apps that decide a top-level call failed by reading its result.
+
+Read `useToolOutcome(toolCallId)` instead; the fallback renderer gets the same
+`status`, `error` and `fix` on its `ToolCall`. See
+[Custom tool cards](tool-cards.md#status-errors-and-timing).
+
+### Re-renders are throttled, and the message list is CopilotKit's own
+
+**Who:** apps that wrap `KabooMessageView` or count on a render per event.
+
+A streaming run re-renders at most every 50 ms; pass `throttleMs={0}` to
+`KabooProvider` for one per event. `KabooMessageView` hands CopilotKit's list
+no children render prop, so a long thread is virtualized; the cards waiting for
+a reply and the run-start indicator render after the list, and CopilotKit's own
+cursor is hidden. A failed run adds a `kaboo-run-error` activity message to the
+list, so a `groupMessages` that handles activity messages sees it.
+
 ## 0.13.1
 
 **Who:** no one needs to change anything.

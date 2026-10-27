@@ -51,7 +51,7 @@ function newId(): string {
  */
 export function useKabooSend(agentId?: string) {
   const { copilotkit } = useCopilotKit();
-  const { agent: rendered } = useAgent(agentId ? { agentId } : undefined);
+  const { agent: rendered } = useAgent({ ...(agentId ? { agentId } : {}), updates: [] });
   return useCallback(
     async (content: KabooUserContent, options: KabooSendOptions = {}) => {
       const id = options.id ?? newId();

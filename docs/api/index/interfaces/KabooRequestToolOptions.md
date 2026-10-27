@@ -4,7 +4,7 @@
 
 # Interface: KabooRequestToolOptions\<T\>
 
-Defined in: [src/requests/useRequestTool.tsx:29](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L29)
+Defined in: [src/requests/useRequestTool.tsx:35](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L35)
 
 Options for [useRequestTool](../functions/useRequestTool.md).
 
@@ -20,7 +20,7 @@ Options for [useRequestTool](../functions/useRequestTool.md).
 
 > `optional` **agentId?**: `string`
 
-Defined in: [src/requests/useRequestTool.tsx:37](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L37)
+Defined in: [src/requests/useRequestTool.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L43)
 
 Offer the tool to this agent only.
 
@@ -30,7 +30,7 @@ Offer the tool to this agent only.
 
 > **description**: `string`
 
-Defined in: [src/requests/useRequestTool.tsx:33](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L33)
+Defined in: [src/requests/useRequestTool.tsx:39](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L39)
 
 What the agent reads about the tool.
 
@@ -40,7 +40,7 @@ What the agent reads about the tool.
 
 > **name**: `string`
 
-Defined in: [src/requests/useRequestTool.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L31)
+Defined in: [src/requests/useRequestTool.tsx:37](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L37)
 
 The tool's name, as agents' `client_tools` allow-lists name it.
 
@@ -50,7 +50,7 @@ The tool's name, as agents' `client_tools` allow-lists name it.
 
 > **parameters**: [`KabooToolSchema`](KabooToolSchema.md)\<`T`\>
 
-Defined in: [src/requests/useRequestTool.tsx:35](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L35)
+Defined in: [src/requests/useRequestTool.tsx:41](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L41)
 
 The arguments schema. Calls that fail it are answered with the problems, so the agent can retry.
 
@@ -60,7 +60,7 @@ The arguments schema. Calls that fail it are answered with the problems, so the 
 
 > **render**: (`props`) => `ReactElement`\<`unknown`, `string` \| `JSXElementConstructor`\<`any`\>\> \| `null`
 
-Defined in: [src/requests/useRequestTool.tsx:39](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L39)
+Defined in: [src/requests/useRequestTool.tsx:45](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L45)
 
 The panel: a component, defined outside the one that registers the tool so it keeps its state.
 

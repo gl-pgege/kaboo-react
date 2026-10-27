@@ -135,7 +135,7 @@ export function ReferenceStateSync({
   agentId?: string;
   pending: PendingReference[];
 }): null {
-  const { agent } = useAgent(agentId ? { agentId } : undefined);
+  const { agent } = useAgent({ ...(agentId ? { agentId } : {}), updates: [] });
   const objectRefs = useMemo(
     () =>
       pending

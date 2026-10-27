@@ -4,7 +4,7 @@
 
 # Interface: KabooProviderProps
 
-Defined in: [src/context/KabooProvider.tsx:15](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L15)
+Defined in: [src/context/KabooProvider.tsx:18](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L18)
 
 Props for [KabooProvider](../functions/KabooProvider.md).
 
@@ -14,7 +14,7 @@ Props for [KabooProvider](../functions/KabooProvider.md).
 
 > `optional` **a2ui?**: `object`
 
-Defined in: [src/context/KabooProvider.tsx:73](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L73)
+Defined in: [src/context/KabooProvider.tsx:85](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L85)
 
 The A2UI catalog, theme and action handler.
 
@@ -62,7 +62,7 @@ When omitted, the built-in `viewerTheme` from `@copilotkit/a2ui-renderer` is use
 
 > **agent**: `string`
 
-Defined in: [src/context/KabooProvider.tsx:19](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L19)
+Defined in: [src/context/KabooProvider.tsx:22](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L22)
 
 CopilotKit agent id to run (the workflow entry agent).
 
@@ -72,7 +72,7 @@ CopilotKit agent id to run (the workflow entry agent).
 
 > `optional` **approvalScopes?**: [`ApprovalScope`](../type-aliases/ApprovalScope.md)[]
 
-Defined in: [src/context/KabooProvider.tsx:34](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L34)
+Defined in: [src/context/KabooProvider.tsx:37](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L37)
 
 The approval options the app allows. A request offers only the scopes
 both the agent and the app allow; `once` is always offered. Defaults to
@@ -84,7 +84,7 @@ all three (`once`, `thread`, `always`).
 
 > **children**: `ReactNode`
 
-Defined in: [src/context/KabooProvider.tsx:79](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L79)
+Defined in: [src/context/KabooProvider.tsx:91](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L91)
 
 Your app subtree, rendered inside all kaboo contexts.
 
@@ -94,7 +94,7 @@ Your app subtree, rendered inside all kaboo contexts.
 
 > `optional` **copilotKitProps?**: `Partial`\<`Omit`\<`CopilotKitProps`, `"agentId"` \| `"children"` \| `"agent"` \| `"runtimeUrl"` \| `"threadId"`\>\>
 
-Defined in: [src/context/KabooProvider.tsx:77](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L77)
+Defined in: [src/context/KabooProvider.tsx:89](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L89)
 
 Any other props for the underlying `<CopilotKit>`.
 
@@ -104,7 +104,7 @@ Any other props for the underlying `<CopilotKit>`.
 
 > `optional` **disableInlineCards?**: `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:54](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L54)
+Defined in: [src/context/KabooProvider.tsx:57](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L57)
 
 Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/KabooInlineCards.md).
 
@@ -114,7 +114,7 @@ Skip auto-mounting the built-in [KabooInlineCards](../../copilotkit/functions/Ka
 
 > `optional` **disableInterruptHandler?**: `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:46](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L46)
+Defined in: [src/context/KabooProvider.tsx:49](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L49)
 
 Skip auto-mounting the built-in [KabooInterruptHandler](../../copilotkit/functions/KabooInterruptHandler.md).
 
@@ -124,7 +124,7 @@ Skip auto-mounting the built-in [KabooInterruptHandler](../../copilotkit/functio
 
 > `optional` **fallbackToolRenderer?**: `ComponentType`\<[`ToolRendererProps`](ToolRendererProps.md)\>
 
-Defined in: [src/context/KabooProvider.tsx:41](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L41)
+Defined in: [src/context/KabooProvider.tsx:44](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L44)
 
 ***
 
@@ -132,7 +132,7 @@ Defined in: [src/context/KabooProvider.tsx:41](https://github.com/gl-pgege/kaboo
 
 > `optional` **interruptRenderers?**: [`InterruptRenderers`](../type-aliases/InterruptRenderers.md)
 
-Defined in: [src/context/KabooProvider.tsx:28](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L28)
+Defined in: [src/context/KabooProvider.tsx:31](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L31)
 
 Renderer overrides for the built-in HITL handler, keyed by request kind:
 `approval`, `form`, or an app's own kind such as `files`.
@@ -143,7 +143,7 @@ Renderer overrides for the built-in HITL handler, keyed by request kind:
 
 > `optional` **isReadOnlyTool?**: (`toolName`) => `boolean`
 
-Defined in: [src/context/KabooProvider.tsx:44](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L44)
+Defined in: [src/context/KabooProvider.tsx:47](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L47)
 
 #### Parameters
 
@@ -161,7 +161,7 @@ Defined in: [src/context/KabooProvider.tsx:44](https://github.com/gl-pgege/kaboo
 
 > `optional` **markdownRenderer?**: (`text`) => `ReactNode`
 
-Defined in: [src/context/KabooProvider.tsx:42](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L42)
+Defined in: [src/context/KabooProvider.tsx:45](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L45)
 
 #### Parameters
 
@@ -179,7 +179,7 @@ Defined in: [src/context/KabooProvider.tsx:42](https://github.com/gl-pgege/kaboo
 
 > `optional` **onInterruptError?**: (`message`) => `void`
 
-Defined in: [src/context/KabooProvider.tsx:52](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L52)
+Defined in: [src/context/KabooProvider.tsx:55](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L55)
 
 Called with the reason when a person's answer never reached the agent;
 the requests come back to be answered again. See
@@ -201,7 +201,7 @@ the requests come back to be answered again. See
 
 > `optional` **openGenerativeUI?**: `object`
 
-Defined in: [src/context/KabooProvider.tsx:75](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L75)
+Defined in: [src/context/KabooProvider.tsx:87](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L87)
 
 Open Generative UI: the sandbox functions and the design skill.
 
@@ -233,7 +233,7 @@ await Websandbox.connection.remote.<functionName>(args)
 
 > `optional` **properties?**: `Record`\<`string`, `any`\>
 
-Defined in: [src/context/KabooProvider.tsx:67](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L67)
+Defined in: [src/context/KabooProvider.tsx:70](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L70)
 
 Sent to the agent as `forwardedProps` with every run.
 
@@ -243,7 +243,7 @@ Sent to the agent as `forwardedProps` with every run.
 
 > `optional` **references?**: [`ReferenceProvider`](ReferenceProvider.md)\<`unknown`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:59](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L59)
+Defined in: [src/context/KabooProvider.tsx:62](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L62)
 
 `@` reference providers made available to the composer / `useReferences`.
 File upload is not implicit — include `uploadProvider()` to offer uploads.
@@ -254,9 +254,10 @@ File upload is not implicit — include `uploadProvider()` to offer uploads.
 
 > `optional` **renderActivityMessages?**: `ReactActivityMessageRenderer`\<`any`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:71](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L71)
+Defined in: [src/context/KabooProvider.tsx:77](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L77)
 
-Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps.
+Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP
+Apps. kaboo-react adds its own for the notice it shows where a run failed.
 
 ***
 
@@ -264,7 +265,7 @@ Renderers for activity messages: A2UI surfaces, Open Generative UI, MCP Apps.
 
 > `optional` **renderAgentResult?**: (`group`) => `ReactNode`
 
-Defined in: [src/context/KabooProvider.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L43)
+Defined in: [src/context/KabooProvider.tsx:46](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L46)
 
 #### Parameters
 
@@ -282,7 +283,7 @@ Defined in: [src/context/KabooProvider.tsx:43](https://github.com/gl-pgege/kaboo
 
 > `optional` **renderToolCalls?**: `ReactToolCallRenderer`\<`any`\>[]
 
-Defined in: [src/context/KabooProvider.tsx:69](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L69)
+Defined in: [src/context/KabooProvider.tsx:72](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L72)
 
 Renderers for tool calls: the controlled tier of generative UI.
 
@@ -292,7 +293,7 @@ Renderers for tool calls: the controlled tier of generative UI.
 
 > **runtimeUrl**: `string`
 
-Defined in: [src/context/KabooProvider.tsx:17](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L17)
+Defined in: [src/context/KabooProvider.tsx:20](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L20)
 
 URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
@@ -302,7 +303,7 @@ URL of the CopilotKit runtime endpoint (e.g. `/api/copilotkit`).
 
 > `optional` **slots?**: [`KabooSlots`](KabooSlots.md)
 
-Defined in: [src/context/KabooProvider.tsx:65](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L65)
+Defined in: [src/context/KabooProvider.tsx:68](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L68)
 
 App-supplied render slots for the chat surfaces (end-of-turn footer,
 per-message footers, run-start indicator). All optional; nothing is
@@ -314,7 +315,7 @@ rendered in those positions unless provided.
 
 > `optional` **structuredRenderers?**: [`StructuredRenderers`](../type-aliases/StructuredRenderers.md)
 
-Defined in: [src/context/KabooProvider.tsx:23](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L23)
+Defined in: [src/context/KabooProvider.tsx:26](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L26)
 
 Renderers for structured agent outputs, keyed by output schema name.
 
@@ -324,9 +325,21 @@ Renderers for structured agent outputs, keyed by output schema name.
 
 > `optional` **threadId?**: `string`
 
-Defined in: [src/context/KabooProvider.tsx:21](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L21)
+Defined in: [src/context/KabooProvider.tsx:24](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L24)
 
 Conversation id. Scopes both the run and its activity.
+
+***
+
+### throttleMs?
+
+> `optional` **throttleMs?**: `number`
+
+Defined in: [src/context/KabooProvider.tsx:83](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L83)
+
+The shortest interval, in milliseconds, between two re-renders while a run
+streams: CopilotKit's `defaultThrottleMs` and the activity cards' own.
+Defaults to 50; `0` re-renders on every event.
 
 ***
 
@@ -334,7 +347,7 @@ Conversation id. Scopes both the run and its activity.
 
 > `optional` **toolRenderers?**: [`ToolRenderers`](../type-aliases/ToolRenderers.md)
 
-Defined in: [src/context/KabooProvider.tsx:40](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L40)
+Defined in: [src/context/KabooProvider.tsx:43](https://github.com/gl-pgege/kaboo-react/blob/main/src/context/KabooProvider.tsx#L43)
 
 Per-tool-name renderer overrides applied inside every [Timeline](../functions/Timeline.md)
 surface (agent cards, drill views). Keyed by exact tool name; a match

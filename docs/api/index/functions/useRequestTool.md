@@ -6,7 +6,7 @@
 
 > **useRequestTool**\<`T`\>(`options`): `void`
 
-Defined in: [src/requests/useRequestTool.tsx:147](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L147)
+Defined in: [src/requests/useRequestTool.tsx:156](https://github.com/gl-pgege/kaboo-react/blob/main/src/requests/useRequestTool.tsx#L156)
 
 Register a browser tool the person answers: a question, a file request, a
 pick from a list. It is a CopilotKit human-in-the-loop tool, offered to the

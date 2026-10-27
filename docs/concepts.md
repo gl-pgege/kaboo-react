@@ -55,6 +55,10 @@ top-level group sits in the transcript at the call that started it
 - **Tool calls render as they stream.** Arguments arrive as the model writes
   them, so a renderer can draw a query or a widget before the call runs
   ([Custom tool cards](tool-cards.md)).
+- **A failed run says why.** A notice with the run's error follows its last
+  message, or the question when the run said nothing, live and on replay.
+- **A streaming run re-renders at most every 50 ms** (`throttleMs` on
+  `KabooProvider`), and a long thread renders only the rows in view.
 
 ## Reading the tree
 

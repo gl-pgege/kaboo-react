@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactElement } from "react";
-import { useAgent, useCopilotChatConfiguration, useCopilotKit, useHumanInTheLoop } from "@copilotkit/react-core/v2";
+import {
+  UseAgentUpdate,
+  useAgent,
+  useCopilotChatConfiguration,
+  useCopilotKit,
+  useHumanInTheLoop,
+} from "@copilotkit/react-core/v2";
 import { checkArguments, type KabooToolSchema } from "./schema";
 import { SKIPPED_ANSWER, currentRequest, requestToolTest, saveAnswer, takeSavedAnswer } from "./openRequests";
 
@@ -55,7 +61,10 @@ function RequestCall<T extends object>({
   const { toolCallId, args, status, result, respond } = call;
   const config = useCopilotChatConfiguration();
   const { copilotkit } = useCopilotKit();
-  const { agent } = useAgent(config?.agentId ? { agentId: config.agentId } : undefined);
+  const { agent } = useAgent({
+    ...(config?.agentId ? { agentId: config.agentId } : {}),
+    updates: [UseAgentUpdate.OnMessagesChanged, UseAgentUpdate.OnRunStatusChanged],
+  });
   const [sent, setSent] = useState<string>();
   const checked = useMemo(
     () => (status === "complete" ? undefined : checkArguments(options.parameters, args)),

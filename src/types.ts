@@ -323,6 +323,36 @@ export interface ActivityState {
    * enabled. Use it to attach run-level feedback scores to the exact trace.
    */
   traceByRun?: Record<string, string>;
+  /**
+   * How each top-level tool call ended, keyed by tool-call id: the `status`,
+   * `error` and `fix` the workflow service puts in the metadata of its
+   * `TOOL_CALL_RESULT`. Sub-agent calls carry the same on their {@link ToolCall}.
+   */
+  toolOutcomes?: Record<string, ToolOutcome>;
+  /**
+   * Why each failed run failed, keyed by AG-UI `runId`: the run's `RUN_ERROR`
+   * live, or the `kaboo.run_error` event kaboo-runtime puts in its place on
+   * replay.
+   */
+  errorByRun?: Record<string, RunError>;
+}
+
+/** How a tool call ended, as the workflow service reported it. */
+export interface ToolOutcome {
+  /** `"error"` when the call failed. */
+  status: "success" | "error";
+  /** What went wrong, when it failed. */
+  error?: string;
+  /** What to do about it, when the tool said. */
+  fix?: string;
+}
+
+/** Why a run failed. */
+export interface RunError {
+  /** The run's error message. */
+  message: string;
+  /** The error code, when the run gave one. */
+  code?: string;
 }
 
 /**

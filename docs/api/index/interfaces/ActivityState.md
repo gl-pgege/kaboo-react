@@ -11,6 +11,18 @@ keyed by group id. This is what [useActivity](../functions/useActivity.md) expos
 
 ## Properties
 
+### errorByRun?
+
+> `optional` **errorByRun?**: `Record`\<`string`, [`RunError`](RunError.md)\>
+
+Defined in: [src/types.ts:337](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L337)
+
+Why each failed run failed, keyed by AG-UI `runId`: the run's `RUN_ERROR`
+live, or the `kaboo.run_error` event kaboo-runtime puts in its place on
+replay.
+
+***
+
 ### groups
 
 > **groups**: `Record`\<`string`, [`StreamGroup`](StreamGroup.md)\>
@@ -18,6 +30,18 @@ keyed by group id. This is what [useActivity](../functions/useActivity.md) expos
 Defined in: [src/types.ts:313](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L313)
 
 All activity groups for the current thread, keyed by group id.
+
+***
+
+### toolOutcomes?
+
+> `optional` **toolOutcomes?**: `Record`\<`string`, [`ToolOutcome`](ToolOutcome.md)\>
+
+Defined in: [src/types.ts:331](https://github.com/gl-pgege/kaboo-react/blob/main/src/types.ts#L331)
+
+How each top-level tool call ended, keyed by tool-call id: the `status`,
+`error` and `fix` the workflow service puts in the metadata of its
+`TOOL_CALL_RESULT`. Sub-agent calls carry the same on their [ToolCall](ToolCall.md).
 
 ***
 

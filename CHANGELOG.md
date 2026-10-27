@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0]
+
+### Added
+
+- **`useToolOutcome(toolCallId)`** says how a top-level tool call ended: the
+  `status`, `error` and `fix` kaboo-workflows 0.34 puts in the metadata of
+  every `TOOL_CALL_RESULT`. `ActivityState.toolOutcomes` holds them all, and
+  the wildcard renderer gives the fallback card a top-level call's real status,
+  error and fix, so an app no longer has to guess a failure from the result's
+  text.
+- **Failed runs show their error.** `ActivityState.errorByRun` keeps each
+  failed run's `message` and `code`, from the live `RUN_ERROR` or the
+  `kaboo.run_error` event kaboo-runtime replays in its place (`RUN_ERROR_EVENT`).
+  `KabooMessageView` puts a notice after the run's last message, or after the
+  question when the run said nothing, so a failed turn is never blank. It is
+  an activity message (`RUN_ERROR_ACTIVITY`) that `KabooProvider` registers a
+  renderer for, styled by `.kaboo-run-error`.
+- **`KabooProvider` takes `throttleMs`**, 50 by default: CopilotKit's
+  `defaultThrottleMs` and the activity cards' own, so a streaming run
+  re-renders at most every 50 ms. `KabooActivityProvider` takes the same prop,
+  0 by default.
+
+### Changed
+
+- **Long threads are virtualized again.** `KabooMessageView` no longer passes
+  `CopilotChatMessageView` a children render prop, which turned CopilotKit's
+  virtualization off; the agent cards still waiting for a reply and the
+  run-start indicator render after the list.
+- **A call that started a sub-agent draws that agent's card** inside a
+  timeline, unless `toolRenderers` has its own renderer for the name, so an app
+  needs no list of its delegate tools.
+- **Fewer re-renders.** `KabooActivityProvider`, `useKabooSend`,
+  `KabooReferenceInput` and `ReferencesProvider` no longer re-render on every
+  streamed message and state change, and a request card only on messages and
+  run status. The wildcard tool renderer registers once instead of on every
+  sub-agent event.
+
 ## [0.13.1]
 
 ### Fixed

@@ -12,25 +12,16 @@ vi.mock("@copilotkit/react-core/v2", () => {
   const CopilotChatMessageView = ({
     messages = [],
     assistantMessage: Assistant,
-    children,
   }: {
     messages?: ViewMessage[];
     assistantMessage?: ComponentType<{ message: ViewMessage }>;
-    children: (props: {
-      messages: ViewMessage[];
-      isRunning: boolean;
-      messageElements: ReactElement[];
-      interruptElement: ReactElement | null;
-    }) => ReactElement;
-  }) =>
-    children({
-      messages,
-      isRunning: false,
-      interruptElement: null,
-      messageElements: messages.map((m) =>
+  }): ReactElement => (
+    <div>
+      {messages.map((m) =>
         m.role === "assistant" && Assistant ? <Assistant key={m.id} message={m} /> : <div key={m.id} />,
-      ),
-    });
+      )}
+    </div>
+  );
   return {
     CopilotChatMessageView: Object.assign(CopilotChatMessageView, { Cursor: () => null }),
     CopilotChatAssistantMessage: ({ message }: { message: ViewMessage }) => <p>{String(message.content)}</p>,

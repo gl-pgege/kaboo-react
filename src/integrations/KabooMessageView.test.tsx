@@ -4,35 +4,20 @@ import type { ReactElement } from "react";
 import { ActivityContext } from "../context/ActivityProvider";
 import { MessageMetaContext } from "../context/MessageMeta";
 import { KabooSlotsProvider } from "../context/KabooSlots";
-import type { MessageMeta, StreamGroup } from "../types";
+import type { MessageMeta, RunError, StreamGroup } from "../types";
 import type { KabooMessageViewProps } from "./KabooMessageView";
 
 vi.mock("@copilotkit/react-core/v2", () => {
   type ViewMessage = { id: string; role: string; content?: unknown };
-  const CopilotChatMessageView = ({
-    messages = [],
-    isRunning = false,
-    children,
-  }: {
-    messages?: ViewMessage[];
-    isRunning?: boolean;
-    children: (props: {
-      messages: ViewMessage[];
-      isRunning: boolean;
-      messageElements: ReactElement[];
-      interruptElement: ReactElement | null;
-    }) => ReactElement;
-  }) =>
-    children({
-      messages,
-      isRunning,
-      interruptElement: null,
-      messageElements: messages.map((m) => (
+  const CopilotChatMessageView = ({ messages = [] }: { messages?: ViewMessage[] }): ReactElement => (
+    <div>
+      {messages.map((m) => (
         <div key={m.id} data-testid={`${m.role}-message`} data-message-id={m.id}>
           {typeof m.content === "string" ? m.content : null}
         </div>
-      )),
-    });
+      ))}
+    </div>
+  );
   return {
     CopilotChatMessageView: Object.assign(CopilotChatMessageView, {
       Cursor: () => <div data-testid="cursor" />,
@@ -86,14 +71,16 @@ function view({
   isRunning = false,
   groups = {},
   meta = {},
+  errorByRun,
 }: {
   messages: ChatMessage[];
   isRunning?: boolean;
   groups?: Record<string, StreamGroup>;
   meta?: Record<string, MessageMeta>;
+  errorByRun?: Record<string, RunError>;
 }) {
   return (
-    <ActivityContext.Provider value={{ groups }}>
+    <ActivityContext.Provider value={{ groups, errorByRun }}>
       <MessageMetaContext.Provider value={meta}>
         <KabooSlotsProvider value={{ runStartIndicator: Working }}>
           <KabooMessageView messages={messages} isRunning={isRunning} />
@@ -102,6 +89,22 @@ function view({
     </ActivityContext.Provider>
   );
 }
+
+describe("KabooMessageView — failed runs", () => {
+  it("puts the run's error after its last message, and after the question when it said nothing", () => {
+    render(
+      view({
+        messages: [user("u1"), assistant("a1", "Looking."), user("u2"), assistant("a2", "Fine.")],
+        meta: { u1: { runId: "r1" }, a1: { runId: "r1" }, u2: { runId: "r2" }, a2: { runId: "r3" } },
+        errorByRun: { r1: { message: "Model refused" }, r2: { message: "Unreachable" } },
+      }),
+    );
+
+    const order = [...document.querySelectorAll("[data-message-id]")].map((row) => row.getAttribute("data-message-id"));
+    expect(order).toEqual(["u1", "a1", "kaboo-run-error:r1", "u2", "kaboo-run-error:r2", "a2"]);
+    expect(screen.getAllByTestId("activity-message")).toHaveLength(2);
+  });
+});
 
 describe("KabooMessageView — reasoning messages", () => {
   it("drops reasoning messages with no text, including signature-only ones", () => {

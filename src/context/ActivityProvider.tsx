@@ -59,6 +59,12 @@ export interface KabooActivityProviderProps {
   agentId?: string;
   /** Renderers for structured agent outputs, keyed by output schema name. */
   structuredRenderers?: StructuredRenderers;
+  /**
+   * The shortest interval, in milliseconds, between two activity updates while
+   * events stream; updates within it are coalesced into the next one. `0`
+   * (the default) updates on every event.
+   */
+  throttleMs?: number;
   /** The subtree that reads activity via {@link useActivity}. */
   children: ReactNode;
 }
@@ -85,8 +91,8 @@ export interface KabooActivityProviderProps {
  * }
  * ```
  */
-export function KabooActivityProvider({ agentId, structuredRenderers, children }: KabooActivityProviderProps) {
-  const { agent } = useAgent(agentId ? { agentId } : undefined);
+export function KabooActivityProvider({ agentId, structuredRenderers, throttleMs = 0, children }: KabooActivityProviderProps) {
+  const { agent } = useAgent({ ...(agentId ? { agentId } : {}), updates: [] });
   const [state, setState] = useState<ActivityState>(EMPTY);
   const [messageMeta, setMessageMeta] = useState<Record<string, MessageMeta>>({});
 
@@ -111,10 +117,28 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
     // Folded here, once per event, rather than in a state updater: the fold
     // keeps partial tool arguments between events, and an updater can run twice.
     let groups: ActivityState = EMPTY;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let pending = false;
+    const flush = () => {
+      timer = undefined;
+      if (!pending) return;
+      pending = false;
+      setState(groups);
+      timer = setTimeout(flush, throttleMs);
+    };
     const apply = (next: ActivityState) => {
       if (next === groups) return;
       groups = next;
+      if (throttleMs <= 0) {
+        setState(next);
+        return;
+      }
+      if (timer) {
+        pending = true;
+        return;
+      }
       setState(next);
+      timer = setTimeout(flush, throttleMs);
     };
     const { unsubscribe } = agent.subscribe({
       onEvent: ({ event }) => {
@@ -166,8 +190,11 @@ export function KabooActivityProvider({ agentId, structuredRenderers, children }
       onRunErrorEvent: ({ event }) => apply(settleActiveGroups(groups, event?.timestamp)),
       onRunFailed: () => apply(settleActiveGroups(groups)),
     });
-    return unsubscribe;
-  }, [agent]);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [agent, throttleMs]);
 
   return (
     <ActivityContext.Provider value={state}>

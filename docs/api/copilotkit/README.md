@@ -16,6 +16,7 @@
 ## Variables
 
 - [KabooMessageView](variables/KabooMessageView.md)
+- [RUN\_ERROR\_ACTIVITY](variables/RUN_ERROR_ACTIVITY.md)
 
 ## Functions
 

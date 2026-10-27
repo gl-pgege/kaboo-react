@@ -31,7 +31,8 @@ function RunSqlCard() {
 ```
 
 Mount it anywhere inside `KabooProvider`. A call that starts a sub-agent is drawn
-as that agent's card instead, whatever is registered for its name.
+as that agent's card instead, whatever is registered for its name, so an app
+needs no list of its delegate tools.
 
 ## Draw it while it streams
 
@@ -104,6 +105,38 @@ export function CallStatus() {
 
 A registered renderer gets a failed or cancelled call with CopilotKit's
 `complete` status, so it stops spinning; this hook says which it was.
+
+A call the chat's own agent made, outside any timeline, reads its outcome with
+`useToolOutcome(toolCallId)`: `status` (`success` or `error`), and `error` and
+`fix` when it failed, as kaboo-workflows 0.34 reports them on every result. It
+is `undefined` while the call runs and for results from older services, which
+carry no status; never guess a failure from the result's text.
+
+```tsx
+import { useRenderTool } from "@copilotkit/react-core/v2";
+import { useToolOutcome } from "@pgege/kaboo-react";
+
+const anyArguments = {
+  "~standard": { version: 1 as const, vendor: "app", validate: (value: unknown) => ({ value }) },
+};
+
+function Outcome({ toolCallId }: { toolCallId: string }) {
+  const outcome = useToolOutcome(toolCallId);
+  return outcome?.status === "error" ? <p role="alert">{outcome.error}</p> : null;
+}
+
+export function RunSqlOutcome() {
+  useRenderTool({
+    name: "run_sql",
+    parameters: anyArguments,
+    render: ({ toolCallId }) => <Outcome toolCallId={toolCallId} />,
+  });
+  return null;
+}
+```
+
+The fallback renderer gets the same outcome on the `ToolCall` it is handed:
+`status`, `error` and `fix`.
 
 ## Every other tool: `fallbackToolRenderer`
 

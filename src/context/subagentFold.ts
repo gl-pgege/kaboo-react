@@ -1,5 +1,11 @@
 import type { ActivityState, StreamGroup, TokenUsage, ToolCall } from "../types";
 
+/**
+ * Name of the `CUSTOM` event kaboo-runtime replays where a run failed, carrying
+ * the failure's `{ message, code }`; the run itself replays as stopped.
+ */
+export const RUN_ERROR_EVENT = "kaboo.run_error";
+
 /** The fields of an AG-UI event this fold reads. */
 export interface SubagentEvent {
   type: string;
@@ -20,6 +26,7 @@ export interface SubagentEvent {
   code?: string;
   usage?: Array<Record<string, unknown>>;
   timestamp?: number;
+  value?: unknown;
 }
 
 /**
@@ -125,6 +132,26 @@ function finishRun(state: ActivityState, event: SubagentEvent, memory: SubagentF
   };
 }
 
+function failRun(state: ActivityState, runId: string | undefined, message: unknown, code: unknown): ActivityState {
+  if (!runId) return state;
+  const error = {
+    message: typeof message === "string" && message.trim() ? message : "The run failed.",
+    ...(typeof code === "string" && code ? { code } : {}),
+  };
+  return { ...state, errorByRun: { ...state.errorByRun, [runId]: error } };
+}
+
+function recordOutcome(state: ActivityState, event: SubagentEvent): ActivityState {
+  const { status, error, fix } = event.metadata ?? {};
+  if (!event.toolCallId || (status !== "success" && status !== "error")) return state;
+  const outcome = {
+    status,
+    ...(typeof error === "string" ? { error } : {}),
+    ...(typeof fix === "string" ? { fix } : {}),
+  } as const;
+  return { ...state, toolOutcomes: { ...state.toolOutcomes, [event.toolCallId]: outcome } };
+}
+
 function withGroup(
   state: ActivityState,
   id: string,
@@ -160,8 +187,13 @@ export function foldSubagentEvent(
     return state;
   }
   if (event.type === "RUN_FINISHED") return finishRun(state, event, memory);
+  if (event.type === "RUN_ERROR") return failRun(state, event.runId ?? memory.runId, event.message, event.code);
+  if (event.type === "CUSTOM" && event.name === RUN_ERROR_EVENT) {
+    const value = (event.value ?? {}) as { message?: unknown; code?: unknown };
+    return failRun(state, memory.runId, value.message, value.code);
+  }
   const id = event.subagentRunId ?? startedBy(event, memory);
-  if (!id) return state;
+  if (!id) return event.type === "TOOL_CALL_RESULT" ? recordOutcome(state, event) : state;
   switch (event.type) {
     case "SUBAGENT_STARTED": {
       const existing = state.groups[id];

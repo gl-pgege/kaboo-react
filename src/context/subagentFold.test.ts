@@ -23,6 +23,43 @@ function fold(events: Record<string, unknown>[]): ActivityState {
   );
 }
 
+describe("foldSubagentEvent top-level outcomes and run errors", () => {
+  it("keeps how each top-level call ended, from its result's metadata", () => {
+    const state = fold([
+      { type: "RUN_STARTED", runId: "r1" },
+      { type: "TOOL_CALL_RESULT", toolCallId: "c1", content: "{}", metadata: { status: "success" } },
+      {
+        type: "TOOL_CALL_RESULT",
+        toolCallId: "c2",
+        content: "HTTP error 400",
+        metadata: { status: "error", error: "Unknown column", fix: "Read the schema first." },
+      },
+      { type: "TOOL_CALL_RESULT", toolCallId: "c3", content: "older stream, no status" },
+    ]);
+    expect(state.toolOutcomes).toEqual({
+      c1: { status: "success" },
+      c2: { status: "error", error: "Unknown column", fix: "Read the schema first." },
+    });
+  });
+
+  it("keeps why a run failed, live and from a replay", () => {
+    const state = fold([
+      { type: "RUN_STARTED", runId: "r1" },
+      { type: "RUN_ERROR", message: "Model refused", code: "refusal" },
+      { type: "RUN_STARTED", runId: "r2" },
+      { type: "CUSTOM", name: "kaboo.run_error", value: { message: "The agent could not be reached" } },
+      { type: "RUN_FINISHED", runId: "r2" },
+      { type: "RUN_STARTED", runId: "r3" },
+      { type: "RUN_ERROR" },
+    ]);
+    expect(state.errorByRun).toEqual({
+      r1: { message: "Model refused", code: "refusal" },
+      r2: { message: "The agent could not be reached" },
+      r3: { message: "The run failed." },
+    });
+  });
+});
+
 describe("foldSubagentEvent run totals and traces", () => {
   it("keeps each run's token usage and trace, and each agent's trace, for the turn footer and feedback", () => {
     const state = fold([

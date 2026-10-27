@@ -6,7 +6,7 @@
 
 > `const` **KabooMessageView**: (`__namedParameters`) => `Element` & `object`
 
-Defined in: [src/integrations/KabooMessageView.tsx:227](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L227)
+Defined in: [src/integrations/KabooMessageView.tsx:262](https://github.com/gl-pgege/kaboo-react/blob/main/src/integrations/KabooMessageView.tsx#L262)
 
 Drop-in replacement for `CopilotChat`'s `messageView` that renders swarm/graph
 member cards **live, inside the chat, from the moment the first agent starts**
@@ -29,7 +29,11 @@ no duplication.
 Reasoning messages with no text (thinking the model only signed or
 encrypted) are dropped, and adjacent ones are merged into one, so a turn
 shows one thought block per stretch of thinking instead of a row of empty
-"Thought for a few seconds" headers.
+"Thought for a few seconds" headers. A run that failed gets a notice after
+its last message, with the run's error, so a failed turn is never blank.
+
+The list stays CopilotKit's own, so long threads are virtualized; pass
+`groupMessages` or `transformMessages` to reshape it.
 
 App-supplied [KabooSlots](../../index/interfaces/KabooSlots.md) (from `KabooProvider` or the `slots` prop)
 plug in here: `runStartIndicator` replaces the bare cursor shown between
